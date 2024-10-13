@@ -17,7 +17,7 @@ namespace Cosmos_Test_Platform
         {
             Console.Write("Input: ");
             var input = Console.ReadLine();
-            Console.Write("Text typed: ");
+            Console.Write("Text typed lolololollolol: ");
             Console.WriteLine(input);
         }
     }
