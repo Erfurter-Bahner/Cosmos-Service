@@ -1,0 +1,43 @@
+# Build-Binaries
+bin/
+obj/
+
+# User-spezifische Dateien
+.vs/
+*.user
+*.rsuser
+*.suo
+
+# Backup- und Logs
+*.log
+*.tmp
+*.bak
+
+# Cosmos spezifische Dateien
+Cosmos/
+
+# Paketmanager (NuGet)
+packages/
+*.nupkg
+project.lock.json
+
+# Visual Studio
+*.ide
+.idea/
+*.ipch
+*.vcxproj.user
+*.DS_Store
+.vscode/
+.vscode/settings.json
+
+# Projektdateien
+*.dbmdl
+*.jfm
+
+# Deployment-Umgebungen
+.publish/
+.env
+
+# Sonstige Windows/OSX-Dateien
+Thumbs.db
+Desktop.ini
