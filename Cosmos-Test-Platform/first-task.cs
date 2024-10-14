@@ -11,13 +11,8 @@ namespace Cosmos_Test_Platform
 {
     public class Kernel : Sys.Kernel
     {
-
-
-        Memory mem= new Memory();
-
-
+        Memory mem = new Memory();
         DateTime start;
-
         protected override void BeforeRun()
         {
             Console.WriteLine("Cosmos booted successfully. Type a line of text to get it echoed back.");
@@ -26,65 +21,69 @@ namespace Cosmos_Test_Platform
 
         protected override void Run()
         {
-
-
             Console.Write("Input: ");
             var input = Console.ReadLine();
             Console.Write("Text typed : ");
             string[] args = input.Split(' ');
             Console.WriteLine(input);
 
-            //System.IO.File.WriteAllText(@"C:\Desktop\test.txt", input);
-
             switch (args[0])
             {
                 case "help":
-                {
-                        Console.WriteLine("phillip stinkt");
-                        break; 
-                }
-                case "time":
-                {
-                        getSysTime();
-                        break;
-                }
-                case "write":
-                {
-                        mem.Schreiben(uint.Parse(args[1]), byte.Parse(args[2]));
-                        break;
-                }
-
-                case "read":
                     {
-                        int a= mem.Lesen(uint.Parse(args[1]));
-                        Console.WriteLine(a);
-                        
+                        Console.WriteLine("phillip stinkt");
                         break;
                     }
 
-                default: Console.WriteLine("eingabe falsch");
-                    break; 
+                case "time":
+                    {
+                        getSysTime();
+                        break;
+                    }
+
+                case "write":
+                    {
+                        int args_lenght = args.Length - 1;
+
+                        if (args_lenght <= 1 || args_lenght > 2)
+                        {
+                            Console.WriteLine("index wert");
+                        }
+
+                        else if (uint.Parse(args[1]) > 16 || byte.Parse(args[2]) > 255)
+                        {
+                            Console.WriteLine("index muss zwischen 0 und 16 liegen, byte zwischen 0 und 255");
+                        }
+
+                        else mem.Schreiben(uint.Parse(args[1]), byte.Parse(args[2]));
+
+                        Console.WriteLine(args_lenght);
+                        break;
+                    }
+
+                case "read":
+                    {
+                        int a = mem.Lesen(uint.Parse(args[1]));
+                        Console.WriteLine(a);
+                        break;
+                    }
+
+                default:
+                    Console.WriteLine("eingabe falsch");
+                    break;
             }
-            
-            
         }
-        private void getSysTime() 
+        private void getSysTime()
         {
             TimeSpan runtime = DateTime.Now - start;
             Console.WriteLine("running for: " + runtime.TotalSeconds + " seconds");
 
         }
-
-
-
-
-
     }
-
 
     class Memory
     {
-        Cosmos.Core.ManagedMemoryBlock newBlock = new Cosmos.Core.ManagedMemoryBlock(16);
+        Cosmos.Core.ManagedMemoryBlock newBlock = new Cosmos.Core.ManagedMemoryBlock(16); //16 Speicheradressen 
         public void Schreiben(uint index, byte value)
         {
             newBlock.Write8(index, value);
@@ -93,9 +92,7 @@ namespace Cosmos_Test_Platform
         {
             ushort val = 0;
             val = newBlock.Read16(index);
-            return (byte)(val & 0xFF);
+            return (ushort)(val & 0xFF);
         }
-
-
     }
 }
