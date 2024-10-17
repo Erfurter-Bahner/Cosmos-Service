@@ -95,4 +95,19 @@ namespace Cosmos_Test_Platform
             return (ushort)(val & 0xFF);
         }
     }
+ 
+   public abstract class ProgrammClass //ohne Zugriffsmodifizierer standardmäßig internal
+    {
+        public int PID { get; private set; }
+        public string ProgName { get; private set; }
+        public int MemoryIndex { get; private set; }
+
+        public ProgrammClass(int _PID, string _ProgName, int _MemoryIndex)
+        {
+            PID=_PID; 
+            ProgName=_ProgName; 
+            MemoryIndex=_MemoryIndex;
+        }
+
+    }
 }
