@@ -68,6 +68,18 @@ namespace Cosmos_Test_Platform
                         break;
                     }
 
+                case "adios":
+                    {
+                        if (args.GetLength(0)==2 && args[1].Equals("amigos"))
+                        {
+                            Sys.Power.Shutdown();
+                        }else
+                        {
+                            Console.WriteLine("no");
+                        }
+                        break;
+                    }
+
                 default:
                     Console.WriteLine("eingabe falsch");
                     break;
