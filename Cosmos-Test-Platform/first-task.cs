@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security.AccessControl;
 using System.Text;
+using System.Threading;
 using Sys = Cosmos.System;
 
 namespace Cosmos_Test_Platform
@@ -72,6 +73,8 @@ namespace Cosmos_Test_Platform
                     {
                         if (args.GetLength(0)==2 && args[1].Equals("amigos"))
                         {
+                            Console.WriteLine("~~~\nHASTA LA VISTA\n~~~");
+                            Thread.Sleep(1500);
                             Sys.Power.Shutdown();
                         }else
                         {
