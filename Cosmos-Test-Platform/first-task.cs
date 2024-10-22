@@ -16,17 +16,15 @@ namespace Cosmos_Test_Platform
         DateTime start;
         protected override void BeforeRun()
         {
-            Console.WriteLine("Cosmos booted successfully. Type a line of text to get it echoed back.");
+            Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
             start = DateTime.Now;
         }
 
         protected override void Run()
         {
-            Console.Write("Input: ");
+            Console.Write(">> ");
             var input = Console.ReadLine();
-            Console.Write("Text typed : ");
             string[] args = input.Split(' ');
-            Console.WriteLine(input);
 
             switch (args[0])
             {
@@ -76,9 +74,32 @@ namespace Cosmos_Test_Platform
                             Console.WriteLine("~~~\nHASTA LA VISTA\n~~~");
                             Thread.Sleep(1500);
                             Sys.Power.Shutdown();
-                        }else
+                        }
+                        break;
+                    }
+
+                case "adios2":
+                    {
+                        if (args.GetLength(0) == 2)
                         {
-                            Console.WriteLine("no");
+                            if (args[1].Equals("amigos"))
+                            {
+                                Console.WriteLine("~~~\nHASTA LA VISTA\n~~~");
+                                Thread.Sleep(1500);
+                                Sys.Power.Shutdown();
+                            }
+                            else
+                            {
+                                fehler(0, args, 1);
+                            }
+                        }
+                        else if (args.GetLength(0) > 2)
+                        {
+                            fehler(2, args, 1);
+                        }
+                        else
+                        {
+                            fehler(1, args, 1);
                         }
                         break;
                     }
@@ -93,6 +114,42 @@ namespace Cosmos_Test_Platform
             TimeSpan runtime = DateTime.Now - start;
             Console.WriteLine("running for: " + runtime.TotalSeconds + " seconds");
 
+        }
+
+        private void fehler(int i, string []arr, int a)
+        {
+            Thread.Sleep(2000);
+            switch (i)
+            {
+                case 0:
+                    {
+                        Console.WriteLine("unknown argument:" + arr[a]);
+                        break;
+                    }
+                case 1:
+                    {
+                        Console.WriteLine("missing argument after: " + arr[a-1]);
+                        break;
+                    }
+                case 2:
+                    {
+                        Console.WriteLine("too many arguments, expected arguments: "+(a+1));
+                        break;
+                    }
+                case 3:
+                    {
+                        break;
+                    }
+                case 4:
+                    {
+                        break;
+                    }
+                default:
+                    {
+                        Console.WriteLine("Fehler :D");
+                        break;
+                    }
+            }
         }
     }
 
