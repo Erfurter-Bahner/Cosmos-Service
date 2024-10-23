@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cosmos-Test-Platform", "Cosmos-Test-Platform\Cosmos-Test-Platform.csproj", "{6F1A387F-2381-4DC7-8FC4-4754EAAE83CD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMIG.OS", "AMIG.OS\AMIG.OS.csproj", "{3FB82163-74B1-4702-9C46-BCE3D56ABDAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMIG.OS", "AMIG.OS\AMIG.OS.csproj", "{3FB82163-74B1-4702-9C46-BCE3D56ABDAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6F1A387F-2381-4DC7-8FC4-4754EAAE83CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F1A387F-2381-4DC7-8FC4-4754EAAE83CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F1A387F-2381-4DC7-8FC4-4754EAAE83CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F1A387F-2381-4DC7-8FC4-4754EAAE83CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3FB82163-74B1-4702-9C46-BCE3D56ABDAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FB82163-74B1-4702-9C46-BCE3D56ABDAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FB82163-74B1-4702-9C46-BCE3D56ABDAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
