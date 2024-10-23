@@ -13,13 +13,13 @@ namespace AMIG.OS
     // Klasse zur Verwaltung von Benutzerinformationen
     public class UserInfo
     {
-        public string Name { get; set; } // Füge die Name-Eigenschaft hinzu
+        public string Name { get; set; } 
         public string Role { get; set; }
         public string Password { get; set; }
 
         public UserInfo(string name, string role, string password)
         {
-            Name = name; // Setze den Benutzernamen
+            Name = name; 
             Role = role;
             Password = password;
         }
