@@ -26,23 +26,21 @@ namespace AMIG.OS
 
             // Alle Benutzer anzeigen
             userManagement.DisplayAllUsers();
+
             
             // Informationen über einen bestimmten Benutzer abrufen
             userManagement.GetUserInfo("User1");                                       
         }
 
+        protected override void Run()
 
-protected override void Run()
         {
             Console.Write("Input: ");
             var input = Console.ReadLine();
             Console.Write("Text typed: ");
             Console.WriteLine(input);
         }
-    
-
 
     }
 
-        
 }
