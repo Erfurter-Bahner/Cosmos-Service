@@ -26,7 +26,6 @@ namespace AMIG.OS
 
             // Alle Benutzer anzeigen
             userManagement.DisplayAllUsers();
-
             
             // Informationen über einen bestimmten Benutzer abrufen
             userManagement.GetUserInfo("User1");                                       
