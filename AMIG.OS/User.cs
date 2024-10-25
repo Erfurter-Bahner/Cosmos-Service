@@ -10,35 +10,34 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Text.Json;
 
-
 namespace AMIG.OS
 {
     // Klasse zur Verwaltung von Benutzerinformationen
     public class UserInfo
     {
-        public string Name { get; set; } 
+        public string Name { get; set; }
         public string Role { get; set; }
         public string Password { get; set; }
 
         public UserInfo(string name, string role, string password)
         {
-            Name = name; 
+            Name = name;
             Role = role;
             Password = password;
         }
     }
     public class UserManagement
     {
-        //private const string FilePath = @"C:/Users/Heads/Desktop/test/user.txt"; // Datei zur Speicherung
+        private const string FilePath = @"0:\users.txt"; // Datei zur Speicherung
         // Dictionary zur Verwaltung von Benutzern mit Benutzername, Rolle und Passwort
         private Dictionary<string, UserInfo> users = new Dictionary<string, UserInfo>();
 
-        /*
         public UserManagement()
         {
+            InitializeTestUsers();
             LoadUsers(); // Lädt Benutzer beim Start
         }
-        */
+
         // Benutzer hinzufügen
         public void AddUser(string username, string role, string password)
         {
@@ -46,7 +45,7 @@ namespace AMIG.OS
             {
                 users.Add(username, new UserInfo(username, role, password)); // Übergebe den Benutzernamen
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} wurde hinzugefügt.");
-                //SaveUsers(); // Speichert nach jedem Hinzufügen
+                SaveUsers(); // Speichert nach jedem Hinzufügen
             }
             else
             {
@@ -105,6 +104,7 @@ namespace AMIG.OS
             {
                 users[username].Role = newRole;
                 Console.WriteLine($"Die Rolle von {username} wurde auf {newRole} geändert.");
+                SaveUsers();
             }
             else
             {
@@ -173,20 +173,6 @@ namespace AMIG.OS
             }
         }
 
-        // Zugriff auf die Informationen des eingeloggten Benutzers, im Grunde das gleiche wie DisplayUser
-        public void DisplayLoggedInUserInfo(string loggedInUser)
-        {
-            if (users.ContainsKey(loggedInUser))
-            {
-                UserInfo userInfo = users[loggedInUser];
-                Console.WriteLine($"Benutzer: {userInfo.Name}, Rolle: {userInfo.Role}");
-            }
-            else
-            {
-                Console.WriteLine("Benutzer existiert nicht.");
-            }
-        }
-
         // Benutzername ändern(für den aktuell eingeloggten Benutzer)
         // Benutzername ändern
         public bool ChangeUsername(string oldUsername, string newUsername)
@@ -199,6 +185,7 @@ namespace AMIG.OS
                     users.Remove(oldUsername); // Alten Benutzernamen entfernen
                     users.Add(newUsername, userInfo); // Neuen Benutzernamen hinzufügen
                     Console.WriteLine($"Benutzername wurde von {oldUsername} auf {newUsername} geändert.");
+                    SaveUsers();
                     return true;
                 }
                 else
@@ -214,34 +201,43 @@ namespace AMIG.OS
             }
         }
 
-        /*
         private void SaveUsers()
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(FilePath))
+                // Überprüfe, ob die Datei bereits existiert und lösche sie ggf.
+                if (File.Exists(FilePath))
+                {
+                    File.Delete(FilePath);
+                }
+
+                // Erstellen und Schreiben in die Datei
+                using (var stream = File.Create(FilePath))
+                using (var writer = new StreamWriter(stream))
                 {
                     foreach (var user in users)
                     {
                         var userInfo = user.Value;
-                        // Daten im Format username,role,password speichern
                         writer.WriteLine($"{user.Key},{userInfo.Role},{userInfo.Password}");
                     }
                 }
+                Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+                Console.WriteLine($"Fehler beim Speichern der Benutzer: {ex.Message}");
             }
         }
-        
-        private void LoadUsers()
+
+        //fileio
+        public void LoadUsers()
         {
             try
             {
                 if (File.Exists(FilePath))
                 {
-                    using (StreamReader reader = new StreamReader(FilePath))
+                    using (var stream = File.OpenRead(FilePath))
+                    using (var reader = new StreamReader(stream))
                     {
                         string line;
                         while ((line = reader.ReadLine()) != null)
@@ -253,21 +249,42 @@ namespace AMIG.OS
                                 string role = parts[1];
                                 string password = parts[2];
                                 users[username] = new UserInfo(username, role, password);
-                                Console.WriteLine("erfolgreich zugegriffen");
                             }
                         }
                     }
+                    Console.WriteLine("Benutzerdaten erfolgreich geladen.");
+                }
+                else
+                {
+                    Console.WriteLine("Benutzerdaten-Datei existiert nicht.");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Fehler beim Laden der Benutzer: {ex.Message}");
             }
-
         }
-      */
-    }
 
+        public void InitializeTestUsers()
+        {
+            if (!File.Exists(FilePath))  // Prüfen, ob die Datei existiert
+            {
+                Console.WriteLine("Erstelle Testbenutzer...");
+
+                // Testbenutzer hinzufügen
+                users.Add("User1", new UserInfo("User1", "Standard", "password123"));
+                users.Add("User2", new UserInfo("User2", "Admin", "adminPass"));
+
+                // Speichern der Benutzer in die Datei
+                SaveUsers();
+            }
+            else
+            {
+                Console.WriteLine("Benutzerdaten-Datei existiert bereits. Überspringe Testbenutzer-Erstellung.");
+            }
+        }
+
+    }
 }
 
 

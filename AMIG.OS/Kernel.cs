@@ -15,18 +15,18 @@ using Console = System.Console;
 using System.IO;
 using System.Text.Json;
 
+
 namespace AMIG.OS
 {
     public class Kernel : Sys.Kernel
     {
-        
-
         private static UserManagement userManagement = new UserManagement(); // Singleton für UserManagement
+        private static Sys.FileSystem.CosmosVFS fs;
+
         string loggedInUser; // Aktuell eingeloggter Benutzer
         DateTime starttime;
         public static string GetPassword()
         {
-            
             string password = "";
             ConsoleKeyInfo key;
 
@@ -57,23 +57,26 @@ namespace AMIG.OS
             return password;
         }
 
-        public void InitUser()
-        {
-            // Benutzer hinzufügen (mit Passwort)
-            userManagement.AddUser("User1", "Standard", "password123");
-            userManagement.AddUser("User2", "Admin", "adminPass");
-
-        }
-        
         protected override void BeforeRun()
         {
+            // Registrierung des virtuellen Dateisystems
+            fs = new Sys.FileSystem.CosmosVFS();
+            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+
+            // Initialisiere die Benutzerverwaltung
+            userManagement.LoadUsers(); // Lade die Benutzer beim Start
+
+            Console.WriteLine("Benutzerverwaltung ist bereit.");
+
             Console.WriteLine("Cosmos booted successfully. Type a line of text to get it echoed back.");
-			Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
+            Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
 
-            //vorgegebene Benutzer init
-            InitUser();
-            // Login-Anforderung
+            login();
+        }
 
+         public void login()
+        {
+            // Login-Auforderung
             Console.WriteLine("Bitte melden Sie sich an.");
             string username;
             string password;
@@ -84,7 +87,7 @@ namespace AMIG.OS
                 Console.Write("Benutzername: ");
                 username = Console.ReadLine();
 
-                if (userManagement.UserExists(username))
+                if (!string.IsNullOrEmpty(username) && userManagement.UserExists(username))
                 {
                     break; // Abbrechen, wenn der Benutzer existiert
                 }
@@ -113,19 +116,18 @@ namespace AMIG.OS
                 }
             }
             starttime = DateTime.Now;
-        }
 
+        }
+        
         protected override void Run()
         {
-            
-                Console.WriteLine("Input: ");
-                var input = Console.ReadLine();
-                string[] args = input.Split(' ');
-
+            Console.WriteLine("Input: ");
+            var input = Console.ReadLine();
+            string[] args = input.Split(' ');
 
             switch (args[0].ToLower())
             {
-            	case "help":
+                case "help":
                     {
                         Console.WriteLine("for further information contact us");
                         break;
@@ -141,7 +143,7 @@ namespace AMIG.OS
                         }
                         break;
                     }
-                    
+
                 case "showall":
                     {
                         Console.WriteLine("Benutzerinformationen:");
@@ -158,21 +160,20 @@ namespace AMIG.OS
 
                 case "change":
                     {
-                
-                            Console.Write("Neuer Benutzername: ");
-                            string newUsername = Console.ReadLine();
+                        Console.Write("Neuer Benutzername: ");
+                        string newUsername = Console.ReadLine();
 
-                            // Ändere den Benutzernamen
-                            if (userManagement.ChangeUsername(loggedInUser, newUsername))
-                            {
-                              loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
-                            }
+                        // Ändere den Benutzernamen
+                        if (userManagement.ChangeUsername(loggedInUser, newUsername))
+                        {
+                            loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
+                        }
 
                         break;
                     }
-                case "logout":
+                case "logout": 
                     {
-                        BeforeRun();
+                        login();
                         break;
                     }
 
@@ -189,19 +190,24 @@ namespace AMIG.OS
                         string username;
                         string role;
                         string pw;
+                        string pw_2;
 
                         Console.WriteLine("Name des anzulegende Benutzers");
                         username = Console.ReadLine();
                         Console.WriteLine("Rolle des anzulegende Benutzers"); //
                         role = Console.ReadLine();
+
+                        //implementation doppelt eingeben
                         Console.WriteLine("PW des anzulegende Benutzers");
-                        pw = Console.ReadLine();
+                        pw = GetPassword();
+                        do{
+                        Console.WriteLine("PW des anzulegende Benutzers wiederholen");
+                        pw_2 = GetPassword();
+                        } while (pw != pw_2);
 
                         userManagement.AddUser(username, role, pw);
                         break;
                     }
-                
-
 
                 default:
                     {
