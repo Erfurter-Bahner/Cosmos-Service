@@ -29,6 +29,9 @@ namespace AMIG.OS
         // Dictionary zur Verwaltung von Benutzern mit Benutzername, Rolle und Passwort
         private Dictionary<string, UserInfo> users = new Dictionary<string, UserInfo>();
 
+        // Variable zum Speichern des aktuell eingeloggten Benutzers
+        private string loggedInUser = null;
+
         // Benutzer hinzufügen
         public void AddUser(string username, string role, string password)
         {
@@ -41,6 +44,11 @@ namespace AMIG.OS
             {
                 Console.WriteLine($"Benutzer {username} existiert bereits.");
             }
+        }
+        // Überprüfen, ob ein Benutzer existiert
+        public bool UserExists(string username)
+        {
+            return users.ContainsKey(username);
         }
 
         // Rolle eines Benutzers abrufen
@@ -134,65 +142,99 @@ namespace AMIG.OS
             }
         }
 
-
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-// Hash-Funktion, die den SHA256-Algorithmus verwendet funkionniert nicht 
-private string HashPassword(string input)
-{
-    if (string.IsNullOrEmpty(input))
-    {
-        throw new ArgumentException("Das Passwort darf nicht leer sein.", nameof(input));
-    }
-
-    using (SHA256 sha256 = SHA256.Create())
-    {
-        byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < bytes.Length; i++)
+        // Benutzer Login-Anforderung
+        public bool Login(string username, string password)
         {
-            builder.Append(bytes[i].ToString("x2"));
+            if (users.ContainsKey(username))
+            {
+                if (users[username].Password == password)
+                {
+                    Console.WriteLine($"Login erfolgreich. Willkommen {username}!");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Falsches Passwort.");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+                return false;
+            }
         }
-        return builder.ToString();
+     
+        // Benutzer ausloggen
+        public void Logout()
+        {
+            if (loggedInUser != null)
+            {
+                Console.WriteLine($"Benutzer {loggedInUser} wurde abgemeldet.");
+                loggedInUser = null; // Setze den eingeloggten Benutzer zurück
+            }
+        }
+
+        // Zugriff auf die Informationen des eingeloggten Benutzers
+        public void DisplayLoggedInUserInfo(string loggedInUser)
+        {
+            if (users.ContainsKey(loggedInUser))
+            {
+                UserInfo userInfo = users[loggedInUser];
+                Console.WriteLine($"Benutzer: {userInfo.Name}, Rolle: {userInfo.Role}");
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+            }
+        }
+
+        // Rolle des aktuell eingeloggten Benutzers ändern
+        public void ChangeLoggedInUserRole(string newRole)
+        {
+            if (loggedInUser != null && users.ContainsKey(loggedInUser))
+            {
+                users[loggedInUser].Role = newRole;
+                Console.WriteLine($"Die Rolle von {loggedInUser} wurde auf {newRole} geändert.");
+            }
+            else
+            {
+                Console.WriteLine("Kein Benutzer eingeloggt.");
+            }
+        }
+
+        // Benutzername ändern(für den aktuell eingeloggten Benutzer)
+        // Benutzername ändern
+        public bool ChangeUsername(string oldUsername, string newUsername)
+        {
+            if (users.ContainsKey(oldUsername))
+            {
+                if (!users.ContainsKey(newUsername)) // Überprüfen, ob der neue Benutzername bereits existiert
+                {
+                    UserInfo userInfo = users[oldUsername];
+                    users.Remove(oldUsername); // Alten Benutzernamen entfernen
+                    users.Add(newUsername, userInfo); // Neuen Benutzernamen hinzufügen
+                    Console.WriteLine($"Benutzername wurde von {oldUsername} auf {newUsername} geändert.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Der neue Benutzername existiert bereits.");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+                return false;
+            }
+        }
     }
-}
 
-// Methode zum Abrufen des gehashten Passworts
-public string GetHashedPassword()
-{
-    return Password;
 }
 
 
 
-
-//verifyHash
-public bool VerifyHash(string inputPassword)
-{
-    string hashedInput = HashPassword(inputPassword); // Hash das eingegebene Passwort
-    return Password == hashedInput; // Vergleiche mit dem gespeicherten gehashten Passwort
-}
-
-//passwort vorraussetzungen
-
-*/
 
 
 
