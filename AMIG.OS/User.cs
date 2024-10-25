@@ -7,6 +7,9 @@ using System.Security.AccessControl;
 using System.Text;
 using Sys = Cosmos.System;
 using System.Security.Cryptography;
+using System.IO;
+using System.Text.Json;
+
 
 namespace AMIG.OS
 {
@@ -26,12 +29,16 @@ namespace AMIG.OS
     }
     public class UserManagement
     {
+        //private const string FilePath = @"C:/Users/Heads/Desktop/test/user.txt"; // Datei zur Speicherung
         // Dictionary zur Verwaltung von Benutzern mit Benutzername, Rolle und Passwort
         private Dictionary<string, UserInfo> users = new Dictionary<string, UserInfo>();
 
-        // Variable zum Speichern des aktuell eingeloggten Benutzers
-        private string loggedInUser = null;
-
+        /*
+        public UserManagement()
+        {
+            LoadUsers(); // Lädt Benutzer beim Start
+        }
+        */
         // Benutzer hinzufügen
         public void AddUser(string username, string role, string password)
         {
@@ -39,6 +46,7 @@ namespace AMIG.OS
             {
                 users.Add(username, new UserInfo(username, role, password)); // Übergebe den Benutzernamen
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} wurde hinzugefügt.");
+                //SaveUsers(); // Speichert nach jedem Hinzufügen
             }
             else
             {
@@ -164,18 +172,8 @@ namespace AMIG.OS
                 return false;
             }
         }
-     
-        // Benutzer ausloggen
-        public void Logout()
-        {
-            if (loggedInUser != null)
-            {
-                Console.WriteLine($"Benutzer {loggedInUser} wurde abgemeldet.");
-                loggedInUser = null; // Setze den eingeloggten Benutzer zurück
-            }
-        }
 
-        // Zugriff auf die Informationen des eingeloggten Benutzers
+        // Zugriff auf die Informationen des eingeloggten Benutzers, im Grunde das gleiche wie DisplayUser
         public void DisplayLoggedInUserInfo(string loggedInUser)
         {
             if (users.ContainsKey(loggedInUser))
@@ -186,20 +184,6 @@ namespace AMIG.OS
             else
             {
                 Console.WriteLine("Benutzer existiert nicht.");
-            }
-        }
-
-        // Rolle des aktuell eingeloggten Benutzers ändern
-        public void ChangeLoggedInUserRole(string newRole)
-        {
-            if (loggedInUser != null && users.ContainsKey(loggedInUser))
-            {
-                users[loggedInUser].Role = newRole;
-                Console.WriteLine($"Die Rolle von {loggedInUser} wurde auf {newRole} geändert.");
-            }
-            else
-            {
-                Console.WriteLine("Kein Benutzer eingeloggt.");
             }
         }
 
@@ -229,6 +213,59 @@ namespace AMIG.OS
                 return false;
             }
         }
+
+        /*
+        private void SaveUsers()
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(FilePath))
+                {
+                    foreach (var user in users)
+                    {
+                        var userInfo = user.Value;
+                        // Daten im Format username,role,password speichern
+                        writer.WriteLine($"{user.Key},{userInfo.Role},{userInfo.Password}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Speichern: {ex.Message}");
+            }
+        }
+        
+        private void LoadUsers()
+        {
+            try
+            {
+                if (File.Exists(FilePath))
+                {
+                    using (StreamReader reader = new StreamReader(FilePath))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split(',');
+                            if (parts.Length == 3)
+                            {
+                                string username = parts[0];
+                                string role = parts[1];
+                                string password = parts[2];
+                                users[username] = new UserInfo(username, role, password);
+                                Console.WriteLine("erfolgreich zugegriffen");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler beim Laden der Benutzer: {ex.Message}");
+            }
+
+        }
+      */
     }
 
 }

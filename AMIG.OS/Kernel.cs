@@ -9,16 +9,24 @@ using System.Threading;
 using Sys = Cosmos.System;
 using System.Security.Cryptography;
 using System.Drawing;
+using System.Data;
+using Cosmos.System;
+using Console = System.Console;
+using System.IO;
+using System.Text.Json;
 
 namespace AMIG.OS
 {
     public class Kernel : Sys.Kernel
     {
-        private UserManagement userManagement; // Benutzerverwaltungsinstanz
-         string loggedInUser; // Aktuell eingeloggter Benutzer
+        
 
+        private static UserManagement userManagement = new UserManagement(); // Singleton für UserManagement
+        string loggedInUser; // Aktuell eingeloggter Benutzer
+        DateTime starttime;
         public static string GetPassword()
         {
+            
             string password = "";
             ConsoleKeyInfo key;
 
@@ -49,20 +57,23 @@ namespace AMIG.OS
             return password;
         }
 
-        protected override void BeforeRun()
+        public void InitUser()
         {
-            Console.WriteLine("Cosmos booted successfully. Type a line of text to get it echoed back.");
-			Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
-			
-			DateTime start;
-			
-            userManagement = new UserManagement(); // Benutzerverwaltung instanziieren
-
             // Benutzer hinzufügen (mit Passwort)
             userManagement.AddUser("User1", "Standard", "password123");
             userManagement.AddUser("User2", "Admin", "adminPass");
 
+        }
+        
+        protected override void BeforeRun()
+        {
+            Console.WriteLine("Cosmos booted successfully. Type a line of text to get it echoed back.");
+			Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
+
+            //vorgegebene Benutzer init
+            InitUser();
             // Login-Anforderung
+
             Console.WriteLine("Bitte melden Sie sich an.");
             string username;
             string password;
@@ -101,6 +112,7 @@ namespace AMIG.OS
                     Console.WriteLine("Login fehlgeschlagen, bitte versuchen Sie es erneut.");
                 }
             }
+            starttime = DateTime.Now;
         }
 
         protected override void Run()
@@ -115,7 +127,7 @@ namespace AMIG.OS
             {
             	case "help":
                     {
-                        Console.WriteLine("for futher information contact us");
+                        Console.WriteLine("for further information contact us");
                         break;
                     }
 
@@ -163,6 +175,33 @@ namespace AMIG.OS
                         BeforeRun();
                         break;
                     }
+
+                case "showtime":
+                    {
+                        DateTime now = DateTime.Now;
+                        TimeSpan current = now - starttime;
+                        Console.WriteLine($" Eingeloggte Zeit:{current}");
+                        break;
+                    }
+
+                case "add":
+                    {
+                        string username;
+                        string role;
+                        string pw;
+
+                        Console.WriteLine("Name des anzulegende Benutzers");
+                        username = Console.ReadLine();
+                        Console.WriteLine("Rolle des anzulegende Benutzers"); //
+                        role = Console.ReadLine();
+                        Console.WriteLine("PW des anzulegende Benutzers");
+                        pw = Console.ReadLine();
+
+                        userManagement.AddUser(username, role, pw);
+                        break;
+                    }
+                
+
 
                 default:
                     {
