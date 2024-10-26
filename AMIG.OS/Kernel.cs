@@ -14,6 +14,7 @@ using Cosmos.System;
 using Console = System.Console;
 using System.IO;
 using System.Text.Json;
+using AMIG.OS;
 
 
 namespace AMIG.OS
@@ -22,6 +23,8 @@ namespace AMIG.OS
     {
         private static UserManagement userManagement = new UserManagement(); // Singleton für UserManagement
         private static Sys.FileSystem.CosmosVFS fs;
+        private List<string> commandHistory = new List<string>(); // Liste für Befehle
+        private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
 
         string loggedInUser; // Aktuell eingeloggter Benutzer
         DateTime starttime;
@@ -74,7 +77,7 @@ namespace AMIG.OS
             login();
         }
 
-         public void login()
+        public void login()
         {
             // Login-Auforderung
             Console.WriteLine("Bitte melden Sie sich an.");
@@ -118,103 +121,201 @@ namespace AMIG.OS
             starttime = DateTime.Now;
 
         }
-        
+
+        public static void ClearCurrentLine()
+        {
+            // stellt sicher, dass während der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, currentLineCursor);
+            Console.Write(new string(' ', Console.WindowWidth - 1));
+            Console.SetCursorPosition(0, currentLineCursor);
+        }
+
         protected override void Run()
         {
-            Console.WriteLine("Input: ");
-            var input = Console.ReadLine();
-            string[] args = input.Split(' ');
+            string currentInput = "";
+            Console.Write("Input: "); // Eingabeaufforderung einmal setzen
 
+            // Hauptschleife für die Eingabe
+            while (true)
+            {
+                var key = Console.ReadKey(intercept: true); // Intercept = true, um die Eingabe nicht anzuzeigen
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine(); // Zeilenumbruch
+                    if (!string.IsNullOrWhiteSpace(currentInput))
+                    {
+                        commandHistory.Add(currentInput); // Füge den Befehl zur Historie hinzu
+                        historyIndex = -1; // Zurücksetzen des Index für die Historie
+
+                        // Verarbeite den Befehl
+                        string[] args = currentInput.Split(' ');
+
+                        // Befehlsverarbeitung
+                        ProcessCommand(args);
+
+                        currentInput = ""; // Zurücksetzen der Eingabe
+                        Console.Write("Input: "); // Neue Eingabeaufforderung
+                    }
+                }
+                else if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (currentInput.Length > 0)
+                    {
+                        currentInput = currentInput.Substring(0, currentInput.Length - 1); // Entferne das letzte Zeichen
+                        int cursorPos = Console.CursorLeft; // Aktuelle Cursorposition speichern
+
+                        // Cursor eine Stelle zurücksetzen und das Zeichen löschen
+                        Console.SetCursorPosition(cursorPos - 1, Console.CursorTop);
+                        Console.Write(" "); // Ein Leerzeichen ausgeben, um das Zeichen zu löschen
+                        Console.SetCursorPosition(cursorPos - 1, Console.CursorTop); // Cursor zurücksetzen
+                    }
+                }
+                else if (key.Key == ConsoleKey.UpArrow)
+                {
+                    // Navigation in der Befehlsverlaufsliste nach oben
+                    if (historyIndex < commandHistory.Count - 1)
+                    {
+                        if (historyIndex == -1) // Wenn historyIndex -1 ist, von aktueller Eingabe starten
+                        {
+                            historyIndex = 0; // Setze Index auf 0 für den ersten Befehl
+                        }
+                        else
+                        {
+                            historyIndex++; // Gehe zum nächsten Befehl
+                        }
+
+                        currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(currentInput); // Zeige den aktuellen Befehl an
+                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                    }
+                }
+                else if (key.Key == ConsoleKey.DownArrow)
+                {
+                    // Navigation in der Befehlsverlaufsliste nach unten
+                    if (historyIndex > 0)
+                    {
+                        historyIndex--;
+                        currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(currentInput); // Zeige den aktuellen Befehl an
+                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                    }
+                    else if (historyIndex == 0) // Wenn wir am Anfang der Historie sind
+                    {
+                        historyIndex = -1; // Setze den Index auf -1 für eine leere Eingabe
+                        currentInput = ""; // Leere Eingabe
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write("Input: "); // Eingabeaufforderung zurücksetzen
+                        Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
+                    }
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    currentInput += key.KeyChar; // Zeichen zur aktuellen Eingabe hinzufügen
+                    Console.Write(key.KeyChar); // Zeichen in der Konsole anzeigen
+                }
+            }
+        }
+
+        // Methode zur Verarbeitung der Befehle
+        private void ProcessCommand(string[] args)
+        {
             switch (args[0].ToLower())
             {
                 case "help":
-                    {
-                        Console.WriteLine("for further information contact us");
-                        break;
-                    }
+                    Console.WriteLine("for further information contact us");
+                    break;
 
                 case "adios":
+                    if (args.Length == 2 && args[1].Equals("amigos"))
                     {
-                        if (args.GetLength(0) == 2 && args[1].Equals("amigos"))
-                        {
-                            Console.WriteLine("\n\tHASTA LA VISTA");
-                            Thread.Sleep(1500);
-                            Sys.Power.Shutdown();
-                        }
-                        break;
+                        Console.WriteLine("\n\tHASTA LA VISTA");
+                        Thread.Sleep(1500);
+                        Sys.Power.Shutdown();
                     }
+                    break;
 
                 case "showall":
-                    {
-                        Console.WriteLine("Benutzerinformationen:");
-                        userManagement.DisplayAllUsers(); // Benutzerinfo nur für den angemeldeten Benutzer
-                        break;
-                    }
+                    Console.WriteLine("Benutzerinformationen:");
+                    userManagement.DisplayAllUsers(); // Benutzerinfo nur für den angemeldeten Benutzer
+                    break;
 
                 case "showme":
-                    {
-                        Console.WriteLine("Benutzerinformationen:");
-                        userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
-                        break;
-                    }
+                    Console.WriteLine("Benutzerinformationen:");
+                    userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
+                    break;
 
                 case "change":
+                    Console.Write("Neuer Benutzername: ");
+                    string newUsername = Console.ReadLine();
+                    if (userManagement.ChangeUsername(loggedInUser, newUsername))
                     {
-                        Console.Write("Neuer Benutzername: ");
-                        string newUsername = Console.ReadLine();
-
-                        // Ändere den Benutzernamen
-                        if (userManagement.ChangeUsername(loggedInUser, newUsername))
-                        {
-                            loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
-                        }
-
-                        break;
+                        loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
                     }
-                case "logout": 
-                    {
-                        login();
-                        break;
-                    }
+                    break;
+
+                case "logout":
+                    login();
+                    break;
 
                 case "showtime":
-                    {
-                        DateTime now = DateTime.Now;
-                        TimeSpan current = now - starttime;
-                        Console.WriteLine($" Eingeloggte Zeit:{current}");
-                        break;
-                    }
+                    TimeSpan current = DateTime.Now - starttime;
+                    Console.WriteLine($" Eingeloggte Zeit: {current}");
+                    break;
 
                 case "add":
-                    {
-                        string username;
-                        string role;
-                        string pw;
-                        string pw_2;
+                    AddUserCommand();
+                    break;
 
-                        Console.WriteLine("Name des anzulegende Benutzers");
-                        username = Console.ReadLine();
-                        Console.WriteLine("Rolle des anzulegende Benutzers"); //
-                        role = Console.ReadLine();
-
-                        //implementation doppelt eingeben
-                        Console.WriteLine("PW des anzulegende Benutzers");
-                        pw = GetPassword();
-                        do{
-                        Console.WriteLine("PW des anzulegende Benutzers wiederholen");
-                        pw_2 = GetPassword();
-                        } while (pw != pw_2);
-
-                        userManagement.AddUser(username, role, pw);
-                        break;
-                    }
+                case "remove":
+                    Console.Write("Benutzername des zu entfernenden Benutzers: ");
+                    string username = Console.ReadLine();
+                    userManagement.RemoveUser(username);
+                    break;
 
                 default:
-                    {
-                        Console.WriteLine("Eingabe falsch.");
-                        break;
-                    }
+                    Console.WriteLine("Eingabe falsch.");
+                    break;
             }
         }
+
+        // Neue Methode zum Hinzufügen eines Benutzers
+        private void AddUserCommand()
+        {
+            Console.WriteLine("Name des anzulegende Benutzers");
+            string username = Console.ReadLine();
+
+            if (userManagement.UserExists(username)){
+
+                do
+                {
+                    Console.WriteLine("Benutzer existiert bereits");
+                    Console.WriteLine("Name des anzulegende Benutzers");
+                    username = Console.ReadLine();
+                }
+                while (userManagement.UserExists(username));
+            }
+            
+            Console.WriteLine("Rolle des anzulegende Benutzers");
+            string role = Console.ReadLine();
+
+            // Passwortabfrage
+            Console.WriteLine("Passwort des anzulegende Benutzers");
+            string pw = GetPassword();
+            string pw_2;
+            do
+            {
+                Console.WriteLine("PW des anzulegende Benutzers wiederholen");
+                pw_2 = GetPassword();
+            } while (pw != pw_2);
+
+            userManagement.AddUser(username, role, pw);
+        }
+
     }
 }
+
+

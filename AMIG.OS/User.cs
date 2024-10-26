@@ -119,6 +119,8 @@ namespace AMIG.OS
             {
                 users.Remove(username);
                 Console.WriteLine($"Benutzer {username} wurde entfernt.");
+                SaveUsers(); // Speichere die Änderungen
+  
             }
             else
             {
