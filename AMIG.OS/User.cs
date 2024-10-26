@@ -128,6 +128,14 @@ namespace AMIG.OS
             }
         }
 
+        // alle Benutzer entfernen
+        public void RemoveAllUser()
+        {
+            users.Clear();
+            Console.WriteLine("Alle Benutzer wurden entfernt");
+            SaveUsers(); // Speichere die Änderungen
+        }
+
         public void DisplayAllUsers()
         {
             foreach (var kvp in users)

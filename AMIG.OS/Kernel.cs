@@ -276,6 +276,10 @@ namespace AMIG.OS
                     userManagement.RemoveUser(username);
                     break;
 
+                case "removeall":
+                    userManagement.RemoveAllUser();
+                    break;
+
                 default:
                     Console.WriteLine("Eingabe falsch.");
                     break;
@@ -299,9 +303,20 @@ namespace AMIG.OS
                 while (userManagement.UserExists(username));
             }
             
-            Console.WriteLine("Rolle des anzulegende Benutzers");
-            string role = Console.ReadLine();
+            Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
+            string role = Console.ReadLine().ToLower();
 
+                if (role!="admin" && role != "standard")
+                {
+                    do
+                    {
+                        Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
+                        role = Console.ReadLine().ToLower();
+                    }
+                    while (role != "admin" && role != "standard");
+                    
+                }
+                
             // Passwortabfrage
             Console.WriteLine("Passwort des anzulegende Benutzers");
             string pw = GetPassword();
