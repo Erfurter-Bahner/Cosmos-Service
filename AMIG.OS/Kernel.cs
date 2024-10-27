@@ -253,8 +253,33 @@ namespace AMIG.OS
                     break;
 
                 case "change":
-                    Console.Write("Neuer Benutzername: ");
-                    string newUsername = Console.ReadLine();
+                    string newUsername;
+                    string entscheidung;
+
+                    do
+                    {
+                        Console.Write("Neuer Benutzername: ");
+                        newUsername = Console.ReadLine();
+
+                        do
+                        {
+                            Console.Write("Bestätigen: y/n ");
+                            entscheidung = Console.ReadLine().ToLower();
+
+                            if (entscheidung == "n")
+                            {
+                                Console.WriteLine("Benutzername nicht bestätigt. Bitte erneut eingeben.");
+                                break;  // Schleife verlassen, um neuen Benutzernamen einzugeben
+                            }
+                            else if (entscheidung != "y" && entscheidung != "n")
+                            {
+                                Console.WriteLine("Ungültige Eingabe. Bitte 'y' für Ja oder 'n' für Nein eingeben.");
+                            }
+
+                        } while (entscheidung != "y" && entscheidung != "n");
+
+                    } while (entscheidung != "y");
+
                     if (userManagement.ChangeUsername(loggedInUser, newUsername))
                     {
                         loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
