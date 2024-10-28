@@ -23,7 +23,8 @@ namespace AMIG.OS.UserSystemManagement
         public User(string username, string password, UserRole role)
         {
             Username = username;
-            PasswordHash = HashPassword(password);
+            //PasswordHash = HashPassword(password);
+            PasswordHash = password;
             Role = role;
             CreatedAt = DateTime.Now;
         }
@@ -31,8 +32,10 @@ namespace AMIG.OS.UserSystemManagement
         // Funktion zum Überprüfen des Passworts
         public bool VerifyPassword(string password)
         {
-            return PasswordHash == HashPassword(password);
+            //return PasswordHash == HashPassword(password);
+            return PasswordHash == password;
         }
+
 
         // Private Methode zur Passwort-Hashing
         private string HashPassword(string password)
@@ -52,7 +55,8 @@ namespace AMIG.OS.UserSystemManagement
         // Funktion zum Ändern des Passworts
         public void ChangePassword(string newPassword)
         {
-            PasswordHash = HashPassword(newPassword);
+            //PasswordHash = HashPassword(newPassword);
+            PasswordHash = newPassword;
         }
 
         // Funktion zum Ändern der Rolle

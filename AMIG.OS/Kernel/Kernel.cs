@@ -10,9 +10,9 @@ namespace AMIG.OS.Kernel
 {
     public class Kernel : Sys.Kernel
     {
-        private UserManagement userManagement = new UserManagement();
-        private FileSystemManager fileSystemManager = new FileSystemManager();
-        private CommandHandler commandHandler;
+        private  UserManagement userManagement = new UserManagement();
+        private static FileSystemManager fileSystemManager = new FileSystemManager();
+        //private  CommandHandler commandHandler;
 
         private string loggedInUser;
         DateTime starttime;
@@ -24,7 +24,7 @@ namespace AMIG.OS.Kernel
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
 
             // Initialisiere CommandHandler mit Abhängigkeiten
-            commandHandler = new CommandHandler(userManagement, fileSystemManager);
+            //commandHandler = new CommandHandler(userManagement, fileSystemManager);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -62,6 +62,7 @@ namespace AMIG.OS.Kernel
             Console.Write("Password: ");
             var password = ConsoleHelpers.GetPassword();
 
+            /*
             if (userManagement.Login(username, password))
             {
                 loggedInUser = username;
@@ -73,6 +74,7 @@ namespace AMIG.OS.Kernel
                 Console.WriteLine("Invalid credentials. Try again.");
                 ShowLoginOptions();
             }
+            */
         }
         private void Register()
         {
@@ -90,7 +92,7 @@ namespace AMIG.OS.Kernel
                 Console.WriteLine("Invalid role. Defaulting to Standard.");
                 role = UserRole.Standard;
             }
-
+            /*
             if (userManagement.Register(username, password, role))
             {
                 Console.WriteLine("Registration successful! Please log in.");
@@ -99,13 +101,14 @@ namespace AMIG.OS.Kernel
             {
                 Console.WriteLine("Registration failed. Username may already exist.");
             }
+            */
         }
 
         protected override void Run()
         {
             Console.Write("Input: ");
             var input = Console.ReadLine();
-            commandHandler.ProcessCommand(input, loggedInUser);
+           // commandHandler.ProcessCommand(input, loggedInUser);
 
             //string currentInput = "";
             //Console.Write("Input: ");

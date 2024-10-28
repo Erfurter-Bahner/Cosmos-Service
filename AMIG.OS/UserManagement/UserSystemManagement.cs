@@ -8,6 +8,7 @@ namespace AMIG.OS.UserSystemManagement
         private readonly AuthenticationService authService;
         private readonly RoleService roleService;
 
+        
         public UserManagement()
         {
             userRepository = new UserRepository();
@@ -15,7 +16,7 @@ namespace AMIG.OS.UserSystemManagement
             roleService = new RoleService();
             userRepository.LoadUsers();
         }
-
+        
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
