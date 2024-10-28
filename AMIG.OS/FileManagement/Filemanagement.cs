@@ -3,7 +3,7 @@ using System.IO;
 using Cosmos.System.FileSystem;
 using Cosmos.System.FileSystem.VFS;
 
-namespace AMIG.OS
+namespace AMIG.OS.FileManagement
 {
     public class FileSystemManager
     {
