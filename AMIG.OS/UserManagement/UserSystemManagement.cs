@@ -8,26 +8,27 @@ namespace AMIG.OS.UserSystemManagement
         private readonly AuthenticationService authService;
         private readonly RoleService roleService;
 
-        
         public UserManagement()
         {
-            userRepository = new UserRepository();
-            authService = new AuthenticationService(userRepository);
-            roleService = new RoleService();
-            userRepository.LoadUsers();
+
+            userRepository = new UserRepository(); // UserRepository initialisieren
+            userRepository.LoadUsers(); // Benutzer laden
+            authService = new AuthenticationService(userRepository); // Authentifizierungsdienst mit geladenen Benutzern initialisieren
+            roleService = new RoleService(); // Rolle-Service initialisieren
         }
-        
+
+
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
         }
 
-        public bool Register(string username, string password, UserRole role)
+        public bool Register(string username, string password, string role)
         {
             return authService.Register(username, password, role);
         }
 
-        public void AddUser(string username, UserRole role, string password)
+        public void AddUser(string username, string role, string password)
         {
             if (!authService.UserExists(username))
             {
@@ -45,9 +46,9 @@ namespace AMIG.OS.UserSystemManagement
         public void DisplayAllUsers()
         {
             var users = userRepository.GetAllUsers();
-            foreach (var user in users)
+            foreach (var user in users.Values)
             {
-                System.Console.WriteLine($"Username: {user.Username}, Role: {user.Role}");
+                Console.WriteLine($"Username: {user.Username}, Role: {user.Role}");
             }
         }
 

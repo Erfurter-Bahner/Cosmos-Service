@@ -25,7 +25,7 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registrierungsprozess
-        public bool Register(string username, string password, UserRole role)
+        public bool Register(string username, string password, string role)
         {
             if (userRepository.GetUserByUsername(username) == null)
             {

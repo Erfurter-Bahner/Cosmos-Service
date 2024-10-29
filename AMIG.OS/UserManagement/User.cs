@@ -4,23 +4,24 @@ using System.Text;
 
 namespace AMIG.OS.UserSystemManagement
 {
+    /*
     public enum UserRole
     {
         Standard,
         Admin
     }
-
+    */
     public class User
     {
         public string Username { get; private set; }
         public string PasswordHash { get; private set; }
-        public UserRole Role { get; private set; }
+        public string Role { get; private set; }
 
         // Weitere Felder für zukünftige Erweiterungen
         public DateTime CreatedAt { get; private set; }
         public DateTime LastLogin { get; set; }
 
-        public User(string username, string password, UserRole role)
+        public User(string username, string password, string role )
         {
             Username = username;
             //PasswordHash = HashPassword(password);
@@ -60,7 +61,7 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Funktion zum Ändern der Rolle
-        public void ChangeRole(UserRole newRole)
+        public void ChangeRole(string newRole)
         {
             Role = newRole;
         }

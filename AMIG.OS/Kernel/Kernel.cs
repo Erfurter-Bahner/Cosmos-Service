@@ -10,30 +10,34 @@ namespace AMIG.OS.Kernel
 {
     public class Kernel : Sys.Kernel
     {
-        private  UserManagement userManagement = new UserManagement();
-        private static FileSystemManager fileSystemManager = new FileSystemManager();
-        //private  CommandHandler commandHandler;
+        private Sys.FileSystem.CosmosVFS fs;
+        private  static UserManagement userManagement = new UserManagement();
+        private  static FileSystemManager fileSystemManager = new FileSystemManager();
+        private  CommandHandler commandHandler;
 
         private string loggedInUser;
         DateTime starttime;
 
         protected override void BeforeRun()
         {
+            
             // Initialisiere das Dateisystem und registriere VFS
-            var fs = new Sys.FileSystem.CosmosVFS();
+            fs = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
 
+            
             // Initialisiere CommandHandler mit Abhängigkeiten
-            //commandHandler = new CommandHandler(userManagement, fileSystemManager);
+            commandHandler = new CommandHandler(userManagement, fileSystemManager);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
 
-            //ShowLoginOptions();
+            ShowLoginOptions();
         }
 
         private void ShowLoginOptions()
         {
+            userManagement.DisplayAllUsers(); // nur zum testen
             Console.WriteLine("1: Login");
             Console.WriteLine("2: Register");
             Console.Write("Select an option: ");
@@ -62,7 +66,7 @@ namespace AMIG.OS.Kernel
             Console.Write("Password: ");
             var password = ConsoleHelpers.GetPassword();
 
-            /*
+            
             if (userManagement.Login(username, password))
             {
                 loggedInUser = username;
@@ -74,7 +78,7 @@ namespace AMIG.OS.Kernel
                 Console.WriteLine("Invalid credentials. Try again.");
                 ShowLoginOptions();
             }
-            */
+            
         }
         private void Register()
         {
@@ -86,14 +90,16 @@ namespace AMIG.OS.Kernel
             Console.Write("Choose a role (Admin or Standard): ");
             var roleInput = Console.ReadLine();
 
-            UserRole role;
+            /*
+            string role;
             if (!Enum.TryParse(roleInput, true, out role) || !Enum.IsDefined(typeof(UserRole), role))
             {
                 Console.WriteLine("Invalid role. Defaulting to Standard.");
                 role = UserRole.Standard;
             }
-            /*
-            if (userManagement.Register(username, password, role))
+            */
+            
+            if (userManagement.Register(username, password, roleInput))
             {
                 Console.WriteLine("Registration successful! Please log in.");
             }
@@ -101,14 +107,14 @@ namespace AMIG.OS.Kernel
             {
                 Console.WriteLine("Registration failed. Username may already exist.");
             }
-            */
+            
         }
 
         protected override void Run()
         {
             Console.Write("Input: ");
             var input = Console.ReadLine();
-           // commandHandler.ProcessCommand(input, loggedInUser);
+            commandHandler.ProcessCommand(input, loggedInUser);
 
             //string currentInput = "";
             //Console.Write("Input: ");
