@@ -6,7 +6,7 @@ namespace AMIG.OS.UserSystemManagement
 {
     public class UserRepository
     {
-        private Dictionary<string, User> users = new Dictionary<string, User>();
+        public Dictionary<string, User> users = new Dictionary<string, User>();
         private readonly string dataFilePath = @"0:\users.txt"; // Pfad zur Benutzerdaten-Datei
 
 
@@ -45,6 +45,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+
         //fileio
         public void LoadUsers()
         {
@@ -62,8 +63,9 @@ namespace AMIG.OS.UserSystemManagement
                             if (parts.Length == 3)
                             {
                                 string username = parts[0];
-                                string role = parts[1];
-                                string password = parts[2];
+                                string password = parts[1];
+                                string role = parts[2];
+                                
                                 users[username] = new User(username,password,role );
                             }
                         }
@@ -129,6 +131,12 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine("User not found.");
             }
         }
+
+        public void RemoveAllUsers()
+        {
+            users.Clear();
+        }
+
 
         public Dictionary<string, User> GetAllUsers()
         {

@@ -43,6 +43,12 @@ namespace AMIG.OS.UserSystemManagement
             userRepository.SaveUsers();
         }
 
+        public void RemoveAllUser()
+        {
+            userRepository.RemoveAllUsers();
+            Console.WriteLine("Alle Benutzer wurden entfernt");
+            userRepository.SaveUsers(); // Speichere die Änderungen
+        }
         public void DisplayAllUsers()
         {
             var users = userRepository.GetAllUsers();
