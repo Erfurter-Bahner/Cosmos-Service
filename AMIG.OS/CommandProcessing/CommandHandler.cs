@@ -85,7 +85,6 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-
                 case "ls":
                     try
                     {

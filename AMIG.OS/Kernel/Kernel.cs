@@ -14,7 +14,8 @@ namespace AMIG.OS.Kernel
         private  static UserManagement userManagement = new UserManagement();
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
         private  CommandHandler commandHandler;
-
+        private List<string> commandHistory = new List<string>(); // Liste für Befehle
+        private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
         private string loggedInUser;
         DateTime starttime;
 
@@ -109,90 +110,128 @@ namespace AMIG.OS.Kernel
             }
             
         }
+        //mussin utils oder so
+        public static void ClearCurrentLine()
+        {
+            // stellt sicher, dass während der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, currentLineCursor);
+            Console.Write(new string(' ', Console.WindowWidth - 1));
+            Console.SetCursorPosition(0, currentLineCursor);
+        }
+
 
         protected override void Run()
         {
             Console.Write("Input: ");
-            var input = Console.ReadLine();
-            commandHandler.ProcessCommand(input, loggedInUser);
+            var currentInput = "";
+            int cursorPosInInput = 0; // Track cursor position in the current input string
 
-            //string currentInput = "";
-            //Console.Write("Input: ");
+            while (true)
+            {
+                var key = Console.ReadKey(intercept: true); // Intercept = true to avoid showing the key automatically
 
-            //while (true)
-            //{
-            //    var key = Console.ReadKey(intercept: true);
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine(); // Line break
+                    if (!string.IsNullOrWhiteSpace(currentInput))
+                    {
+                        commandHistory.Add(currentInput); // Add the command to history
+                        historyIndex = -1; // Reset history index
 
-            //    if (key.Key == ConsoleKey.Enter)
-            //    {
-            //        Console.WriteLine();
-            //        if (!string.IsNullOrWhiteSpace(currentInput))
-            //        {
-            //            commandHistory.Add(currentInput);
-            //            historyIndex = -1;
+                        // Process command
+                        commandHandler.ProcessCommand(currentInput, loggedInUser);
 
-            //            string[] args = currentInput.Split(' ');
-            //            ProcessCommand(args);
+                        // Reset input and cursor position
+                        currentInput = "";
+                        cursorPosInInput = 0;
+                        Console.Write("Input: ");
+                    }
+                }
+                else if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (cursorPosInInput > 0)
+                    {
+                        // Remove character from currentInput at cursor position
+                        currentInput = currentInput.Remove(cursorPosInInput - 1, 1);
+                        cursorPosInInput--; // Move cursor position back
 
-            //            currentInput = "";
-            //            Console.Write("Input: ");
-            //        }
-            //    }
-            //    else if (key.Key == ConsoleKey.Backspace)
-            //    {
-            //        if (currentInput.Length > 0)
-            //        {
-            //            currentInput = currentInput[..^1];
-            //            ConsoleHelpers.ClearCurrentLine();
-            //            Console.Write(currentInput);
-            //        }
-            //    }
-            //    else if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow)
-            //    {
-            //        currentInput = CommandHistory.NavigateHistory(commandHistory, key.Key, ref historyIndex);
-            //        ConsoleHelpers.ClearCurrentLine();
-            //        Console.Write(currentInput);
-            //    }
-            //    else if (!char.IsControl(key.KeyChar))
-            //    {
-            //        currentInput += key.KeyChar;
-            //        Console.Write(key.KeyChar);
-            //    }
-            //}
+                        // Clear the line and re-write the input with updated cursor position
+                        ClearCurrentLine();
+                        Console.Write("Input: " + currentInput);
+                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop); // Adjust cursor
+                    }
+                }
+                else if (key.Key == ConsoleKey.LeftArrow)
+                {
+                    if (cursorPosInInput > 0)
+                    {
+                        cursorPosInInput--; // Move cursor left within the input
+                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                    }
+                }
+                else if (key.Key == ConsoleKey.RightArrow)
+                {
+                    if (cursorPosInInput < currentInput.Length)
+                    {
+                        cursorPosInInput++; // Move cursor right within the input
+                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                    }
+                }
+
+                else if (key.Key == ConsoleKey.UpArrow)
+                {
+                    // Navigation in der Befehlsverlaufsliste nach oben
+                    if (historyIndex < commandHistory.Count - 1)
+                    {
+                        if (historyIndex == -1) // Wenn historyIndex -1 ist, von aktueller Eingabe starten
+                        {
+                            historyIndex = 0; // Setze Index auf 0 für den ersten Befehl
+                        }
+                        else
+                        {
+                            historyIndex++; // Gehe zum nächsten Befehl
+                        }
+
+                        currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(currentInput); // Zeige den aktuellen Befehl an
+                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                    }
+                }
+                else if (key.Key == ConsoleKey.DownArrow)
+                {
+                    // Navigation in der Befehlsverlaufsliste nach unten
+                    if (historyIndex > 0)
+                    {
+                        historyIndex--;
+                        currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(currentInput); // Zeige den aktuellen Befehl an
+                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                    }
+                    else if (historyIndex == 0) // Wenn wir am Anfang der Historie sind
+                    {
+                        historyIndex = -1; // Setze den Index auf -1 für eine leere Eingabe
+                        currentInput = ""; // Leere Eingabe
+                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write("Input: "); // Eingabeaufforderung zurücksetzen
+                        Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
+                    }
+                }
+
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    // Insert character at current cursor position within input
+                    currentInput = currentInput.Insert(cursorPosInInput, key.KeyChar.ToString());
+                    cursorPosInInput++; // Move cursor position forward
+
+                    // Clear line, reprint, and reposition cursor
+                    ClearCurrentLine();
+                    Console.Write("Input: " + currentInput);
+                    Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                }
+            }
         }
-
-        //private void ProcessCommand(string[] args)
-        //{
-        //    switch (args[0].ToLower())
-        //    {
-        //        case "help":
-        //            Console.WriteLine("Use 'help' for more information.");
-        //            break;
-        //        case "adios":
-        //            if (args.Length > 1 && args[1].Equals("amigos"))
-        //            {
-        //                Console.WriteLine("\n\tHASTA LA VISTA");
-        //                Sys.Power.Shutdown();
-        //            }
-        //            break;
-        //        case "showall":
-        //        case "showme":
-        //            userManagement.HandleUserCommands(args, loggedInUser);
-        //            break;
-        //        case "mkdir":
-        //        case "cd":
-        //        case "ls":
-        //        case "write":
-        //        case "rm":
-        //        case "rmdir":
-        //        case "touch":
-        //        case "cat":
-        //            fileSystemManager.HandleFileCommands(args, currentDirectory);
-        //            break;
-        //        default:
-        //            Console.WriteLine("Unbekannter Befehl.");
-        //            break;
-        //    }
-        //}
     }
 }

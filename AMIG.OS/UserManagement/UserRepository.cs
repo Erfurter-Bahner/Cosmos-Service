@@ -14,7 +14,6 @@ namespace AMIG.OS.UserSystemManagement
         {
             InitializeTestUsers();
             LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
-
         }
 
         public void SaveUsers()
@@ -44,7 +43,6 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine($"Fehler beim Speichern der Benutzer: {ex.Message}");
             }
         }
-
 
         //fileio
         public void LoadUsers()
