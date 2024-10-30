@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
     public class UserRepository
     {
         public Dictionary<string, User> users = new Dictionary<string, User>();
-        private readonly string dataFilePath = @"0:\users.txt"; // Pfad zur Benutzerdaten-Datei
-
+        private readonly string dataFilePath = @"0:\user.txt"; // Pfad zur Benutzerdaten-Datei
 
         public UserRepository()
         {
@@ -44,7 +45,6 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        //fileio
         public void LoadUsers()
         {
             try
@@ -64,7 +64,7 @@ namespace AMIG.OS.UserSystemManagement
                                 string password = parts[1];
                                 string role = parts[2];
                                 
-                                users[username] = new User(username,password,role );
+                                users[username] = new User(username, password, role, isHashed: true);
                             }
                         }
                     }
@@ -82,12 +82,29 @@ namespace AMIG.OS.UserSystemManagement
         }
         public void InitializeTestUsers()
         {
-            if (!File.Exists(dataFilePath))  // Prüfen, ob die Datei existiert
-            {
-                Console.WriteLine("Erstelle Testbenutzer...");
+            bool addTestUsers = false;
 
+            // Prüfen, ob die Datei existiert
+            if (!File.Exists(dataFilePath))
+            {
+                Console.WriteLine("Benutzerdaten-Datei existiert nicht. Erstelle Testbenutzer...");
+                addTestUsers = true;
+            }
+            else
+            {
+                // Datei existiert, aber prüfen, ob sie Benutzer enthält
+                LoadUsers(); // Benutzer aus Datei laden
+                if (users.Count == 0)
+                {
+                    Console.WriteLine("Benutzerdaten-Datei ist leer. Erstelle Testbenutzer...");
+                    addTestUsers = true;
+                }
+            }
+
+            if (addTestUsers)
+            {
                 // Testbenutzer hinzufügen
-                users.Add("User1", new User("User1", "password123", "Standard"));
+                users.Add("User1", new User("User1", "123", "Standard"));
                 users.Add("User2", new User("User2", "adminPass", "Admin"));
 
                 // Speichern der Benutzer in die Datei
@@ -95,9 +112,10 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine("Benutzerdaten-Datei existiert bereits. Überspringe Testbenutzer-Erstellung.");
+                Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
             }
         }
+
 
         public User GetUserByUsername(string username)
         {
@@ -135,6 +153,47 @@ namespace AMIG.OS.UserSystemManagement
             users.Clear();
         }
 
+        public bool ChangeUsername(string oldUsername, string newUsername)
+        {
+            if (users.ContainsKey(oldUsername))
+            {
+                if (!users.ContainsKey(newUsername)) // Überprüfen, ob der neue Benutzername bereits existiert
+                {
+                    User user = users[oldUsername];
+                    users.Remove(oldUsername); // Alten Benutzernamen entfernen
+                    user.Username = newUsername; // Benutzername in der User-Instanz ändern
+                    users.Add(newUsername, user); // Neuen Benutzernamen mit aktualisiertem User-Objekt hinzufügen
+
+                    Console.WriteLine($"Benutzername wurde von {oldUsername} auf {newUsername} geändert.");
+                    SaveUsers(); // Änderungen speichern
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Der neue Benutzername existiert bereits.");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+                return false;
+            }
+        }
+
+        // Zugriff auf einen Benutzer
+        public void GetUserInfo(string username)
+        {
+            if (users.ContainsKey(username))
+            {
+                User userInfo = users[username];
+                Console.WriteLine($"Benutzer: {username},Passwort: {userInfo.PasswordHash}, Rolle: {userInfo.Role}");
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+            }
+        }
 
         public Dictionary<string, User> GetAllUsers()
         {

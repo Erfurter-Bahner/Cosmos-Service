@@ -43,6 +43,21 @@ namespace AMIG.OS.UserSystemManagement
             userRepository.SaveUsers();
         }
 
+        public void AddUserWithRoleAndPassword(string username, string password, string role)
+        {
+            if (!authService.UserExists(username))
+            {
+                var user = new User(username, password, role); // Neues User-Objekt erstellen
+                userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
+                userRepository.SaveUsers(); // Änderungen speichern
+                Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
+            }
+            else
+            {
+                Console.WriteLine("Benutzername existiert bereits.");
+            }
+        }
+
         public void RemoveAllUser()
         {
             userRepository.RemoveAllUsers();
@@ -54,9 +69,21 @@ namespace AMIG.OS.UserSystemManagement
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
-                Console.WriteLine($"Username: {user.Username}, Role: {user.Role}");
+                Console.WriteLine($"Username: {user.Username},PW: {user.PasswordHash} Role: {user.Role}");
             }
         }
+
+        public bool ChangeUsername(string oldUsername, string newUsername)
+        {
+           return userRepository.ChangeUsername(oldUsername, newUsername);
+        }
+
+        // Zugriff auf einen Benutzer
+        public void GetUserInfo(string username)
+        {
+            userRepository.GetUserInfo(username);
+        }
+
 
         public bool UserExists(string username)
         {

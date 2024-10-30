@@ -25,10 +25,10 @@ namespace AMIG.OS.Kernel
             // Initialisiere das Dateisystem und registriere VFS
             fs = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
+     
 
-            
             // Initialisiere CommandHandler mit Abhängigkeiten
-            commandHandler = new CommandHandler(userManagement, fileSystemManager);
+            commandHandler = new CommandHandler(userManagement, fileSystemManager,ShowLoginOptions);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -36,7 +36,9 @@ namespace AMIG.OS.Kernel
             ShowLoginOptions();
         }
 
-        private void ShowLoginOptions()
+
+
+        public void ShowLoginOptions()
         {
             userManagement.DisplayAllUsers(); // nur zum testen
             Console.WriteLine("1: Login");
@@ -71,6 +73,7 @@ namespace AMIG.OS.Kernel
             if (userManagement.Login(username, password))
             {
                 loggedInUser = username;
+                commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
                 Console.WriteLine("Login successful!");
                 // Systemstart fortsetzen
             }

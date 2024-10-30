@@ -3,6 +3,9 @@ using AMIG.OS.UserSystemManagement;
 using AMIG.OS.FileManagement;
 using System.IO;
 using Sys = Cosmos.System;
+using System.Threading;
+using System.Data;
+
 
 namespace AMIG.OS.CommandProcessing
 {
@@ -10,11 +13,20 @@ namespace AMIG.OS.CommandProcessing
     {
         private readonly UserManagement userManagement;
         private readonly FileSystemManager fileSystemManager;
+        private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
-        public CommandHandler(UserManagement userMgmt, FileSystemManager fsManager)
+        private readonly Action showLoginOptions;
+
+        public CommandHandler(UserManagement userMgmt, FileSystemManager fsManager, Action showLoginOptionsDelegate)
         {
             userManagement = userMgmt;
             fileSystemManager = fsManager;
+            showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
+        }
+
+        public void SetStartTime(DateTime loginTime)
+        {
+            starttime = loginTime;
         }
 
         public void ProcessCommand(string input, string loggedInUser)
@@ -23,12 +35,83 @@ namespace AMIG.OS.CommandProcessing
 
             switch (args[0].ToLower())
             {
+                case "adios":
+                    if (args.Length == 2 && args[1].Equals("amigos"))
+                    {
+                        Console.WriteLine("\n\tHASTA LA VISTA");
+                        Thread.Sleep(1500);
+                        Sys.Power.Shutdown();
+                    }
+                    break;
+
                 // Benutzerbefehle
                 case "showall":
                     userManagement.DisplayAllUsers();
                     break;
+
+                case "showme":
+                    Console.WriteLine("Benutzerinformationen:");
+                    userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
+                    break;
+
                 case "removeall":
                     userManagement.RemoveAllUser();
+                    break;
+
+                case "change":
+                    string newUsername;
+                    string entscheidung;
+
+                    do
+                    {
+                        Console.Write("Neuer Benutzername: ");
+                        newUsername = Console.ReadLine();
+
+                        do
+                        {
+                            Console.Write("Bestätigen: y/n ");
+                            entscheidung = Console.ReadLine().ToLower();
+
+                            if (entscheidung == "n")
+                            {
+                                Console.WriteLine("Benutzername nicht bestätigt. Bitte erneut eingeben.");
+                                break;  // Schleife verlassen, um neuen Benutzernamen einzugeben
+                            }
+                            else if (entscheidung != "y" && entscheidung != "n")
+                            {
+                                Console.WriteLine("Ungültige Eingabe: y/n ");
+                            }
+
+                        } while (entscheidung != "y" && entscheidung != "n");
+
+                    } while (entscheidung != "y");
+
+                    if (userManagement.ChangeUsername(loggedInUser, newUsername))
+                    {
+                        loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
+                    }
+                    break;
+
+                case "showtime":
+                    TimeSpan current = DateTime.Now - starttime;
+                    Console.WriteLine($" Eingeloggte Zeit: {current}");
+                    break;
+
+                case "logout":
+                    showLoginOptions.Invoke();
+                    break;
+
+                case "add":
+                    string username;
+                    Console.WriteLine("Name: ");
+                    username=Console.ReadLine();
+                    string password;
+                    Console.WriteLine("Password: ");
+                    password = Console.ReadLine();
+                    string role;
+                    Console.WriteLine("Role: ");
+                    role = Console.ReadLine();
+                    userManagement.AddUserWithRoleAndPassword(username, password, role);
                     break;
 
                 // Datei- und Verzeichnisbefehle
