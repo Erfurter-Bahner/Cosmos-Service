@@ -1,6 +1,7 @@
 ﻿using System;
 using AMIG.OS.UserSystemManagement;
 using AMIG.OS.FileManagement;
+using AMIG.OS.Utils;
 using System.IO;
 using Sys = Cosmos.System;
 using System.Threading;
@@ -13,15 +14,21 @@ namespace AMIG.OS.CommandProcessing
     {
         private readonly UserManagement userManagement;
         private readonly FileSystemManager fileSystemManager;
+        private readonly Helpers helpers;
         private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
         private readonly Action showLoginOptions;
 
-        public CommandHandler(UserManagement userMgmt, FileSystemManager fsManager, Action showLoginOptionsDelegate)
+        public CommandHandler
+            (UserManagement userMgmt, 
+            FileSystemManager fsManager, 
+            Action showLoginOptionsDelegate,
+            Helpers _helpers)
         {
             userManagement = userMgmt;
             fileSystemManager = fsManager;
             showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
+            helpers = _helpers;
         }
 
         public void SetStartTime(DateTime loginTime)
@@ -102,16 +109,21 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "add":
-                    string username;
-                    Console.WriteLine("Name: ");
-                    username=Console.ReadLine();
-                    string password;
-                    Console.WriteLine("Password: ");
-                    password = Console.ReadLine();
-                    string role;
-                    Console.WriteLine("Role: ");
-                    role = Console.ReadLine();
-                    userManagement.AddUserWithRoleAndPassword(username, password, role);
+                    //string username;
+                    //Console.WriteLine("Name: ");
+                    //username=Console.ReadLine();
+                    //string password;
+                    //Console.WriteLine("Password: ");
+                    //password = Console.ReadLine();
+                    //string role;
+                    //Console.WriteLine("Role: ");
+                    //role = Console.ReadLine();
+                    //userManagement.AddUserWithRoleAndPassword(username, password, role);
+
+
+                    helpers.AddUserCommand();
+
+
                     break;
 
                 // Datei- und Verzeichnisbefehle

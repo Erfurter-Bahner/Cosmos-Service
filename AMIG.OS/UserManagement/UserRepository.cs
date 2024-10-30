@@ -181,6 +181,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+
         // Zugriff auf einen Benutzer
         public void GetUserInfo(string username)
         {
@@ -194,6 +195,21 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine("Benutzer existiert nicht.");
             }
         }
+
+        public string GetPasswordHash(string username)
+        {
+            if (users.ContainsKey(username))
+            {
+                // Passwort-Hash des Benutzers zurückgeben
+                return users[username].PasswordHash;
+            }
+            else
+            {
+                Console.WriteLine("Benutzer nicht gefunden.");
+                return null;
+            }
+        }
+
 
         public Dictionary<string, User> GetAllUsers()
         {

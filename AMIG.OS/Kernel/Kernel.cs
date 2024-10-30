@@ -10,9 +10,10 @@ namespace AMIG.OS.Kernel
 {
     public class Kernel : Sys.Kernel
     {
-        private Sys.FileSystem.CosmosVFS fs;
+        private Sys.FileSystem.CosmosVFS fs1;
         private  static UserManagement userManagement = new UserManagement();
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
+        private static Helpers helpers = new Helpers(userManagement);
         private  CommandHandler commandHandler;
         private List<string> commandHistory = new List<string>(); // Liste für Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
@@ -23,20 +24,25 @@ namespace AMIG.OS.Kernel
         {
             
             // Initialisiere das Dateisystem und registriere VFS
-            fs = new Sys.FileSystem.CosmosVFS();
-            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs);
-     
+            fs1 = new Sys.FileSystem.CosmosVFS();
+            Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs1);
+            //var available_space = fs.getavailablefreespace(@"0:\");
+            //console.writeline("available free space: " + available_space);
+
+            //var fs_type = fs.getfilesystemtype(@"0:\");
+            //console.writeline("file system type: " + fs_type);
 
             // Initialisiere CommandHandler mit Abhängigkeiten
-            commandHandler = new CommandHandler(userManagement, fileSystemManager,ShowLoginOptions);
+            commandHandler = new CommandHandler(userManagement, 
+                                                fileSystemManager,
+                                                ShowLoginOptions,
+                                                helpers);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
 
             ShowLoginOptions();
         }
-
-
 
         public void ShowLoginOptions()
         {

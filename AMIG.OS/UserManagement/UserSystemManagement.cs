@@ -17,7 +17,6 @@ namespace AMIG.OS.UserSystemManagement
             roleService = new RoleService(); // Rolle-Service initialisieren
         }
 
-
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
@@ -36,13 +35,13 @@ namespace AMIG.OS.UserSystemManagement
                 userRepository.SaveUsers();
             }
         }
-
+        /*
         public void RemoveUser(string username)
         {
             userRepository.RemoveUser(username);
             userRepository.SaveUsers();
         }
-
+        */
         public void AddUserWithRoleAndPassword(string username, string password, string role)
         {
             if (!authService.UserExists(username))
@@ -78,12 +77,16 @@ namespace AMIG.OS.UserSystemManagement
            return userRepository.ChangeUsername(oldUsername, newUsername);
         }
 
+        public string GetPasswordHash(string username)
+        {
+            return userRepository.GetPasswordHash(username);
+        }
+
         // Zugriff auf einen Benutzer
         public void GetUserInfo(string username)
         {
             userRepository.GetUserInfo(username);
         }
-
 
         public bool UserExists(string username)
         {

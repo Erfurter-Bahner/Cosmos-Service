@@ -4,13 +4,6 @@ using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
-    /*
-    public enum UserRole
-    {
-        Standard,
-        Admin
-    }
-    */
     public class User
     {
         public string Username { get; internal set; }
