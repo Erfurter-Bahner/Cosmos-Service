@@ -18,17 +18,20 @@ namespace AMIG.OS.CommandProcessing
         private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
         private readonly Action showLoginOptions;
+        private readonly Sys.FileSystem.CosmosVFS vfs;
 
         public CommandHandler
             (UserManagement userMgmt, 
             FileSystemManager fsManager, 
             Action showLoginOptionsDelegate,
-            Helpers _helpers)
+            Helpers _helpers,
+            Sys.FileSystem.CosmosVFS vfs)
         {
             userManagement = userMgmt;
             fileSystemManager = fsManager;
             showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
             helpers = _helpers;
+            this.vfs = vfs; ;
         }
 
         public void SetStartTime(DateTime loginTime)
@@ -109,21 +112,7 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "add":
-                    //string username;
-                    //Console.WriteLine("Name: ");
-                    //username=Console.ReadLine();
-                    //string password;
-                    //Console.WriteLine("Password: ");
-                    //password = Console.ReadLine();
-                    //string role;
-                    //Console.WriteLine("Role: ");
-                    //role = Console.ReadLine();
-                    //userManagement.AddUserWithRoleAndPassword(username, password, role);
-
-
                     helpers.AddUserCommand();
-
-
                     break;
 
                 // Datei- und Verzeichnisbefehle
@@ -249,6 +238,10 @@ namespace AMIG.OS.CommandProcessing
                     {
                         Console.WriteLine("Bitte geben Sie eine Datei an.");
                     }
+                    break;
+                case "space":
+                    var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");
+                    Console.WriteLine($"Verfügbarer Speicherplatz: {availableSpace} Bytes");
                     break;
 
                 // Beispiel für andere Befehle

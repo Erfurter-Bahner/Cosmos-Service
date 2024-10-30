@@ -21,22 +21,22 @@ namespace AMIG.OS.Kernel
         DateTime starttime;
 
         protected override void BeforeRun()
-        {
-            
+        { 
             // Initialisiere das Dateisystem und registriere VFS
             fs1 = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs1);
-            //var available_space = fs.getavailablefreespace(@"0:\");
-            //console.writeline("available free space: " + available_space);
+            var available_space = fs1.GetAvailableFreeSpace(@"0:\");
+            Console.WriteLine("available free space: " + available_space);
 
-            //var fs_type = fs.getfilesystemtype(@"0:\");
-            //console.writeline("file system type: " + fs_type);
+            var fs_type = fs1.GetFileSystemType(@"0:\");
+             Console.WriteLine("file system type: " + fs_type);
 
             // Initialisiere CommandHandler mit Abhängigkeiten
             commandHandler = new CommandHandler(userManagement, 
                                                 fileSystemManager,
                                                 ShowLoginOptions,
-                                                helpers);
+                                                helpers,
+                                                fs1);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -99,15 +99,6 @@ namespace AMIG.OS.Kernel
 
             Console.Write("Choose a role (Admin or Standard): ");
             var roleInput = Console.ReadLine();
-
-            /*
-            string role;
-            if (!Enum.TryParse(roleInput, true, out role) || !Enum.IsDefined(typeof(UserRole), role))
-            {
-                Console.WriteLine("Invalid role. Defaulting to Standard.");
-                role = UserRole.Standard;
-            }
-            */
             
             if (userManagement.Register(username, password, roleInput))
             {
@@ -128,7 +119,6 @@ namespace AMIG.OS.Kernel
             Console.Write(new string(' ', Console.WindowWidth - 1));
             Console.SetCursorPosition(0, currentLineCursor);
         }
-
 
         protected override void Run()
         {
@@ -157,6 +147,7 @@ namespace AMIG.OS.Kernel
                         Console.Write("Input: ");
                     }
                 }
+
                 else if (key.Key == ConsoleKey.Backspace)
                 {
                     if (cursorPosInInput > 0)
@@ -171,6 +162,7 @@ namespace AMIG.OS.Kernel
                         Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop); // Adjust cursor
                     }
                 }
+
                 else if (key.Key == ConsoleKey.LeftArrow)
                 {
                     if (cursorPosInInput > 0)
@@ -179,6 +171,7 @@ namespace AMIG.OS.Kernel
                         Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
                     }
                 }
+
                 else if (key.Key == ConsoleKey.RightArrow)
                 {
                     if (cursorPosInInput < currentInput.Length)
@@ -208,6 +201,7 @@ namespace AMIG.OS.Kernel
                         Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
                 }
+
                 else if (key.Key == ConsoleKey.DownArrow)
                 {
                     // Navigation in der Befehlsverlaufsliste nach unten

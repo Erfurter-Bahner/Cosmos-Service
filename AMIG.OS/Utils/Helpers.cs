@@ -9,18 +9,13 @@ using System.Threading.Tasks;
 
 namespace AMIG.OS.Utils
 {
-
-    
-
     public class Helpers
     {
-
         private readonly UserManagement userManagement;
         public Helpers(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
-
 
         // Neue Methode zum Hinzufügen eines Benutzers
         public void AddUserCommand()
@@ -30,7 +25,6 @@ namespace AMIG.OS.Utils
 
             if (userManagement.UserExists(username))
             {
-
                 do
                 {
                     Console.WriteLine("Benutzer existiert bereits");
@@ -66,7 +60,5 @@ namespace AMIG.OS.Utils
 
             userManagement.AddUserWithRoleAndPassword(username, pw, role);
         }
-
-
     }
 }
