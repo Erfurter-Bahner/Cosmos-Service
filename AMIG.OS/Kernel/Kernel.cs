@@ -32,7 +32,7 @@ namespace AMIG.OS.Kernel
              Console.WriteLine("file system type: " + fs_type);
 
             // Initialisiere CommandHandler mit Abhängigkeiten
-            commandHandler = new CommandHandler(userManagement, 
+            commandHandler = new CommandHandler(userManagement,
                                                 fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,

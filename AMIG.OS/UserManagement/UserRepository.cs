@@ -180,7 +180,6 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-
         // Zugriff auf einen Benutzer
         public void GetUserInfo(string username)
         {
@@ -209,6 +208,18 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+        public string GetUserRole(string username)
+        {
+            if (users.ContainsKey(username))
+            {
+                return users[username].Role; // Gibt die Rolle des Benutzers zurück
+            }
+            else
+            {
+                Console.WriteLine("Benutzer existiert nicht.");
+                return null; // Alternativ könnte auch ein Standardwert wie "Unbekannt" zurückgegeben werden
+            }
+        }
 
         public Dictionary<string, User> GetAllUsers()
         {

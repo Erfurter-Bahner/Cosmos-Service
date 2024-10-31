@@ -87,6 +87,11 @@ namespace AMIG.OS.UserSystemManagement
             userRepository.GetUserInfo(username);
         }
 
+        public string GetUserRole(string username)
+        {
+            return userRepository.GetUserRole(username);
+        }
+
         public bool UserExists(string username)
         {
             return authService.UserExists(username);

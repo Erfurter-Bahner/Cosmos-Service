@@ -31,7 +31,8 @@ namespace AMIG.OS.CommandProcessing
             fileSystemManager = fsManager;
             showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
             helpers = _helpers;
-            this.vfs = vfs; ;
+            this.vfs = vfs; 
+           
         }
 
         public void SetStartTime(DateTime loginTime)
@@ -43,98 +44,65 @@ namespace AMIG.OS.CommandProcessing
         {
             var args = input.Split(' ');
 
+            bool admin_true = userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
+
             switch (args[0].ToLower())
             {
                 case "adios":
-                    if (args.Length == 2 && args[1].Equals("amigos"))
-                    {
-                        Console.WriteLine("\n\tHASTA LA VISTA");
-                        Thread.Sleep(1500);
-                        Sys.Power.Shutdown();
-                    }
+                    helpers.AdiosHelper(args);
                     break;
 
                 // Benutzerbefehle
-                case "showall":
-                    userManagement.DisplayAllUsers();
+                case "showall": //Admin
+                    helpers.ShowAllHelper(admin_true);
                     break;
 
-                case "showme":
-                    Console.WriteLine("Benutzerinformationen:");
-                    userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
+                case "showme": //Both
+                    helpers.ShowMeHelper(loggedInUser);
                     break;
 
-                case "remove":
-                    Console.Write("Benutzername des zu entfernenden Benutzers: ");
-                    string username = Console.ReadLine();
-                    userManagement.RemoveUser(username);
+                case "remove": //Admin
+                    helpers.RemoveHelper(admin_true);
                     break;
 
-                case "removeall":
-                    userManagement.RemoveAllUser();
+                case "removeall": //Admin
+                    if(admin_true) userManagement.RemoveAllUser();
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "change":
-                    string newUsername;
-                    string entscheidung;
-
-                    do
-                    {
-                        Console.Write("Neuer Benutzername: ");
-                        newUsername = Console.ReadLine();
-
-                        do
-                        {
-                            Console.Write("Bestätigen: y/n ");
-                            entscheidung = Console.ReadLine().ToLower();
-
-                            if (entscheidung == "n")
-                            {
-                                Console.WriteLine("Benutzername nicht bestätigt. Bitte erneut eingeben.");
-                                break;  // Schleife verlassen, um neuen Benutzernamen einzugeben
-                            }
-                            else if (entscheidung != "y" && entscheidung != "n")
-                            {
-                                Console.WriteLine("Ungültige Eingabe: y/n ");
-                            }
-
-                        } while (entscheidung != "y" && entscheidung != "n");
-
-                    } while (entscheidung != "y");
-
-                    if (userManagement.ChangeUsername(loggedInUser, newUsername))
-                    {
-                        loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
-                    }
+                case "changename": // Both
+                    helpers.ChangeNameHelper(loggedInUser);
                     break;
 
-                case "showtime":
+                case "showtime": //both
                     TimeSpan current = DateTime.Now - starttime;
                     Console.WriteLine($" Eingeloggte Zeit: {current}");
                     break;
 
-                case "logout":
+                case "logout": //both
                     showLoginOptions.Invoke();
                     break;
 
-                case "add":
-                    helpers.AddUserCommand();
+                case "add": //admin
+                    if(admin_true) helpers.AddUserCommand();
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
                 // Datei- und Verzeichnisbefehle
-                case "mkdir":
-                    if (args.Length > 1)
+                case "mkdir": //admin
+                    if (admin_true)
                     {
-                        string dirName = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.CreateDirectory(dirName);
+                        if (args.Length > 1)
+                        {
+                            string dirName = Path.Combine(currentDirectory, args[1]);
+                            fileSystemManager.CreateDirectory(dirName);
+                        }
+                        else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");    
                     }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
-                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "cd":
+                case "cd": //both
                     if (args.Length > 1)
                     {
                         string newDir;
@@ -175,7 +143,7 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-                case "ls":
+                case "ls": //both
                     try
                     {
                         var directories = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(currentDirectory);
@@ -190,50 +158,58 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-                case "write":
-                    string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
-                    Console.WriteLine("Bitte Inhalt eingeben");
-                    string content = Console.ReadLine();
-                    fileSystemManager.WriteToFile(fileName, content);
+                case "write": //admin
+                    if (admin_true)
+                    {  
+                        string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
+                        Console.WriteLine("Bitte Inhalt eingeben");
+                        string content = Console.ReadLine();
+                        fileSystemManager.WriteToFile(fileName, content);
+                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "rm":
-                    if (args.Length > 1)
+                case "rm": //admin
+                    if (admin_true)
                     {
-                        string filePath = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.DeleteFile(filePath);
+                        if (args.Length > 1)
+                        {
+                            string filePath = Path.Combine(currentDirectory, args[1]);
+                            fileSystemManager.DeleteFile(filePath);
+                        }
+                        else Console.WriteLine("Bitte geben Sie eine Datei an.");
                     }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie eine Datei an.");
-                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "rmdir":
-                    if (args.Length > 1)
+                case "rmdir": //admin
+                    if (admin_true)
                     {
-                        string dirPath = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.DeleteDirectory(dirPath);
+                        if (args.Length > 1)
+                        {
+                            string dirPath = Path.Combine(currentDirectory, args[1]);
+                            fileSystemManager.DeleteDirectory(dirPath);
+                        }
+                        else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
                     }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
-                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "touch":
-                    if (args.Length > 1)
+                case "touch": //admin
+                    if (admin_true)
                     {
-                        string filePath = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.CreateFile(filePath, "");
+                        if (args.Length > 1)
+                        {
+                            string filePath = Path.Combine(currentDirectory, args[1]);
+                            fileSystemManager.CreateFile(filePath, "");
+                        }
+                        else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
+                  
                     }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
-                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
-                case "cat":
+                case "cat": //both
                     if (args.Length > 1)
                     {
                         string filePath = Path.Combine(currentDirectory, args[1]);
@@ -245,17 +221,17 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-                case "space":
+                case "space": //both
                     var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine($"Verfügbarer Speicherplatz: {availableSpace} Bytes");
                     break;
 
                 // Beispiel für andere Befehle
-                case "help":
+                case "help": //both
                     Console.WriteLine("Available commands: showall, adduser, removeuser, mkdir, rmdir, touch, rm, cat.");
                     break;
 
-                default:
+                default: //both
                     Console.WriteLine("Unknown command.");
                     break;
             }
