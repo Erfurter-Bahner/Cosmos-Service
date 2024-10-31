@@ -14,7 +14,7 @@ namespace AMIG.OS.UserSystemManagement
         public UserRepository()
         {
             InitializeTestUsers();
-            LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
+            //LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
         }
 
         public void SaveUsers()
@@ -115,7 +115,6 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
             }
         }
-
 
         public User GetUserByUsername(string username)
         {

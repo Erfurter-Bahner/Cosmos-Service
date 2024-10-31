@@ -18,7 +18,7 @@ namespace AMIG.OS.CommandProcessing
         private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
         private readonly Action showLoginOptions;
-        private readonly Sys.FileSystem.CosmosVFS vfs;
+        private readonly Sys.FileSystem.CosmosVFS vfs; //damit freier speicherplatz angezeigt werden kann
 
         public CommandHandler
             (UserManagement userMgmt, 
@@ -62,6 +62,12 @@ namespace AMIG.OS.CommandProcessing
                 case "showme":
                     Console.WriteLine("Benutzerinformationen:");
                     userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
+                    break;
+
+                case "remove":
+                    Console.Write("Benutzername des zu entfernenden Benutzers: ");
+                    string username = Console.ReadLine();
+                    userManagement.RemoveUser(username);
                     break;
 
                 case "removeall":
@@ -189,7 +195,6 @@ namespace AMIG.OS.CommandProcessing
                     Console.WriteLine("Bitte Inhalt eingeben");
                     string content = Console.ReadLine();
                     fileSystemManager.WriteToFile(fileName, content);
-
                     break;
 
                 case "rm":
@@ -239,6 +244,7 @@ namespace AMIG.OS.CommandProcessing
                         Console.WriteLine("Bitte geben Sie eine Datei an.");
                     }
                     break;
+
                 case "space":
                     var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine($"Verfügbarer Speicherplatz: {availableSpace} Bytes");
