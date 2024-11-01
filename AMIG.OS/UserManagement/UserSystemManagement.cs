@@ -81,6 +81,11 @@ namespace AMIG.OS.UserSystemManagement
            return userRepository.ChangeUsername(oldUsername, newUsername);
         }
 
+        public bool ChangePassword(string username, string oldPassword, string newPassword)
+        {
+           return userRepository.ChangePassword(username, oldPassword, newPassword);    
+        }
+
         public string GetPasswordHash(string username)
         {
             return userRepository.GetPasswordHash(username);

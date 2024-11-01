@@ -187,6 +187,37 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+        public bool ChangePassword(string username, string oldPassword, string newPassword)
+        {
+            if (users.ContainsKey(username))
+            {
+                User user = users[username];
+
+                // Überprüfen, ob das alte Passwort korrekt ist
+                if (user.VerifyPassword(oldPassword))
+                {
+                    // Setze das neue Passwort
+                    user.ChangePassword(newPassword);
+
+                    // Speichere die Benutzer nach der Passwortänderung
+                    SaveUsers();
+
+                    Console.WriteLine("Passwort erfolgreich geändert.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Das alte Passwort ist falsch.");
+                    return false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Benutzer nicht gefunden.");
+                return false;
+            }
+        }
+
         // Zugriff auf einen Benutzer
         public void GetUserInfo(string username)
         {

@@ -13,7 +13,7 @@ namespace AMIG.OS.Kernel
         private Sys.FileSystem.CosmosVFS fs1;
         private  static UserManagement userManagement = new UserManagement();
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
-        private static Helpers helpers = new Helpers(userManagement);
+        private static Helpers helpers = new Helpers(userManagement, fileSystemManager);
         private  CommandHandler commandHandler;
         private List<string> commandHistory = new List<string>(); // Liste für Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste

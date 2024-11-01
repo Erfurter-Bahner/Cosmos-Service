@@ -8,15 +8,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Sys = Cosmos.System;
-
+using AMIG.OS.FileManagement;
+using System.IO;
 namespace AMIG.OS.Utils
 {
     public class Helpers
     {
         private readonly UserManagement userManagement;
-        public Helpers(UserManagement userManagement)
+        private readonly FileSystemManager fileSystemManager;
+        public Helpers(UserManagement userManagement, FileSystemManager fileSystemManager)
         {
             this.userManagement = userManagement;
+            this.fileSystemManager = fileSystemManager;
         }
 
         // Neue Methode zum Hinzufügen eines Benutzers
@@ -131,10 +134,87 @@ namespace AMIG.OS.Utils
             }
         }
 
-        public void mkdirHelper(bool admin_true)
+        public void ChangePasswortHelper(string loggedInUser)
         {
-            //noch nicht implementiert
+
+            Console.Write("Altes Passwort: ");
+            string oldPassword = Console.ReadLine();
+
+            Console.Write("Neues Passwort: ");
+            string newPassword = Console.ReadLine();
+            userManagement.ChangePassword(loggedInUser, oldPassword, newPassword);
         }
+
+        public void mkdirHelper(bool admin_true, string[]args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length > 1)
+                {
+                    string dirName = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.CreateDirectory(dirName);
+                }
+                else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
+
+        public void cdHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (args.Length > 1)
+            {
+                string newDir;
+
+                // Wenn der Benutzer ".." eingibt, navigiert er eine Verzeichnisebene zurück
+                if (args[1] == "..")
+                {
+                    // Parent-Directory extrahieren
+                    newDir = Directory.GetParent(currentDirectory)?.FullName;
+                    if (newDir == null)
+                    {
+                        Console.WriteLine("Sie befinden sich bereits im Root-Verzeichnis.");
+                    }
+                    else
+                    {
+                        currentDirectory = newDir;
+                        Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
+                    }
+                }
+                else
+                {
+                    // Andernfalls kombiniere den aktuellen Pfad mit dem neuen Unterverzeichnis
+                    newDir = Path.Combine(currentDirectory, args[1]);
+                    if (Directory.Exists(newDir))
+                    {
+                        currentDirectory = newDir;
+                        Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Verzeichnis existiert nicht.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
+            }
+        }
+        public void lsHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length > 1)
+                {
+                    string dirName = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.CreateDirectory(dirName);
+                }
+                else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
+
+
 
         //hier kommen noch die anderen befehle
 

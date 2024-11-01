@@ -82,6 +82,10 @@ namespace AMIG.OS.CommandProcessing
                     helpers.ChangeNameHelper(loggedInUser);
                     break;
 
+                case "changepw": //
+                    helpers.ChangePasswortHelper(loggedInUser);
+                    break;
+
                 case "showtime": //both
                     TimeSpan current = DateTime.Now - starttime;
                     Console.WriteLine($" Eingeloggte Zeit: {current}");
@@ -98,16 +102,7 @@ namespace AMIG.OS.CommandProcessing
 
                 // Datei- und Verzeichnisbefehle
                 case "mkdir": //admin
-                    if (admin_true)
-                    {
-                        if (args.Length > 1)
-                        {
-                            string dirName = Path.Combine(currentDirectory, args[1]);
-                            fileSystemManager.CreateDirectory(dirName);
-                        }
-                        else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");    
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.mkdirHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "cd": //both
