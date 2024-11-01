@@ -45,7 +45,7 @@ namespace AMIG.OS.CommandProcessing
             var args = input.Split(' ');
 
             bool admin_true = userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
-
+            string role = userManagement.GetUserRole(loggedInUser).ToLower();
             switch (args[0].ToLower())
             {
                 case "adios":
@@ -158,7 +158,7 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-                case "write": //admin
+                case "write": //admin, fehlerbehandlung noch impllementieren
                     if (admin_true)
                     {  
                         string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
@@ -213,7 +213,7 @@ namespace AMIG.OS.CommandProcessing
                     if (args.Length > 1)
                     {
                         string filePath = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.ReadFile(filePath);
+                        fileSystemManager.ReadFile(filePath,role);
                     }
                     else
                     {
@@ -224,6 +224,36 @@ namespace AMIG.OS.CommandProcessing
                 case "space": //both
                     var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine($"Verfügbarer Speicherplatz: {availableSpace} Bytes");
+                    break;
+
+                case "setperm": //admin
+                    // Berechtigung für Datei oder Verzeichnis setzen
+                    if (admin_true)
+                    {
+                        if (args.Length == 3)
+                        {
+                            string path = Path.Combine(currentDirectory, args[1]);
+                            string permission = args[2];
+                            fileSystemManager.SetPermission(path, permission);
+                            Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
+                        }
+                        else Console.WriteLine("Ungültige Argumente für setperm.");
+                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    break;
+
+                case "unlock": //admin
+                    if (admin_true)
+                    {
+                        if (args.Length == 2)
+                        {
+                            string path = Path.Combine(currentDirectory, args[1]);
+                            fileSystemManager.UnlockFile(path);
+                        }
+                    else Console.WriteLine("Ungültige Argumente für unlock.");
+                    
+                    }
+                    else Console.WriteLine("Keine Berechtigung für diesen Command");
                     break;
 
                 // Beispiel für andere Befehle
