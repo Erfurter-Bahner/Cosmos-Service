@@ -48,6 +48,14 @@ namespace AMIG.OS.CommandProcessing
             string role = userManagement.GetUserRole(loggedInUser).ToLower();
             switch (args[0].ToLower())
             {
+
+                //ausstehende befehle: created, lastlogin, change pw, 
+
+                case "datetime":
+                    DateTime now=DateTime.Now;
+                    Console.WriteLine(now);
+                    break;
+
                 case "adios":
                     helpers.AdiosHelper(args);
                     break;

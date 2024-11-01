@@ -34,9 +34,10 @@ namespace AMIG.OS.UserSystemManagement
                     foreach (var user in users)
                     {
                         var userInfo = user.Value;
-                        writer.WriteLine($"{user.Key},{userInfo.PasswordHash},{userInfo.Role}");
+                        writer.WriteLine($"{user.Key},{userInfo.PasswordHash},{userInfo.Role},{userInfo.CreatedAt},{userInfo.LastLogin}");
                     }
                 }
+                
                 Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
             }
             catch (Exception ex)
@@ -58,13 +59,18 @@ namespace AMIG.OS.UserSystemManagement
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split(',');
-                            if (parts.Length == 3)
+                            if (parts.Length == 5)
                             {
                                 string username = parts[0];
                                 string password = parts[1];
                                 string role = parts[2];
-                                
-                                users[username] = new User(username, password, role, isHashed: true);
+                                string createdAt = parts[3];
+                                string lastlogin = parts[4];
+                                users[username] = new User(username, password, role, createdAt, isHashed: true)
+                                {
+                                    LastLogin = lastlogin
+                                };
+
                             }
                         }
                     }
@@ -103,9 +109,9 @@ namespace AMIG.OS.UserSystemManagement
 
             if (addTestUsers)
             {
-                // Testbenutzer hinzufügen
-                users.Add("User1", new User("User1", "123", "Standard"));
-                users.Add("User2", new User("User2", "adminPass", "Admin"));
+                // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
+                users.Add("User1", new User("User1", "123", "Standard", DateTime.Now.ToString()));
+                users.Add("User2", new User("User2", "adminPass", "Admin",DateTime.Now.ToString()));
 
                 // Speichern der Benutzer in die Datei
                 SaveUsers();
@@ -115,6 +121,7 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
             }
         }
+
 
         public User GetUserByUsername(string username)
         {
@@ -186,7 +193,11 @@ namespace AMIG.OS.UserSystemManagement
             if (users.ContainsKey(username))
             {
                 User userInfo = users[username];
-                Console.WriteLine($"Benutzer: {username},Passwort: {userInfo.PasswordHash}, Rolle: {userInfo.Role}");
+                Console.WriteLine($"Benutzer: {username}, " +
+                                  $"Passwort-Hash: {userInfo.PasswordHash}," +
+                                  $" Rolle: {userInfo.Role}, " +
+                                  $"Erstellt am {userInfo.CreatedAt}," +
+                                  $"Letzter Login am {userInfo.LastLogin}");
             }
             else
             {

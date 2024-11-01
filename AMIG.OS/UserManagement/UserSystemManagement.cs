@@ -45,7 +45,8 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (!authService.UserExists(username))
             {
-                var user = new User(username, password, role); // Neues User-Objekt erstellen
+                DateTime created = DateTime.Now;
+                var user = new User(username, password, role, DateTime.Now.ToString()); // Neues User-Objekt erstellen
                 userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
                 //userRepository.SaveUsers(); // Änderungen speichern
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
@@ -67,7 +68,11 @@ namespace AMIG.OS.UserSystemManagement
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
-                Console.WriteLine($"Username: {user.Username},PW: {user.PasswordHash} Role: {user.Role}");
+                Console.WriteLine($"Username: {user.Username}," +
+                    $"PW: {user.PasswordHash} " +
+                    $"Role: {user.Role}, " +
+                    $"Erstellt am {user.CreatedAt},"+
+                    $"Letzter Login am {user.LastLogin}");
             }
         }
 

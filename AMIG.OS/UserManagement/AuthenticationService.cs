@@ -17,8 +17,8 @@ namespace AMIG.OS.UserSystemManagement
             var user = userRepository.GetUserByUsername(username);
             if (user != null && user.VerifyPassword(password))
             {
-                user.LastLogin = DateTime.Now; // Datum der letzten Anmeldung aktualisieren
-                //userRepository.SaveUsers(); // Änderungen speichern
+                user.LastLogin = DateTime.Now.ToString(); // Datum der letzten Anmeldung aktualisieren
+                userRepository.SaveUsers(); // Änderungen speichern
                 return true;
             }
             return false;
@@ -29,7 +29,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (userRepository.GetUserByUsername(username) == null)
             {
-                var newUser = new User(username, password, role);
+                var newUser = new User(username, password, role, DateTime.Now.ToString());
                 userRepository.AddUser(newUser);
                 //userRepository.SaveUsers(); // Benutzer sofort speichern
                 return true;

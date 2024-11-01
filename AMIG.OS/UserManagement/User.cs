@@ -9,18 +9,19 @@ namespace AMIG.OS.UserSystemManagement
         public string Username { get; internal set; }
         public string PasswordHash { get; private set; }
         public string Role { get; private set; }
-
+       
         // Weitere Felder für zukünftige Erweiterungen
-        public DateTime CreatedAt { get; private set; }
-        public DateTime LastLogin { get; set; }
-
-        public User(string username, string password, string role, bool isHashed = false)
+        public string CreatedAt { get; internal set; }
+        public string LastLogin { get; set; }
+        public string Group { get; private set; }
+        public User(string username, string password, string role , string created, bool isHashed = false)
         {
             Username = username;
             PasswordHash = isHashed ? password : HashPassword(password);
             Role = role;
-            CreatedAt = DateTime.Now;
+            CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
         }
+
 
         // Funktion zum Überprüfen des Passworts
         public bool VerifyPassword(string password)
