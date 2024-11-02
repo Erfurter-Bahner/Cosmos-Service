@@ -1,63 +1,48 @@
 using System;
-using System.Security.Cryptography;
 using System.Text;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
-    /*
-    public enum UserRole
-    {
-        Standard,
-        Admin
-    }
-    */
     public class User
     {
-        public string Username { get; private set; }
+        public string Username { get; internal set; }
         public string PasswordHash { get; private set; }
         public string Role { get; private set; }
-
+       
         // Weitere Felder für zukünftige Erweiterungen
-        public DateTime CreatedAt { get; private set; }
-        public DateTime LastLogin { get; set; }
-
-        public User(string username, string password, string role )
+        public string CreatedAt { get; internal set; }
+        public string LastLogin { get; set; }
+        public string Group { get; private set; }
+        public User(string username, string password, string role , string created, bool isHashed = false)
         {
             Username = username;
-            //PasswordHash = HashPassword(password);
-            PasswordHash = password;
+            PasswordHash = isHashed ? password : HashPassword(password);
             Role = role;
-            CreatedAt = DateTime.Now;
+            CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
         }
 
         // Funktion zum Überprüfen des Passworts
         public bool VerifyPassword(string password)
         {
-            //return PasswordHash == HashPassword(password);
-            return PasswordHash == password;
+            Console.WriteLine($"Verifying password. Input: {password}, Hash: {PasswordHash}");
+            return PasswordHash == HashPassword(password);
+
+            //return PasswordHash == password;
         }
 
-
-        // Private Methode zur Passwort-Hashing
-        private string HashPassword(string password)
+        // Methode zum Hashen eines Passworts mit SHA256
+        private string HashPassword(string input)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
+            byte[] hashBytes = SHA256.Hash(Encoding.UTF8.GetBytes(input));
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
 
         // Funktion zum Ändern des Passworts
         public void ChangePassword(string newPassword)
         {
-            //PasswordHash = HashPassword(newPassword);
-            PasswordHash = newPassword;
+            PasswordHash = HashPassword(newPassword);
+            //PasswordHash = newPassword;
         }
 
         // Funktion zum Ändern der Rolle
@@ -65,5 +50,13 @@ namespace AMIG.OS.UserSystemManagement
         {
             Role = newRole;
         }
+
+        /*
+        public void ChangeName(string newName)
+        {
+            Username = newName;
+        }
+        */
+
     }
 }

@@ -19,6 +19,8 @@
         <PxeInterface>192.168.0.8</PxeInterface>
         <TraceMode>User</TraceMode>
         <DebugEnabled>False</DebugEnabled>
+        <DebugCom>2</DebugCom>
+        <StackCorruptionDetectionEnabled>True</StackCorruptionDetectionEnabled>
     </PropertyGroup>
 
     <ItemGroup>
