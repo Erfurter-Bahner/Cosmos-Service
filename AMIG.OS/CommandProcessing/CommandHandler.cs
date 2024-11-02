@@ -106,122 +106,126 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "cd": //both
-                    if (args.Length > 1)
-                    {
-                        string newDir;
+                    //if (args.Length > 1)
+                    //{
+                    //    string newDir;
 
-                        // Wenn der Benutzer ".." eingibt, navigiert er eine Verzeichnisebene zurück
-                        if (args[1] == "..")
-                        {
-                            // Parent-Directory extrahieren
-                            newDir = Directory.GetParent(currentDirectory)?.FullName;
-                            if (newDir == null)
-                            {
-                                Console.WriteLine("Sie befinden sich bereits im Root-Verzeichnis.");
-                            }
-                            else
-                            {
-                                currentDirectory = newDir;
-                                Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
-                            }
-                        }
-                        else
-                        {
-                            // Andernfalls kombiniere den aktuellen Pfad mit dem neuen Unterverzeichnis
-                            newDir = Path.Combine(currentDirectory, args[1]);
-                            if (Directory.Exists(newDir))
-                            {
-                                currentDirectory = newDir;
-                                Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Verzeichnis existiert nicht.");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
-                    }
+                    //    // Wenn der Benutzer ".." eingibt, navigiert er eine Verzeichnisebene zurück
+                    //    if (args[1] == "..")
+                    //    {
+                    //        // Parent-Directory extrahieren
+                    //        newDir = Directory.GetParent(currentDirectory)?.FullName;
+                    //        if (newDir == null)
+                    //        {
+                    //            Console.WriteLine("Sie befinden sich bereits im Root-Verzeichnis.");
+                    //        }
+                    //        else
+                    //        {
+                    //            currentDirectory = newDir;
+                    //            Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        // Andernfalls kombiniere den aktuellen Pfad mit dem neuen Unterverzeichnis
+                    //        newDir = Path.Combine(currentDirectory, args[1]);
+                    //        if (Directory.Exists(newDir))
+                    //        {
+                    //            currentDirectory = newDir;
+                    //            Console.WriteLine($"Verzeichnis gewechselt zu '{currentDirectory}'.");
+                    //        }
+                    //        else
+                    //        {
+                    //            Console.WriteLine("Verzeichnis existiert nicht.");
+                    //        }
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
+                    //}
+                    helpers.cdHelper(args, ref currentDirectory);
                     break;
 
                 case "ls": //both
-                    try
-                    {
-                        var directories = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(currentDirectory);
-                        foreach (var dir in directories)
-                        {
-                            Console.WriteLine($"{(dir.mEntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory ? "[DIR]" : "[FILE]")} {dir.mName}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Fehler bei der Verzeichnisauflistung: {ex.Message}");
-                    }
+                    //try
+                    //{
+                    //    var directories = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(currentDirectory);
+                    //    foreach (var dir in directories)
+                    //    {
+                    //        Console.WriteLine($"{(dir.mEntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory ? "[DIR]" : "[FILE]")} {dir.mName}");
+                    //    }
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    Console.WriteLine($"Fehler bei der Verzeichnisauflistung: {ex.Message}");
+                    //}
+                    helpers.lsHelper(args, currentDirectory);
                     break;
 
                 case "write": //admin, fehlerbehandlung noch impllementieren
-                    if (admin_true)
-                    {  
-                        string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
-                        Console.WriteLine("Bitte Inhalt eingeben");
-                        string content = Console.ReadLine();
-                        fileSystemManager.WriteToFile(fileName, content);
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    //if (admin_true)
+                    //{  
+                    //    string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
+                    //    Console.WriteLine("Bitte Inhalt eingeben");
+                    //    string content = Console.ReadLine();
+                    //    fileSystemManager.WriteToFile(fileName, content);
+                    //}
+                    //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.writeHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "rm": //admin
-                    if (admin_true)
-                    {
-                        if (args.Length > 1)
-                        {
-                            string filePath = Path.Combine(currentDirectory, args[1]);
-                            fileSystemManager.DeleteFile(filePath);
-                        }
-                        else Console.WriteLine("Bitte geben Sie eine Datei an.");
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                           //if (admin_true)
+                           //{
+                           //    if (args.Length > 1)
+                           //    {
+                           //        string filePath = Path.Combine(currentDirectory, args[1]);
+                           //        fileSystemManager.DeleteFile(filePath);
+                           //    }
+                           //    else Console.WriteLine("Bitte geben Sie eine Datei an.");
+                           //}
+                           //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.rmHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "rmdir": //admin
-                    if (admin_true)
-                    {
-                        if (args.Length > 1)
-                        {
-                            string dirPath = Path.Combine(currentDirectory, args[1]);
-                            fileSystemManager.DeleteDirectory(dirPath);
-                        }
-                        else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    //if (admin_true)
+                    //{
+                    //    if (args.Length > 1)
+                    //    {
+                    //        string dirPath = Path.Combine(currentDirectory, args[1]);
+                    //        fileSystemManager.DeleteDirectory(dirPath);
+                    //    }
+                    //    else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
+                    //}
+                    //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.rmdirHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "touch": //admin
-                    if (admin_true)
-                    {
-                        if (args.Length > 1)
-                        {
-                            string filePath = Path.Combine(currentDirectory, args[1]);
-                            fileSystemManager.CreateFile(filePath, "");
-                        }
-                        else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
+                    //if (admin_true)
+                    //{
+                    //    if (args.Length > 1)
+                    //    {
+                    //        string filePath = Path.Combine(currentDirectory, args[1]);
+                    //        fileSystemManager.CreateFile(filePath, "");
+                    //    }
+                    //    else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
                   
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    //}
+                    //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.touchHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "cat": //both
-                    if (args.Length > 1)
-                    {
-                        string filePath = Path.Combine(currentDirectory, args[1]);
-                        fileSystemManager.ReadFile(filePath,role);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Bitte geben Sie eine Datei an.");
-                    }
+                    //if (args.Length > 1)
+                    //{
+                    //    string filePath = Path.Combine(currentDirectory, args[1]);
+                    //    fileSystemManager.ReadFile(filePath,role);
+                    //}
+                    //else Console.WriteLine("Bitte geben Sie eine Datei an.");
+                    helpers.catHelper(args, currentDirectory, role);
                     break;
 
                 case "space": //both
@@ -231,32 +235,33 @@ namespace AMIG.OS.CommandProcessing
 
                 case "setperm": //admin
                     // Berechtigung für Datei oder Verzeichnis setzen
-                    if (admin_true)
-                    {
-                        if (args.Length == 3)
-                        {
-                            string path = Path.Combine(currentDirectory, args[1]);
-                            string permission = args[2];
-                            fileSystemManager.SetPermission(path, permission);
-                            Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
-                        }
-                        else Console.WriteLine("Ungültige Argumente für setperm.");
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    //if (admin_true)
+                    //{
+                    //    if (args.Length == 3)
+                    //    {
+                    //        string path = Path.Combine(currentDirectory, args[1]);
+                    //        string permission = args[2];
+                    //        fileSystemManager.SetPermission(path, permission);
+                    //        Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
+                    //    }
+                    //    else Console.WriteLine("Ungültige Argumente für setperm.");
+                    //}
+                    //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.setpermHelper(admin_true, args, currentDirectory);
                     break;
 
                 case "unlock": //admin
-                    if (admin_true)
-                    {
-                        if (args.Length == 2)
-                        {
-                            string path = Path.Combine(currentDirectory, args[1]);
-                            fileSystemManager.UnlockFile(path);
-                        }
-                    else Console.WriteLine("Ungültige Argumente für unlock.");
-                    
-                    }
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    //if (admin_true)
+                    //{
+                    //    if (args.Length == 2)
+                    //    {
+                    //        string path = Path.Combine(currentDirectory, args[1]);
+                    //        fileSystemManager.UnlockFile(path);
+                    //    }
+                    //else Console.WriteLine("Ungültige Argumente für unlock.");
+                    //}
+                    //else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    helpers.unlockHelper(admin_true, args, currentDirectory);
                     break;
 
                 // Beispiel für andere Befehle

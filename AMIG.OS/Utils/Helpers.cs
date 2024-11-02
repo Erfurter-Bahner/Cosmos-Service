@@ -16,6 +16,7 @@ namespace AMIG.OS.Utils
     {
         private readonly UserManagement userManagement;
         private readonly FileSystemManager fileSystemManager;
+        private string currentDirectory1 = @"0:\";
         public Helpers(UserManagement userManagement, FileSystemManager fileSystemManager)
         {
             this.userManagement = userManagement;
@@ -159,7 +160,7 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
-        public void cdHelper(bool admin_true, string[] args, string currentDirectory) //not working
+        public void cdHelper(string[] args, ref string currentDirectory) //not working
         {
             if (args.Length > 1)
             {
@@ -200,22 +201,118 @@ namespace AMIG.OS.Utils
                 Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
             }
         }
-        public void lsHelper(bool admin_true, string[] args, string currentDirectory)
+        public void lsHelper( string[] args, string currentDirectory)
+        {
+            try
+            {
+                var directories = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(currentDirectory);
+                foreach (var dir in directories)
+                {
+                    Console.WriteLine($"{(dir.mEntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory ? "[DIR]" : "[FILE]")} {dir.mName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler bei der Verzeichnisauflistung: {ex.Message}");
+            }
+        }
+
+        public void writeHelper(bool admin_true, string[] args, string currentDirectory)
         {
             if (admin_true)
             {
-                if (args.Length > 1)
-                {
-                    string dirName = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.CreateDirectory(dirName);
-                }
-                else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
+                string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
+                Console.WriteLine("Bitte Inhalt eingeben");
+                string content = Console.ReadLine();
+                fileSystemManager.WriteToFile(fileName, content);
             }
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
 
+        public void rmHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length > 1)
+                {
+                    string filePath = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.DeleteFile(filePath);
+                }
+                else Console.WriteLine("Bitte geben Sie eine Datei an.");
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
 
+        public void rmdirHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length > 1)
+                {
+                    string dirPath = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.DeleteDirectory(dirPath);
+                }
+                else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
+
+        public void touchHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length > 1)
+                {
+                    string filePath = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.CreateFile(filePath, "");
+                }
+                else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
+
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
+
+        public void catHelper(string[] args, string currentDirectory, string role)
+        {
+            if (args.Length > 1)
+            {
+                string filePath = Path.Combine(currentDirectory, args[1]);
+                fileSystemManager.ReadFile(filePath, role);
+            }
+            else Console.WriteLine("Bitte geben Sie eine Datei an.");
+        }
+
+        public void setpermHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length == 3)
+                {
+                    string path = Path.Combine(currentDirectory, args[1]);
+                    string permission = args[2];
+                    fileSystemManager.SetPermission(path, permission);
+                    Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
+                }
+                else Console.WriteLine("Ungültige Argumente für setperm.");
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
+
+        public void unlockHelper(bool admin_true, string[] args, string currentDirectory)
+        {
+            if (admin_true)
+            {
+                if (args.Length == 2)
+                {
+                    string path = Path.Combine(currentDirectory, args[1]);
+                    fileSystemManager.UnlockFile(path);
+                }
+                else Console.WriteLine("Ungültige Argumente für unlock.");
+
+            }
+            else Console.WriteLine("Keine Berechtigung für diesen Command");
+        }
         //hier kommen noch die anderen befehle
 
     }
