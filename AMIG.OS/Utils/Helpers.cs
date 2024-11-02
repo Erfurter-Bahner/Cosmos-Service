@@ -138,10 +138,10 @@ namespace AMIG.OS.Utils
         {
 
             Console.Write("Altes Passwort: ");
-            string oldPassword = Console.ReadLine();
+            string oldPassword =ConsoleHelpers.GetPassword() ;
 
             Console.Write("Neues Passwort: ");
-            string newPassword = Console.ReadLine();
+            string newPassword = ConsoleHelpers.GetPassword();
             userManagement.ChangePassword(loggedInUser, oldPassword, newPassword);
         }
 
@@ -159,7 +159,7 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
-        public void cdHelper(bool admin_true, string[] args, string currentDirectory)
+        public void cdHelper(bool admin_true, string[] args, string currentDirectory) //not working
         {
             if (args.Length > 1)
             {
