@@ -24,47 +24,51 @@ namespace AMIG.OS.Utils
         }
 
         // Neue Methode zum Hinzufügen eines Benutzers
-        public void AddUserCommand()
+        public void addHelper(bool admin_true)
         {
-            Console.WriteLine("Name des anzulegende Benutzers");
-            string username = Console.ReadLine();
-
-            if (userManagement.UserExists(username))
+            if (admin_true)
             {
+                Console.WriteLine("Name des anzulegende Benutzers");
+                string username = Console.ReadLine();
+
+                if (userManagement.UserExists(username))
+                {
+                    do
+                    {
+                        Console.WriteLine("Benutzer existiert bereits");
+                        Console.WriteLine("Name des anzulegende Benutzers");
+                        username = Console.ReadLine();
+                    }
+                    while (userManagement.UserExists(username));
+                }
+
+                Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
+                string role = Console.ReadLine().ToLower();
+
+                if (role != "admin" && role != "standard")
+                {
+                    do
+                    {
+                        Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
+                        role = Console.ReadLine().ToLower();
+                    }
+                    while (role != "admin" && role != "standard");
+
+                }
+
+                // Passwortabfrage
+                Console.WriteLine("Passwort des anzulegende Benutzers");
+                string pw = ConsoleHelpers.GetPassword();
+                string pw_2;
                 do
                 {
-                    Console.WriteLine("Benutzer existiert bereits");
-                    Console.WriteLine("Name des anzulegende Benutzers");
-                    username = Console.ReadLine();
-                }
-                while (userManagement.UserExists(username));
+                    Console.WriteLine("PW des anzulegende Benutzers wiederholen");
+                    pw_2 = ConsoleHelpers.GetPassword();
+                } while (pw != pw_2);
+
+                userManagement.AddUserWithRoleAndPassword(username, pw, role);
             }
-
-            Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
-            string role = Console.ReadLine().ToLower();
-
-            if (role != "admin" && role != "standard")
-            {
-                do
-                {
-                    Console.WriteLine("Rolle des anzulegende Benutzers: Standard oder Admin");
-                    role = Console.ReadLine().ToLower();
-                }
-                while (role != "admin" && role != "standard");
-
-            }
-
-            // Passwortabfrage
-            Console.WriteLine("Passwort des anzulegende Benutzers");
-            string pw = ConsoleHelpers.GetPassword();
-            string pw_2;
-            do
-            {
-                Console.WriteLine("PW des anzulegende Benutzers wiederholen");
-                pw_2 = ConsoleHelpers.GetPassword();
-            } while (pw != pw_2);
-
-            userManagement.AddUserWithRoleAndPassword(username, pw, role);
+            else Console.WriteLine("Keine Berechtigung für diesen Command"); 
         }
 
         public void AdiosHelper(string[] args)
@@ -160,7 +164,7 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
-        public void cdHelper(string[] args, ref string currentDirectory) //not working
+        public void cdHelper(string[] args, ref string currentDirectory) 
         {
             if (args.Length > 1)
             {
@@ -201,6 +205,7 @@ namespace AMIG.OS.Utils
                 Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
             }
         }
+
         public void lsHelper( string[] args, string currentDirectory)
         {
             try
@@ -228,7 +233,6 @@ namespace AMIG.OS.Utils
             }
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
-
 
         public void rmHelper(bool admin_true, string[] args, string currentDirectory)
         {

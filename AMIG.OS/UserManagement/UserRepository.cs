@@ -86,6 +86,7 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine($"Fehler beim Laden der Benutzer: {ex.Message}");
             }
         }
+
         public void InitializeTestUsers()
         {
             bool addTestUsers = false;
@@ -121,7 +122,6 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
             }
         }
-
 
         public User GetUserByUsername(string username)
         {

@@ -22,7 +22,6 @@ namespace AMIG.OS.UserSystemManagement
             CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
         }
 
-
         // Funktion zum Überprüfen des Passworts
         public bool VerifyPassword(string password)
         {

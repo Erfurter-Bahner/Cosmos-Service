@@ -10,7 +10,6 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserManagement()
         {
-
             userRepository = new UserRepository(); // UserRepository initialisieren
             userRepository.LoadUsers(); // Benutzer laden
             authService = new AuthenticationService(userRepository); // Authentifizierungsdienst mit geladenen Benutzern initialisieren
@@ -26,16 +25,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             return authService.Register(username, password, role);
         }
-        /*
-        public void AddUser(string username, string role, string password)
-        {
-            if (!authService.UserExists(username))
-            {
-                userRepository.AddUser(new User(username, password, role));
-                userRepository.SaveUsers();
-            }
-        }
-        */
+
         public void RemoveUser(string username)
         {
             userRepository.RemoveUser(username);

@@ -90,6 +90,7 @@ namespace AMIG.OS.Kernel
             }
             
         }
+
         private void Register()
         {
             Console.Write("Choose a username: ");
@@ -110,6 +111,7 @@ namespace AMIG.OS.Kernel
             }
             
         }
+
         //mussin utils oder so
         public static void ClearCurrentLine()
         {

@@ -181,8 +181,6 @@ namespace AMIG.OS.FileManagement
             }
         }
 
-
-
         public void CreateFile(string path, string content)
         {
             try
@@ -202,15 +200,6 @@ namespace AMIG.OS.FileManagement
 
         public void ReadFile(string path, string userRole)
         {
-            //if (HasPermission(path, userRole))
-            //{
-            //    Console.WriteLine("Haspermission has returned true");
-            //}
-            //if (File.Exists(path))
-            //{
-            //    string content = File.ReadAllText(path);
-            //    Console.WriteLine($"Inhalt der Datei '{path}':\n{content}");
-            //}
             if (HasPermission(path, userRole))
             {
                 if (File.Exists(path))
@@ -253,6 +242,7 @@ namespace AMIG.OS.FileManagement
                 Console.WriteLine($"Fehler beim Schreiben in die Datei: {ex.Message}");
             }
         }
+
         public void DeleteFile(string path)
         {
             try
@@ -272,6 +262,7 @@ namespace AMIG.OS.FileManagement
                 Console.WriteLine($"Fehler beim Löschen der Datei: {ex.Message}");
             }
         }
+
         public void CreateDirectory(string path)
         {
             try
@@ -291,6 +282,7 @@ namespace AMIG.OS.FileManagement
                 Console.WriteLine($"Fehler beim Erstellen des Verzeichnisses: {ex.Message}");
             }
         }
+
         public void ListDirectory(string path)
         {
             try
