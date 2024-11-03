@@ -130,8 +130,8 @@ namespace AMIG.OS.UserSystemManagement
             if (addTestUsers)
             {
                 // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
-                users.Add("User1", new User("User1", "123", "Standard", DateTime.Now.ToString()));
-                users.Add("User2", new User("User2", "adminPass", "Admin", DateTime.Now.ToString()));
+                users.Add("User1", new User("User1", "123", "standard", DateTime.Now.ToString()));
+                users.Add("User2", new User("User2", "adminPass", "admin", DateTime.Now.ToString()));
                 
                 // Berechtigungen anzeigen
                 foreach (var user in users.Values)
@@ -250,8 +250,6 @@ namespace AMIG.OS.UserSystemManagement
             {
                 User userInfo = users[username];
                 // Berechtigungen formatieren
-               
-
                 Console.WriteLine($"Benutzer: {username}, " +
                                   $"Passwort-Hash: {userInfo.PasswordHash}, " +
                                   $"Rolle: {userInfo.Role}, " +

@@ -99,7 +99,7 @@ namespace AMIG.OS.Kernel
             var password = ConsoleHelpers.GetPassword();
 
             Console.Write("Choose a role (Admin or Standard): ");
-            var roleInput = Console.ReadLine();
+            var roleInput = Console.ReadLine().ToLower();
             
             if (userManagement.Register(username, password, roleInput))
             {

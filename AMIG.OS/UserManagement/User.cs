@@ -22,29 +22,43 @@ namespace AMIG.OS.UserSystemManagement
             PasswordHash = isHashed ? password : HashPassword(password);
             Role = role;
             CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
-
-            // Standardberechtigungen nur setzen, wenn keine Berechtigungen vorhanden sind
-
             Permissions = new Dictionary<string, string>();
-            SetDefaultPermissions();
-            
+            SetDefaultPermissions();  
         }
 
         private void SetDefaultPermissions()
         {
-            if (Role == "Admin")
+            if (Role == "admin")
             {
                 Permissions["CreateUser"] = "true";
-                Permissions["DeleteUser"] = "true";
+                Permissions["RemoveUser"] = "true";
                 Permissions["ChangeName"] = "true";
                 Permissions["ChangePassword"] = "true";
+                Permissions["ShowAllUsers"] = "true";
+                Permissions["SetUserPermission"] = "true";
+                Permissions["CreateDirectory"] = "true";
+                Permissions["WriteToFile"] = "true";
+                Permissions["RemoveFile"] = "true";
+                Permissions["RemoveDirectory"] = "true";
+                Permissions["CreateFile"] = "true";
+                Permissions["SetFilePermission"] = "true";
+                Permissions["UnlockFile"] = "true";
             }
-            else if (Role == "Standard")
+            else if (Role == "standard")
             {
                 Permissions["CreateUser"] = "false";
-                Permissions["DeleteUser"] = "false";
+                Permissions["RemoveUser"] = "false";
                 Permissions["ChangeName"] = "true";
                 Permissions["ChangePassword"] = "true";
+                Permissions["ShowAllUsers"] = "false";
+                Permissions["SetUserPermission"] = "false";
+                Permissions["CreateDirectory"] = "false";
+                Permissions["WriteToFile"] = "false";
+                Permissions["RemoveFile"] = "false";
+                Permissions["RemoveDirectory"] = "false";
+                Permissions["CreateFile"] = "false";
+                Permissions["SetFilePermission"] = "false";
+                Permissions["UnlockFile"] = "false";
             }
         }
 
