@@ -31,7 +31,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 var newUser = new User(username, password, role, DateTime.Now.ToString());
                 userRepository.AddUser(newUser);
-                //userRepository.SaveUsers(); // Benutzer sofort speichern
+                userRepository.SaveUsers(); // Benutzer sofort speichern
                 return true;
             }
             Console.WriteLine("Username already taken.");

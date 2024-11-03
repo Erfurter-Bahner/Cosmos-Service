@@ -16,7 +16,6 @@ namespace AMIG.OS.Utils
     {
         private readonly UserManagement userManagement;
         private readonly FileSystemManager fileSystemManager;
-        private string currentDirectory1 = @"0:\";
         public Helpers(UserManagement userManagement, FileSystemManager fileSystemManager)
         {
             this.userManagement = userManagement;

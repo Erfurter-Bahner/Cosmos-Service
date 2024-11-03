@@ -6,6 +6,7 @@ using System.IO;
 using Sys = Cosmos.System;
 using System.Threading;
 using System.Data;
+using System.Security;
 
 
 namespace AMIG.OS.CommandProcessing
@@ -42,15 +43,31 @@ namespace AMIG.OS.CommandProcessing
         public void ProcessCommand(string input, string loggedInUser)
         {
             var args = input.Split(' ');
-
+            var currentUser = userManagement.GetUser(loggedInUser);
             bool admin_true = userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
             string role = userManagement.GetUserRole(loggedInUser).ToLower();
             switch (args[0].ToLower())
             {
-                //ausstehende befehle: created, lastlogin
+                case "userperm":
+                    // Überprüfen, ob die erforderlichen Argumente übergeben wurden
+                    if (args.Length >= 3) // args[0] ist der Befehl, args[1] der Benutzername, args[2] die Berechtigung, args[3] der Wert
+                    {
+                        string targetUsername = args[1]; // Benutzername, dessen Berechtigung gesetzt werden soll
+                        string permission = args[2]; // Die Berechtigung, die gesetzt werden soll
+                        string value = args[3]; // Der Wert, der gesetzt werden soll (z.B. "true" oder "false")
+
+                        // Berechtigungen setzen
+                        userManagement.SetUserPermission(loggedInUser, targetUsername, permission, value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ungültige Eingabe. Verwenden Sie: userperm <Benutzername> <Berechtigung> <Wert>");
+                    }
+                    break;
+
+
                 case "datetime":
-                    DateTime now=DateTime.Now;
-                    Console.WriteLine(now);
+                    Console.WriteLine(DateTime.Now);
                     break;
 
                 case "adios":
@@ -59,7 +76,14 @@ namespace AMIG.OS.CommandProcessing
 
                 // Benutzerbefehle
                 case "showall": //Admin
-                    helpers.ShowAllHelper(admin_true);
+                    if (currentUser.HasPermission("ShowAllUsers")) // Berechtigungsprüfung
+                    {
+                        helpers.ShowAllHelper(true); // Admin hat die Berechtigung
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
+                    }
                     break;
 
                 case "showme": //Both
@@ -67,20 +91,47 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "remove": //Admin
-                    helpers.RemoveHelper(admin_true);
+                    if (currentUser.HasPermission("RemoveUser")) // Berechtigungsprüfung
+                    {
+                        helpers.RemoveHelper(true); // Admin hat die Berechtigung
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
+                    }
                     break;
 
                 case "removeall": //Admin
-                    if(admin_true) userManagement.RemoveAllUser();
-                    else Console.WriteLine("Keine Berechtigung für diesen Command");
+                    if (currentUser.HasPermission("RemoveAllUsers")) // Berechtigungsprüfung
+                    {
+                        userManagement.RemoveAllUser();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
+                    }
                     break;
 
                 case "changename": // Both
-                    helpers.ChangeNameHelper(loggedInUser);
+                    if (currentUser.HasPermission("ChangeName")) // Berechtigungsprüfung
+                    {
+                        helpers.ChangeNameHelper(loggedInUser);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um den Namen zu ändern.");
+                    }
                     break;
 
                 case "changepw": //both
-                    helpers.ChangePasswortHelper(loggedInUser);
+                    if (currentUser.HasPermission("ChangePassword")) // Berechtigungsprüfung
+                    {
+                        helpers.ChangePasswortHelper(loggedInUser);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um das Passwort zu ändern.");
+                    }
                     break;
 
                 case "showtime": //both
@@ -93,12 +144,26 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "add": //admin
-                    helpers.addHelper(admin_true);
+                    if (currentUser.HasPermission("CreateUser")) // Berechtigungsprüfung
+                    {
+                        helpers.addHelper(true); // Admin hat die Berechtigung
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um einen Benutzer hinzuzufügen.");
+                    }
                     break;
 
                 // Datei- und Verzeichnisbefehle
                 case "mkdir": //admin
-                    helpers.mkdirHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("CreateDirectory")) // Berechtigungsprüfung
+                    {
+                        helpers.mkdirHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um ein Verzeichnis zu erstellen.");
+                    }
                     break;
 
                 case "cd": //both             
@@ -109,20 +174,48 @@ namespace AMIG.OS.CommandProcessing
                     helpers.lsHelper(args, currentDirectory);
                     break;
 
-                case "write": //admin, fehlerbehandlung noch impllementieren
-                    helpers.writeHelper(admin_true, args, currentDirectory);
+                case "write": //admin
+                    if (currentUser.HasPermission("WriteToFile")) // Berechtigungsprüfung
+                    {
+                        helpers.writeHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um in die Datei zu schreiben.");
+                    }
                     break;
 
                 case "rm": //admin
-                    helpers.rmHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("RemoveFile")) // Berechtigungsprüfung
+                    {
+                        helpers.rmHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um die Datei zu entfernen.");
+                    }
                     break;
 
                 case "rmdir": //admin
-                    helpers.rmdirHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("RemoveDirectory")) // Berechtigungsprüfung
+                    {
+                        helpers.rmdirHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um das Verzeichnis zu entfernen.");
+                    }
                     break;
 
                 case "touch": //admin
-                    helpers.touchHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("CreateFile")) // Berechtigungsprüfung
+                    {
+                        helpers.touchHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um die Datei zu erstellen.");
+                    }
                     break;
 
                 case "cat": //both
@@ -135,11 +228,25 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "setperm": //admin
-                    helpers.setpermHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("SetUserPermission")) // Berechtigungsprüfung
+                    {
+                        helpers.setpermHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um Berechtigungen zu setzen.");
+                    }
                     break;
 
                 case "unlock": //admin
-                    helpers.unlockHelper(admin_true, args, currentDirectory);
+                    if (currentUser.HasPermission("UnlockUser")) // Berechtigungsprüfung
+                    {
+                        helpers.unlockHelper(true, args, currentDirectory);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Keine Berechtigung, um den Benutzer zu entsperren.");
+                    }
                     break;
 
                 // Beispiel für andere Befehle

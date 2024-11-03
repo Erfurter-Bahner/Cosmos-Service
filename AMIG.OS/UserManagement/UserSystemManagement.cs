@@ -33,12 +33,13 @@ namespace AMIG.OS.UserSystemManagement
         
         public void AddUserWithRoleAndPassword(string username, string password, string role)
         {
+            
             if (!authService.UserExists(username))
             {
                 DateTime created = DateTime.Now;
                 var user = new User(username, password, role, DateTime.Now.ToString()); // Neues User-Objekt erstellen
                 userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
-                //userRepository.SaveUsers(); // Änderungen speichern
+                userRepository.SaveUsers(); // Änderungen speichern
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
             }
             else
@@ -63,6 +64,7 @@ namespace AMIG.OS.UserSystemManagement
                     $"Role: {user.Role}, " +
                     $"Erstellt am {user.CreatedAt},"+
                     $"Letzter Login am {user.LastLogin}");
+                user.DisplayPermissions();
             }
         }
 
@@ -75,7 +77,19 @@ namespace AMIG.OS.UserSystemManagement
         {
            return userRepository.ChangePassword(username, oldPassword, newPassword);    
         }
-
+        public User GetUser(string username)
+        {
+            // Überprüfen, ob der Benutzer existiert
+            if (userRepository.users.ContainsKey(username))
+            {
+                return userRepository.users[username]; // Benutzer zurückgeben
+            }
+            else
+            {
+                Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                return null; // Null zurückgeben, wenn der Benutzer nicht existiert
+            }
+        }
         public string GetPasswordHash(string username)
         {
             return userRepository.GetPasswordHash(username);
@@ -95,6 +109,39 @@ namespace AMIG.OS.UserSystemManagement
         public bool UserExists(string username)
         {
             return authService.UserExists(username);
+        }
+
+        public void SetUserPermission(string requesterUsername, string username, string permission, string value )
+        {
+            // Überprüfen, ob der anfordernde Benutzer existiert
+            if (!userRepository.users.ContainsKey(requesterUsername))
+            {
+                Console.WriteLine($"Benutzer '{requesterUsername}' existiert nicht.");
+                return;
+            }
+
+            var requesterUser = userRepository.users[requesterUsername];
+
+            // Überprüfen, ob der anfordernde Benutzer Admin ist oder die Berechtigung hat
+            if (requesterUser.Role == "Admin" || requesterUser.Permissions.ContainsKey("PermissionChange"))
+            {
+                // Überprüfen, ob der Benutzer, dessen Berechtigung geändert werden soll, existiert
+                if (userRepository.users.ContainsKey(username))
+                {
+                    // Berechtigung ändern
+                    userRepository.users[username].ChangePermission(permission, value);
+                    userRepository.SaveUsers(); // Änderungen speichern
+                    Console.WriteLine($"Berechtigung '{permission}' für Benutzer '{username}' auf '{value}' geändert.");
+                }
+                else
+                {
+                    Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Zugriff verweigert: Nur Admins oder Benutzer mit der Berechtigung 'PermissionChange' können Berechtigungen ändern.");
+            }
         }
     }
 }

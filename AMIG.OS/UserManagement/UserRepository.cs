@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using AMIG.OS.Utils;
 
@@ -21,23 +22,36 @@ namespace AMIG.OS.UserSystemManagement
         {
             try
             {
-                // Überprüfe, ob die Datei bereits existiert und lösche sie ggf.
                 if (File.Exists(dataFilePath))
                 {
                     File.Delete(dataFilePath);
                 }
 
-                // Erstellen und Schreiben in die Datei
                 using (var stream = File.Create(dataFilePath))
                 using (var writer = new StreamWriter(stream))
                 {
-                    foreach (var user in users)
+                    foreach (var user in users.Values)
                     {
-                        var userInfo = user.Value;
-                        writer.WriteLine($"{user.Key},{userInfo.PasswordHash},{userInfo.Role},{userInfo.CreatedAt},{userInfo.LastLogin}");
+                        string permissionsString = string.Empty;
+
+                        if (user.Permissions != null && user.Permissions.Count > 0)
+                        {
+                            foreach (var permission in user.Permissions)
+                            {
+                                permissionsString += $"{permission.Key}:{permission.Value};";
+                            }
+
+                            // Entferne das letzte Semikolon, falls vorhanden
+                            if (permissionsString.EndsWith(";"))
+                            {
+                                permissionsString = permissionsString.Substring(0, permissionsString.Length - 1);
+                            }
+                        }
+
+                        writer.WriteLine($"{user.Username},{user.PasswordHash},{user.Role},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
-                
+
                 Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
             }
             catch (Exception ex)
@@ -48,43 +62,48 @@ namespace AMIG.OS.UserSystemManagement
 
         public void LoadUsers()
         {
-            try
-            {
-                if (File.Exists(dataFilePath))
-                {
-                    using (var stream = File.OpenRead(dataFilePath))
-                    using (var reader = new StreamReader(stream))
-                    {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            var parts = line.Split(',');
-                            if (parts.Length == 5)
-                            {
-                                string username = parts[0];
-                                string password = parts[1];
-                                string role = parts[2];
-                                string createdAt = parts[3];
-                                string lastlogin = parts[4];
-                                users[username] = new User(username, password, role, createdAt, isHashed: true)
-                                {
-                                    LastLogin = lastlogin
-                                };
+            if (!File.Exists(dataFilePath)) return;
 
+            using (var reader = new StreamReader(dataFilePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var parts = line.Split(',');
+                    if (parts.Length >= 6)
+                    {
+                        string username = parts[0];
+                        string password = parts[1];
+                        string role = parts[2];
+                        string createdAt = parts[3];
+                        string lastLogin = parts[4];
+                        var permissions = new Dictionary<string, string>(); // Verwende Dictionary<string, string>
+
+                        // Berechtigungen laden
+                        foreach (var permissionString in parts[5].Split(';'))
+                        {
+                            var permissionParts = permissionString.Split(':');
+                            if (permissionParts.Length == 2)
+                            {
+                                permissions[permissionParts[0]] = permissionParts[1];
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Ungültige Berechtigung: {permissionString} - überspringe diese Berechtigung.");
                             }
                         }
+
+                        var user = new User(username, password, role, createdAt, isHashed: true)
+                        {
+                            LastLogin = lastLogin,
+                            Permissions = permissions // Bestehende Berechtigungen aus der Datei setzen
+                        };
+                        users[username] = user;
                     }
-                    Console.WriteLine("Benutzerdaten erfolgreich geladen.");
-                }
-                else
-                {
-                    Console.WriteLine("Benutzerdaten-Datei existiert nicht.");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Fehler beim Laden der Benutzer: {ex.Message}");
-            }
+
+            Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
         public void InitializeTestUsers()
@@ -112,7 +131,13 @@ namespace AMIG.OS.UserSystemManagement
             {
                 // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
                 users.Add("User1", new User("User1", "123", "Standard", DateTime.Now.ToString()));
-                users.Add("User2", new User("User2", "adminPass", "Admin",DateTime.Now.ToString()));
+                users.Add("User2", new User("User2", "adminPass", "Admin", DateTime.Now.ToString()));
+                
+                // Berechtigungen anzeigen
+                foreach (var user in users.Values)
+                {
+                    user.DisplayPermissions();
+                }
 
                 // Speichern der Benutzer in die Datei
                 SaveUsers();
@@ -224,11 +249,15 @@ namespace AMIG.OS.UserSystemManagement
             if (users.ContainsKey(username))
             {
                 User userInfo = users[username];
+                // Berechtigungen formatieren
+               
+
                 Console.WriteLine($"Benutzer: {username}, " +
-                                  $"Passwort-Hash: {userInfo.PasswordHash}," +
-                                  $" Rolle: {userInfo.Role}, " +
-                                  $"Erstellt am {userInfo.CreatedAt}," +
-                                  $"Letzter Login am {userInfo.LastLogin}");
+                                  $"Passwort-Hash: {userInfo.PasswordHash}, " +
+                                  $"Rolle: {userInfo.Role}, " +
+                                  $"Erstellt am: {userInfo.CreatedAt}, " +
+                                  $"Letzter Login am: {userInfo.LastLogin}, "  );
+                userInfo.DisplayPermissions();
             }
             else
             {

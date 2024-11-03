@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using AMIG.OS.Utils;
 
@@ -14,12 +15,56 @@ namespace AMIG.OS.UserSystemManagement
         public string CreatedAt { get; internal set; }
         public string LastLogin { get; set; }
         public string Group { get; private set; }
+        public Dictionary<string, string> Permissions { get;  set; } // Neue Eigenschaft
         public User(string username, string password, string role , string created, bool isHashed = false)
         {
             Username = username;
             PasswordHash = isHashed ? password : HashPassword(password);
             Role = role;
             CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
+
+            // Standardberechtigungen nur setzen, wenn keine Berechtigungen vorhanden sind
+
+            Permissions = new Dictionary<string, string>();
+            SetDefaultPermissions();
+            
+        }
+
+        private void SetDefaultPermissions()
+        {
+            if (Role == "Admin")
+            {
+                Permissions["CreateUser"] = "true";
+                Permissions["DeleteUser"] = "true";
+                Permissions["ChangeName"] = "true";
+                Permissions["ChangePassword"] = "true";
+            }
+            else if (Role == "Standard")
+            {
+                Permissions["CreateUser"] = "false";
+                Permissions["DeleteUser"] = "false";
+                Permissions["ChangeName"] = "true";
+                Permissions["ChangePassword"] = "true";
+            }
+        }
+
+        public void DisplayPermissions()
+        {
+            Console.WriteLine($"Berechtigungen für Benutzer: {Username}");
+            foreach (var permission in Permissions)
+            {
+                Console.WriteLine($"- {permission.Key}: {(permission.Value == "true" ? "Erlaubt" : "Nicht erlaubt")}");
+            }
+        }
+
+        public bool HasPermission(string permission)
+        {
+            return Permissions.ContainsKey(permission) && Permissions[permission] == "true";
+        }
+
+        public void ChangePermission(string permission, string value)
+        {
+            Permissions[permission] = value;
         }
 
         // Funktion zum Überprüfen des Passworts
