@@ -73,9 +73,10 @@ namespace AMIG.OS.Kernel
 
         private void Login()
         {
-            Console.WriteLine("Username: ");
+            Console.WriteLine("");
+            Console.Write("Username: ");
             var username = Console.ReadLine();
-            Console.WriteLine("Password: ");
+            Console.Write("Password: ");
             var password = ConsoleHelpers.GetPassword();
 
             
@@ -204,7 +205,8 @@ namespace AMIG.OS.Kernel
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
                         Console.Write(helpers.preInput);
                         Console.Write(currentInput); // Zeige den aktuellen Befehl an
-                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                        cursorPosInInput = (currentInput.Length);
+                        Console.SetCursorPosition(currentInput.Length + helpers.preInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
                 }
 
@@ -216,8 +218,10 @@ namespace AMIG.OS.Kernel
                         historyIndex--;
                         currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(helpers.preInput);
                         Console.Write(currentInput); // Zeige den aktuellen Befehl an
-                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                        cursorPosInInput = (currentInput.Length);
+                        Console.SetCursorPosition(currentInput.Length + helpers.preInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
                     else if (historyIndex == 0) // Wenn wir am Anfang der Historie sind
                     {
@@ -225,6 +229,7 @@ namespace AMIG.OS.Kernel
                         currentInput = ""; // Leere Eingabe
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
                         Console.Write(helpers.preInput); // Eingabeaufforderung zurücksetzen
+                        cursorPosInInput = (currentInput.Length);
                         Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
                     }
                 }
