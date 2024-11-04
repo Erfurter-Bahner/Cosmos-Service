@@ -165,7 +165,7 @@ namespace AMIG.OS.Kernel
                         // Clear the line and re-write the input with updated cursor position
                         ClearCurrentLine();
                         Console.Write(helpers.preInput + currentInput);
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop); // Adjust cursor
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop); // Adjust cursor
                     }
                 }
 
@@ -174,7 +174,7 @@ namespace AMIG.OS.Kernel
                     if (cursorPosInInput > 0)
                     {
                         cursorPosInInput--; // Move cursor left within the input
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                     }
                 }
 
@@ -183,7 +183,7 @@ namespace AMIG.OS.Kernel
                     if (cursorPosInInput < currentInput.Length)
                     {
                         cursorPosInInput++; // Move cursor right within the input
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                     }
                 }
 
@@ -230,7 +230,7 @@ namespace AMIG.OS.Kernel
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
                         Console.Write(helpers.preInput); // Eingabeaufforderung zurücksetzen
                         cursorPosInInput = (currentInput.Length);
-                        Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
+                        Console.SetCursorPosition(helpers.preInput.Length, Console.CursorTop); // Setze den Cursor nach "Input: "
                     }
                 }
 
@@ -243,7 +243,7 @@ namespace AMIG.OS.Kernel
                     // Clear line, reprint, and reposition cursor
                     ClearCurrentLine();
                     Console.Write(helpers.preInput + currentInput);
-                    Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                    Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                 }
             }
         }
