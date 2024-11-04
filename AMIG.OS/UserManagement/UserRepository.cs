@@ -14,7 +14,7 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserRepository()
         {
-            InitializeTestUsers();
+            //InitializeTestUsers();
             //LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
         }
 
@@ -32,23 +32,12 @@ namespace AMIG.OS.UserSystemManagement
                 {
                     foreach (var user in users.Values)
                     {
-                        string permissionsString = string.Empty;
+                        // Rollen als String zusammenfügen
+                        string rolesString = string.Join(";", user.Roles.Select(r => r.RoleName));
+                        // Berechtigungen als String zusammenfügen
+                        string permissionsString = string.Join(";", user.Permissions);
 
-                        if (user.Permissions != null && user.Permissions.Count > 0)
-                        {
-                            foreach (var permission in user.Permissions)
-                            {
-                                permissionsString += $"{permission.Key}:{permission.Value};";
-                            }
-
-                            // Entferne das letzte Semikolon, falls vorhanden
-                            if (permissionsString.EndsWith(";"))
-                            {
-                                permissionsString = permissionsString.Substring(0, permissionsString.Length - 1);
-                            }
-                        }
-
-                        writer.WriteLine($"{user.Username},{user.PasswordHash},{user.Role},{user.CreatedAt},{user.LastLogin},{permissionsString}");
+                        writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
 
@@ -60,12 +49,15 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        public void LoadUsers()
+        // Lädt alle Benutzer aus der Datei
+        public void LoadUsers(RoleRepository roleRepository)
         {
+ 
             if (!File.Exists(dataFilePath)) return;
 
             using (var reader = new StreamReader(dataFilePath))
             {
+
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -73,31 +65,35 @@ namespace AMIG.OS.UserSystemManagement
                     if (parts.Length >= 6)
                     {
                         string username = parts[0];
-                        string password = parts[1];
-                        string role = parts[2];
+                        string passwordHash = parts[1];
                         string createdAt = parts[3];
                         string lastLogin = parts[4];
-                        var permissions = new Dictionary<string, string>(); // Verwende Dictionary<string, string>
 
-                        // Berechtigungen laden
-                        foreach (var permissionString in parts[5].Split(';'))
-                        {
-                            var permissionParts = permissionString.Split(':');
-                            if (permissionParts.Length == 2)
-                            {
-                                permissions[permissionParts[0]] = permissionParts[1];
-                            }
-                            else
-                            {
-                                Console.WriteLine($"Ungültige Berechtigung: {permissionString} - überspringe diese Berechtigung.");
-                            }
-                        }
+                        // Rollen und Berechtigungen laden
+                        var roles = new HashSet<Role>();
 
-                        var user = new User(username, password, role, createdAt, isHashed: true)
-                        {
-                            LastLogin = lastLogin,
-                            Permissions = permissions // Bestehende Berechtigungen aus der Datei setzen
-                        };
+
+                        //DAS PROBLEM IST ZEILE 78
+                        var role = new Role("test", new HashSet<string> { "testRole" });
+                        roles.Add(role); // HIER DAS GANZ GROßE PROBLEM
+
+
+                        //foreach (var roleName in parts[2].Split(';'))
+                        //{
+                        //    Console.WriteLine("Testöasdkljföalsdkjfösdkljf");
+
+                        //    //var role = roleRepository.GetRoleByName(roleName);
+                        //    var role = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs", "modifySettings" });
+                        //    if (role != null)
+                        //    {
+                        //        roles.Add(role);
+                        //    }
+                        //}
+
+                        var permissions = new HashSet<string>(parts[5].Split(';'));
+                        Console.WriteLine("Test5");
+                        var user = new User(username, passwordHash, true, roles, permissions);
+
                         users[username] = user;
                     }
                 }
@@ -106,47 +102,50 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
-        public void InitializeTestUsers()
-        {
-            bool addTestUsers = false;
+        //public void InitializeTestUsers()
+        //{
+        //    bool addTestUsers = true;
 
-            // Prüfen, ob die Datei existiert
-            if (!File.Exists(dataFilePath))
-            {
-                Console.WriteLine("Benutzerdaten-Datei existiert nicht. Erstelle Testbenutzer...");
-                addTestUsers = true;
-            }
-            else
-            {
-                // Datei existiert, aber prüfen, ob sie Benutzer enthält
-                LoadUsers(); // Benutzer aus Datei laden
-                if (users.Count == 0)
-                {
-                    Console.WriteLine("Benutzerdaten-Datei ist leer. Erstelle Testbenutzer...");
-                    addTestUsers = true;
-                }
-            }
+        //    // Prüfen, ob die Datei existiert
+        //    if (!File.Exists(dataFilePath))
+        //    {
+        //        Console.WriteLine("Benutzerdaten-Datei existiert nicht. Erstelle Testbenutzer...");
+        //        addTestUsers = true;
+        //        Console.WriteLine("test x.1");
+        //    }
+        //    else
+        //    {
+        //        // Datei existiert, aber prüfen, ob sie Benutzer enthält
+        //        //LoadUsers(); // Benutzer aus Datei laden
+        //        if (users.Count == 0)
+        //        {
+        //            Console.WriteLine("Benutzerdaten-Datei ist leer. Erstelle Testbenutzer...");
+        //            addTestUsers = true;
+        //        }
+        //    }
 
-            if (addTestUsers)
-            {
-                // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
-                users.Add("User1", new User("User1", "123", "standard", DateTime.Now.ToString()));
-                users.Add("User2", new User("User2", "adminPass", "admin", DateTime.Now.ToString()));
-                
-                // Berechtigungen anzeigen
-                foreach (var user in users.Values)
-                {
-                    user.DisplayPermissions();
-                }
+        //    if (addTestUsers)
+        //    {
+        //        // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
+        //        var adminRole = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs" });
+        //        var userPermissions = new HashSet<string> { "viewReports" };
 
-                // Speichern der Benutzer in die Datei
-                SaveUsers();
-            }
-            else
-            {
-                Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
-            }
-        }
+        //        users.Add("User1", new User("Admin", "adminPass", false, new HashSet<Role> { adminRole }, userPermissions));
+
+        //        // Berechtigungen anzeigen
+        //        foreach (var user in users.Values)
+        //        {
+        //            user.DisplayPermissions();
+        //        }
+
+        //        // Speichern der Benutzer in die Datei
+        //        SaveUsers();
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
+        //    }
+        //}
 
         public User GetUserByUsername(string username)
         {
@@ -244,24 +243,24 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Zugriff auf einen Benutzer
-        public void GetUserInfo(string username)
-        {
-            if (users.ContainsKey(username))
-            {
-                User userInfo = users[username];
-                // Berechtigungen formatieren
-                Console.WriteLine($"Benutzer: {username}, " +
-                                  $"Passwort-Hash: {userInfo.PasswordHash}, " +
-                                  $"Rolle: {userInfo.Role}, " +
-                                  $"Erstellt am: {userInfo.CreatedAt}, " +
-                                  $"Letzter Login am: {userInfo.LastLogin}, "  );
-                userInfo.DisplayPermissions();
-            }
-            else
-            {
-                Console.WriteLine("Benutzer existiert nicht.");
-            }
-        }
+        //public void GetUserInfo(string username)
+        //{
+        //    if (users.ContainsKey(username))
+        //    {
+        //        User userInfo = users[username];
+        //        // Berechtigungen formatieren
+        //        Console.WriteLine($"Benutzer: {username}, " +
+        //                          $"Passwort-Hash: {userInfo.PasswordHash}, " +
+        //                          $"Rolle: {userInfo.Role}, " +
+        //                          $"Erstellt am: {userInfo.CreatedAt}, " +
+        //                          $"Letzter Login am: {userInfo.LastLogin}, "  );
+        //        userInfo.DisplayPermissions();
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Benutzer existiert nicht.");
+        //    }
+        //}
 
         public string GetPasswordHash(string username)
         {
@@ -277,18 +276,18 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        public string GetUserRole(string username)
-        {
-            if (users.ContainsKey(username))
-            {
-                return users[username].Role; // Gibt die Rolle des Benutzers zurück
-            }
-            else
-            {
-                Console.WriteLine("Benutzer existiert nicht.");
-                return null; // Alternativ könnte auch ein Standardwert wie "Unbekannt" zurückgegeben werden
-            }
-        }
+        //public string GetUserRole(string username)
+        //{
+        //    if (users.ContainsKey(username))
+        //    {
+        //        return users[username].Roles; // Gibt die Rolle des Benutzers zurück
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Benutzer existiert nicht.");
+        //        return null; // Alternativ könnte auch ein Standardwert wie "Unbekannt" zurückgegeben werden
+        //    }
+        //}
 
         public Dictionary<string, User> GetAllUsers()
         {

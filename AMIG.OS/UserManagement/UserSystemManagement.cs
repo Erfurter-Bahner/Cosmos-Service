@@ -1,4 +1,8 @@
-﻿using System;
+﻿using AMIG.OS.Utils;
+using AMIG.OS.FileManagement;
+using System;
+using System.Data;
+using System.IO;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -6,21 +10,30 @@ namespace AMIG.OS.UserSystemManagement
     {
         private readonly UserRepository userRepository;
         private readonly AuthenticationService authService;
-        private readonly RoleService roleService;
+        private readonly RoleRepository roleRepository;
+        private static FileSystemManager fileSystemManager = new FileSystemManager();
 
         public UserManagement()
         {
+            //zum testen!!!!!
+            var helpers = new Helpers(this, fileSystemManager);
+            string filePath = Path.Combine(@"0:\", "role.txt");
+            //fileSystemManager.DeleteFile(filePath);
+            
+            roleRepository = new RoleRepository();// RoleRepository initialisieren
+            roleRepository.LoadRoles(); // Rollen laden
+
+            //zum testen!!!!!
+            fileSystemManager.ReadFile(filePath, "admin");
+            roleRepository.GetRoleByName("viewLogs");
+
+
             userRepository = new UserRepository(); // UserRepository initialisieren
-            userRepository.LoadUsers(); // Benutzer laden
+            userRepository.LoadUsers(roleRepository); // Benutzer laden
+
             authService = new AuthenticationService(userRepository); // Authentifizierungsdienst mit geladenen Benutzern initialisieren
-            roleService = new RoleService(userRepository); // Rolle-Service initialisieren
         }
-
-        public RoleService GetRoleService()
-        {
-            return roleService;
-        }
-
+        
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
@@ -42,7 +55,8 @@ namespace AMIG.OS.UserSystemManagement
             if (!authService.UserExists(username))
             {
                 DateTime created = DateTime.Now;
-                var user = new User(username, password, role, DateTime.Now.ToString()); // Neues User-Objekt erstellen
+                //var user = new User(username, password, role, DateTime.Now.ToString()); // Neues User-Objekt erstellen
+                var user = new User(username, password, true);
                 userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
                 userRepository.SaveUsers(); // Änderungen speichern
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
@@ -66,10 +80,10 @@ namespace AMIG.OS.UserSystemManagement
             {
                 Console.WriteLine($"Username: {user.Username}," +
                     $"PW: {user.PasswordHash} " +
-                    $"Role: {user.Role}, " +
+                    $"Role: {user.Roles}, " +
                     $"Erstellt am {user.CreatedAt},"+
                     $"Letzter Login am {user.LastLogin}");
-                user.DisplayPermissions();
+                //user.DisplayPermissions();
             }
         }
 
@@ -101,15 +115,15 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Zugriff auf einen Benutzer
-        public void GetUserInfo(string username)
-        {
-            userRepository.GetUserInfo(username);
-        }
+        //public void GetUserInfo(string username)
+        //{
+        //    userRepository.GetUserInfo(username);
+        //}
 
-        public string GetUserRole(string username)
-        {
-            return userRepository.GetUserRole(username);
-        }
+        //public string GetUserRole(string username)
+        //{
+        //    return userRepository.GetUserRole(username);
+        //}
 
         public bool UserExists(string username)
         {

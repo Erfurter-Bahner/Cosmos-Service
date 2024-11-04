@@ -9,77 +9,70 @@ namespace AMIG.OS.UserSystemManagement
     {
         public string Username { get; internal set; }
         public string PasswordHash { get; private set; }
-        public string Role { get; private set; }
-       
-        // Weitere Felder für zukünftige Erweiterungen
         public string CreatedAt { get; internal set; }
         public string LastLogin { get; set; }
-        public string Group { get; private set; }
-        public Dictionary<string, string> Permissions { get;  set; } // Neue Eigenschaft
-        public User(string username, string password, string role , string created, bool isHashed = false)
+
+
+        //Neue Berechtigungsimplementierung
+        public HashSet<Role> Roles { get; private set; }
+        public HashSet<string> Permissions { get; private set; }
+
+        private HashSet<string> combinedPermissions = new HashSet<string>();
+        
+        
+        public User(string username, string password, bool isHashed = false, HashSet<Role> roles = null, HashSet<string> permissions = null, string created = null)
         {
             Username = username;
             PasswordHash = isHashed ? password : HashPassword(password);
-            Role = role;
-            CreatedAt = created; // Falls `createdAt` null ist, wird `DateTime.Now` verwendet.
-            Permissions = new Dictionary<string, string>();
-            SetDefaultPermissions();  
+            CreatedAt = created ?? DateTime.Now.ToString(); // Falls `createdAt` null ist, wird `DateTime.Now` verwendet. Vllt noch überarbeiten
+            
+            Roles = roles ?? new HashSet<Role>();
+            Permissions = permissions ?? new HashSet<string>();
+            
+            UpdateCombinedPermissions();
         }
 
-        private void SetDefaultPermissions()
+        public void AddRole(Role role)
         {
-            if (Role == "admin")
-            {
-                Permissions["CreateUser"] = "true";
-                Permissions["RemoveUser"] = "true";
-                Permissions["ChangeName"] = "true";
-                Permissions["ChangePassword"] = "true";
-                Permissions["ShowAllUsers"] = "true";
-                Permissions["SetUserPermission"] = "true";
-                Permissions["CreateDirectory"] = "true";
-                Permissions["WriteToFile"] = "true";
-                Permissions["RemoveFile"] = "true";
-                Permissions["RemoveDirectory"] = "true";
-                Permissions["CreateFile"] = "true";
-                Permissions["SetFilePermission"] = "true";
-                Permissions["UnlockFile"] = "true";
-            }
-            else if (Role == "standard")
-            {
-                Permissions["CreateUser"] = "false";
-                Permissions["RemoveUser"] = "false";
-                Permissions["ChangeName"] = "true";
-                Permissions["ChangePassword"] = "true";
-                Permissions["ShowAllUsers"] = "false";
-                Permissions["SetUserPermission"] = "false";
-                Permissions["CreateDirectory"] = "false";
-                Permissions["WriteToFile"] = "false";
-                Permissions["RemoveFile"] = "false";
-                Permissions["RemoveDirectory"] = "false";
-                Permissions["CreateFile"] = "false";
-                Permissions["SetFilePermission"] = "false";
-                Permissions["UnlockFile"] = "false";
-            }
+            Roles.Add(role);
+            UpdateCombinedPermissions();
         }
 
-        public void DisplayPermissions()
+        public void RemoveRole(Role role)
         {
-            Console.WriteLine($"Berechtigungen für Benutzer: {Username}");
-            foreach (var permission in Permissions)
+            Roles.Remove(role);
+            UpdateCombinedPermissions();
+        }
+
+        public void AddPermission(string permission)
+        {
+            Permissions.Add(permission);
+        }
+
+        public void RemovePermission(string permission)
+        {
+            Permissions.Remove(permission);
+        }
+
+        private void UpdateCombinedPermissions()
+        {
+            combinedPermissions.Clear();
+
+            // Berechtigungen der Rollen hinzufügen
+            foreach (var role in Roles)
             {
-                Console.WriteLine($"- {permission.Key}: {(permission.Value == "true" ? "Erlaubt" : "Nicht erlaubt")}");
+                combinedPermissions.UnionWith(role.Permissions);
             }
+
+            // Individuelle Berechtigungen des Users hinzufügen
+            combinedPermissions.UnionWith(Permissions);
         }
 
         public bool HasPermission(string permission)
         {
-            return Permissions.ContainsKey(permission) && Permissions[permission] == "true";
+            return combinedPermissions.Contains(permission);
         }
-
-        public void ChangePermission(string permission, string value)
-        {
-            Permissions[permission] = value;
-        }
+    
 
         // Funktion zum Überprüfen des Passworts
         public bool VerifyPassword(string password)
@@ -103,19 +96,5 @@ namespace AMIG.OS.UserSystemManagement
             PasswordHash = HashPassword(newPassword);
             //PasswordHash = newPassword;
         }
-
-        // Funktion zum Ändern der Rolle
-        public void ChangeRole(string newRole)
-        {
-            Role = newRole;
-        }
-
-        /*
-        public void ChangeName(string newName)
-        {
-            Username = newName;
-        }
-        */
-
     }
 }

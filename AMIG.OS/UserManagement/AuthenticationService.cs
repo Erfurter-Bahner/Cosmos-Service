@@ -29,7 +29,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (userRepository.GetUserByUsername(username) == null)
             {
-                var newUser = new User(username, password, role, DateTime.Now.ToString());
+                var newUser = new User(username, password, false);
                 userRepository.AddUser(newUser);
                 userRepository.SaveUsers(); // Benutzer sofort speichern
                 return true;

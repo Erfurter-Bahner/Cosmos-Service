@@ -45,36 +45,36 @@ namespace AMIG.OS.CommandProcessing
         {
             var args = input.Split(' ');
             var currentUser = userManagement.GetUser(loggedInUser);
-            bool admin_true = userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
-            string role = userManagement.GetUserRole(loggedInUser).ToLower();
+            //bool admin_true = true; //userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
+            string role = "admin"; //userManagement.GetUserRole(loggedInUser).ToLower();
             switch (args[0].ToLower())
             {
-                case "userperm":
-                    if (currentUser.HasPermission("SetUserPermission"))
+                //case "userperm":
+                //    if (currentUser.HasPermission("SetUserPermission"))
                     
-                    {
-                        // Überprüfen, ob die erforderlichen Argumente übergeben wurden
-                        if (args.Length >= 3) // args[0] ist der Befehl, args[1] der Benutzername, args[2] die Berechtigung, args[3] der Wert
-                        {
-                            string targetUsername = args[1]; // Benutzername, dessen Berechtigung gesetzt werden soll
-                            string permission = args[2]; // Die Berechtigung, die gesetzt werden soll
-                            string value = args[3]; // Der Wert, der gesetzt werden soll (z.B. "true" oder "false")
+                //    {
+                //        // Überprüfen, ob die erforderlichen Argumente übergeben wurden
+                //        if (args.Length >= 3) // args[0] ist der Befehl, args[1] der Benutzername, args[2] die Berechtigung, args[3] der Wert
+                //        {
+                //            string targetUsername = args[1]; // Benutzername, dessen Berechtigung gesetzt werden soll
+                //            string permission = args[2]; // Die Berechtigung, die gesetzt werden soll
+                //            string value = args[3]; // Der Wert, der gesetzt werden soll (z.B. "true" oder "false")
 
-                            // Berechtigungen setzen
-                            userManagement.GetRoleService().SetUserPermission(targetUsername, permission, value);
-                        }
+                //            // Berechtigungen setzen
+                //            userManagement.GetRoleService().SetUserPermission(targetUsername, permission, value);
+                //        }
 
-                        else
-                        {
-                            Console.WriteLine("Ungültige Eingabe. Verwenden Sie: userperm <Benutzername> <Berechtigung> <Wert>");
-                        }
+                //        else
+                //        {
+                //            Console.WriteLine("Ungültige Eingabe. Verwenden Sie: userperm <Benutzername> <Berechtigung> <Wert>");
+                //        }
 
-                    }
-                    else
-                    {
-                        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
-                    }
-                    break;
+                //    }
+                //    else
+                //    {
+                //        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
+                //    }
+                //    break;
 
                 case "datetime":
                     Console.WriteLine(DateTime.Now);
@@ -96,9 +96,9 @@ namespace AMIG.OS.CommandProcessing
                     }
                     break;
 
-                case "showme": //Both
-                    helpers.ShowMeHelper(loggedInUser);
-                    break;
+                //case "showme": //Both
+                //    helpers.ShowMeHelper(loggedInUser);
+                //    break;
 
                 case "remove": //Admin
                     if (currentUser.HasPermission("RemoveUser")) // Berechtigungsprüfung

@@ -86,11 +86,11 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
-        public void ShowMeHelper(string loggedInUser)
-        {
-            Console.WriteLine("Benutzerinformationen:");
-            userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
-        }
+        //public void ShowMeHelper(string loggedInUser)
+        //{
+        //    Console.WriteLine("Benutzerinformationen:");
+        //    userManagement.GetUserInfo(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
+        //}
 
         public void RemoveHelper(bool admin_true)
         {
