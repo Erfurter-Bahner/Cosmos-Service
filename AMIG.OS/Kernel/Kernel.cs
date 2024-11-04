@@ -45,33 +45,37 @@ namespace AMIG.OS.Kernel
 
         public void ShowLoginOptions()
         {
-            userManagement.DisplayAllUsers(); // nur zum testen
-            Console.WriteLine("1: Login");
-            Console.WriteLine("2: Register");
-            Console.Write("Select an option: ");
-            var option = Console.ReadLine();
-
-            if (option == "1")
-            {
-                Login();
-            }
-            else if (option == "2")
-            {
-                Register();
-                ShowLoginOptions(); // Nach der Registrierung erneut Login/Registrierung anzeigen
-            }
-            else
-            {
-                Console.WriteLine("Invalid option, try again.");
-                ShowLoginOptions();
-            }
+            //userManagement.DisplayAllUsers(); // nur zum testen
+            Console.WriteLine("Select an option: ");
+            Console.WriteLine("[1] Login");
+            Console.WriteLine("[2] Register");
+                var key = Console.ReadKey(intercept: true);
+                switch (key.Key)
+                {
+                    case ConsoleKey.Escape:
+                        Sys.Power.Shutdown();
+                        break;
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
+                        Login();
+                        break;
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        Register();
+                        ShowLoginOptions();
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option! Please use a Number as an Input");
+                        ShowLoginOptions();
+                        break;
+                }
         }
 
         private void Login()
         {
-            Console.Write("Username: ");
+            Console.WriteLine("Username: ");
             var username = Console.ReadLine();
-            Console.Write("Password: ");
+            Console.WriteLine("Password: ");
             var password = ConsoleHelpers.GetPassword();
 
             
