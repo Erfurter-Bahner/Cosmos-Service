@@ -22,6 +22,7 @@ namespace AMIG.OS.Utils
             this.fileSystemManager = fileSystemManager;
         }
 
+        public String preInput = "Input: ";
         // Neue Methode zum Hinzufügen eines Benutzers
         public void addHelper(bool admin_true)
         {

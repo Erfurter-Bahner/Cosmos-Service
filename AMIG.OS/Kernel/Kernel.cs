@@ -37,8 +37,7 @@ namespace AMIG.OS.Kernel
                                                 ShowLoginOptions,
                                                 helpers,
                                                 fs1);
-
-            Console.WriteLine("Cosmos booted successfully.");
+            Console.Clear();
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
 
             ShowLoginOptions();
@@ -112,7 +111,7 @@ namespace AMIG.OS.Kernel
             
         }
 
-        //mussin utils oder so
+        //muss in utils oder so
         public static void ClearCurrentLine()
         {
             // stellt sicher, dass während der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
@@ -124,7 +123,7 @@ namespace AMIG.OS.Kernel
 
         protected override void Run()
         {
-            Console.Write("Input: ");
+            Console.Write(helpers.preInput);
             var currentInput = "";
             int cursorPosInInput = 0; // Track cursor position in the current input string
 
@@ -146,7 +145,7 @@ namespace AMIG.OS.Kernel
                         // Reset input and cursor position
                         currentInput = "";
                         cursorPosInInput = 0;
-                        Console.Write("Input: ");
+                        Console.Write(helpers.preInput);
                     }
                 }
 
@@ -160,7 +159,7 @@ namespace AMIG.OS.Kernel
 
                         // Clear the line and re-write the input with updated cursor position
                         ClearCurrentLine();
-                        Console.Write("Input: " + currentInput);
+                        Console.Write(helpers.preInput + currentInput);
                         Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop); // Adjust cursor
                     }
                 }
@@ -199,6 +198,7 @@ namespace AMIG.OS.Kernel
 
                         currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        Console.Write(helpers.preInput);
                         Console.Write(currentInput); // Zeige den aktuellen Befehl an
                         Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
@@ -220,7 +220,7 @@ namespace AMIG.OS.Kernel
                         historyIndex = -1; // Setze den Index auf -1 für eine leere Eingabe
                         currentInput = ""; // Leere Eingabe
                         ClearCurrentLine(); // Lösche die aktuelle Zeile
-                        Console.Write("Input: "); // Eingabeaufforderung zurücksetzen
+                        Console.Write(helpers.preInput); // Eingabeaufforderung zurücksetzen
                         Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
                     }
                 }
@@ -233,7 +233,7 @@ namespace AMIG.OS.Kernel
 
                     // Clear line, reprint, and reposition cursor
                     ClearCurrentLine();
-                    Console.Write("Input: " + currentInput);
+                    Console.Write(helpers.preInput + currentInput);
                     Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
                 }
             }
