@@ -150,6 +150,7 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "logout": //both
+                    Console.Clear();
                     showLoginOptions.Invoke();
                     break;
 
@@ -257,6 +258,10 @@ namespace AMIG.OS.CommandProcessing
                     {
                         Console.WriteLine("Keine Berechtigung, um den Benutzer zu entsperren.");
                     }
+                    break;
+
+                case "clear": //both
+                    Console.Clear();
                     break;
 
                 // Beispiel für andere Befehle
