@@ -7,6 +7,7 @@ namespace AMIG.OS.UserSystemManagement
         public string RoleName { get; private set; }
         public HashSet<string> Permissions { get; private set; }
 
+        //public Dictionary<string, HashSet<string>> roleanperms;
         public Role(string roleName, HashSet<string> permissions)
         {
             RoleName = roleName;

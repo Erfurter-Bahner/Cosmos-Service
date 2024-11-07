@@ -7,15 +7,19 @@ using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
+    
     public class UserRepository
+
     {
+        RoleRepository roleRepository;
         public Dictionary<string, User> users = new Dictionary<string, User>();
         private readonly string dataFilePath = @"0:\user.txt"; // Pfad zur Benutzerdaten-Datei
 
-        public UserRepository()
+        public UserRepository(RoleRepository roleRepository)
         {
+            this.roleRepository = roleRepository;
             //InitializeTestUsers();
-            //LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
+            LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
         }
 
         public void SaveUsers()
@@ -50,14 +54,12 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Lädt alle Benutzer aus der Datei
-        public void LoadUsers(RoleRepository roleRepository)
+        public void LoadUsers(/*RoleRepository roleRepository*/)
         {
- 
             if (!File.Exists(dataFilePath)) return;
 
             using (var reader = new StreamReader(dataFilePath))
             {
-
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -70,29 +72,26 @@ namespace AMIG.OS.UserSystemManagement
                         string lastLogin = parts[4];
 
                         // Rollen und Berechtigungen laden
-                        var roles = new HashSet<Role>();
+                        var roles = new Dictionary<string, Role>();
+                        var permissions = new HashSet<string> { "defaultPermission1", "defaultPermission2" }; // Beispiel-Berechtigungen
+                        var role = new Role("Admin", permissions); // Feste Rolle "Admin"
 
+                        // Rolle zum Dictionary hinzufügen
+                        roles["Admin"] = role; // Rolle unter dem Schlüssel "Admin" speichern
 
-                        //DAS PROBLEM IST ZEILE 78
-                        var role = new Role("test", new HashSet<string> { "testRole" });
-                        roles.Add(role); // HIER DAS GANZ GROßE PROBLEM
-
-
+                        // Laden der Rollen aus der CSV
                         //foreach (var roleName in parts[2].Split(';'))
                         //{
-                        //    Console.WriteLine("Testöasdkljföalsdkjfösdkljf");
-
-                        //    //var role = roleRepository.GetRoleByName(roleName);
-                        //    var role = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs", "modifySettings" });
+                        //   // var role = roleRepository.GetRoleByName(roleName);
                         //    if (role != null)
                         //    {
-                        //        roles.Add(role);
+                        //        roles[roleName] = role; // Rolle zum Dictionary hinzufügen
                         //    }
                         //}
 
-                        var permissions = new HashSet<string>(parts[5].Split(';'));
+                        //var permissions = new HashSet<string>(parts[5].Split(';'));
                         Console.WriteLine("Test5");
-                        var user = new User(username, passwordHash, true, roles, permissions);
+                        var user = new User(username, passwordHash, true, roles.Values.ToHashSet(), permissions); // Rollen als HashSet übergeben
 
                         users[username] = user;
                     }
@@ -102,50 +101,30 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
-        //public void InitializeTestUsers()
-        //{
-        //    bool addTestUsers = true;
+        public void InitializeTestUsers()
+        {
+      
+        //        //Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
+            var adminRole = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs" });
+             var userPermissions = new HashSet<string> { "viewReports" };
 
-        //    // Prüfen, ob die Datei existiert
-        //    if (!File.Exists(dataFilePath))
-        //    {
-        //        Console.WriteLine("Benutzerdaten-Datei existiert nicht. Erstelle Testbenutzer...");
-        //        addTestUsers = true;
-        //        Console.WriteLine("test x.1");
-        //    }
-        //    else
-        //    {
-        //        // Datei existiert, aber prüfen, ob sie Benutzer enthält
-        //        //LoadUsers(); // Benutzer aus Datei laden
-        //        if (users.Count == 0)
-        //        {
-        //            Console.WriteLine("Benutzerdaten-Datei ist leer. Erstelle Testbenutzer...");
-        //            addTestUsers = true;
-        //        }
-        //    }
+         users.Add("User1", new User("Admin", "adminPass", false, new HashSet<Role> { adminRole }, userPermissions));
 
-        //    if (addTestUsers)
-        //    {
-        //        // Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
-        //        var adminRole = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs" });
-        //        var userPermissions = new HashSet<string> { "viewReports" };
+        //        ////Berechtigungen anzeigen
+        //        //foreach (var user in users.Values)
+        //        //{
+        //        //    user.DisplayPermissions();
+        //        //}
 
-        //        users.Add("User1", new User("Admin", "adminPass", false, new HashSet<Role> { adminRole }, userPermissions));
-
-        //        // Berechtigungen anzeigen
-        //        foreach (var user in users.Values)
-        //        {
-        //            user.DisplayPermissions();
-        //        }
-
-        //        // Speichern der Benutzer in die Datei
-        //        SaveUsers();
+        //        //Speichern der Benutzer in die Datei
+              SaveUsers();
         //    }
         //    else
         //    {
         //        Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
         //    }
-        //}
+        }
+
 
         public User GetUserByUsername(string username)
         {
@@ -288,6 +267,10 @@ namespace AMIG.OS.UserSystemManagement
         //        return null; // Alternativ könnte auch ein Standardwert wie "Unbekannt" zurückgegeben werden
         //    }
         //}
+
+
+
+
 
         public Dictionary<string, User> GetAllUsers()
         {

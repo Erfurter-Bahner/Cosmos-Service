@@ -3,6 +3,8 @@ using AMIG.OS.FileManagement;
 using System;
 using System.Data;
 using System.IO;
+using Sys =Cosmos.System;
+using System.Collections.Generic;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -19,7 +21,7 @@ namespace AMIG.OS.UserSystemManagement
             var helpers = new Helpers(this, fileSystemManager);
             string filePath = Path.Combine(@"0:\", "role.txt");
             //fileSystemManager.DeleteFile(filePath);
-            
+
             roleRepository = new RoleRepository();// RoleRepository initialisieren
             roleRepository.LoadRoles(); // Rollen laden
 
@@ -28,12 +30,12 @@ namespace AMIG.OS.UserSystemManagement
             roleRepository.GetRoleByName("viewLogs");
 
 
-            userRepository = new UserRepository(); // UserRepository initialisieren
-            userRepository.LoadUsers(roleRepository); // Benutzer laden
+            userRepository = new UserRepository(roleRepository); // UserRepository initialisieren
+            //userRepository.LoadUsers(); // Benutzer laden
 
             authService = new AuthenticationService(userRepository); // Authentifizierungsdienst mit geladenen Benutzern initialisieren
         }
-        
+
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
@@ -48,10 +50,10 @@ namespace AMIG.OS.UserSystemManagement
         {
             userRepository.RemoveUser(username);
         }
-        
+
         public void AddUserWithRoleAndPassword(string username, string password, string role)
         {
-            
+
             if (!authService.UserExists(username))
             {
                 DateTime created = DateTime.Now;
@@ -81,7 +83,7 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine($"Username: {user.Username}," +
                     $"PW: {user.PasswordHash} " +
                     $"Role: {user.Roles}, " +
-                    $"Erstellt am {user.CreatedAt},"+
+                    $"Erstellt am {user.CreatedAt}," +
                     $"Letzter Login am {user.LastLogin}");
                 //user.DisplayPermissions();
             }
@@ -89,12 +91,12 @@ namespace AMIG.OS.UserSystemManagement
 
         public bool ChangeUsername(string oldUsername, string newUsername)
         {
-           return userRepository.ChangeUsername(oldUsername, newUsername);
+            return userRepository.ChangeUsername(oldUsername, newUsername);
         }
 
         public bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-           return userRepository.ChangePassword(username, oldPassword, newPassword);    
+            return userRepository.ChangePassword(username, oldPassword, newPassword);
         }
         public User GetUser(string username)
         {
@@ -112,6 +114,11 @@ namespace AMIG.OS.UserSystemManagement
         public string GetPasswordHash(string username)
         {
             return userRepository.GetPasswordHash(username);
+        }
+
+        public Role GetRoleByName(string roleName)
+        {
+            return roleRepository.GetRoleByName(roleName);
         }
 
         // Zugriff auf einen Benutzer
@@ -162,5 +169,13 @@ namespace AMIG.OS.UserSystemManagement
         //        Console.WriteLine("Zugriff verweigert: Nur Admins oder Benutzer mit der Berechtigung 'PermissionChange' können Berechtigungen ändern.");
         //    }
         //}
+
+        public void LoadUsers()
+        {
+
+            userRepository.LoadUsers();
+
+
+        }
     }
 }

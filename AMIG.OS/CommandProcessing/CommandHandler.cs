@@ -51,7 +51,7 @@ namespace AMIG.OS.CommandProcessing
             {
                 //case "userperm":
                 //    if (currentUser.HasPermission("SetUserPermission"))
-                    
+
                 //    {
                 //        // Überprüfen, ob die erforderlichen Argumente übergeben wurden
                 //        if (args.Length >= 3) // args[0] ist der Befehl, args[1] der Benutzername, args[2] die Berechtigung, args[3] der Wert
@@ -75,6 +75,46 @@ namespace AMIG.OS.CommandProcessing
                 //        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
                 //    }
                 //    break;
+
+                //case "addroletorepo":
+                //    string targetUsername = args[1];
+
+                //    //addrole to user erstmal ohne perm
+
+                //    break;
+
+                case "addroletouser":
+                    string targetUsername = args[1]; // Benutzername
+                    string roleName = args[2];       // Rollenname, der hinzugefügt werden soll
+
+                    // Überprüfen, ob der Benutzer existiert
+                    User user = userManagement.GetUser(targetUsername);
+                    
+                    if (user != null)
+                    {
+                        // Überprüfen, ob die Rolle im RoleRepository existiert
+                        Role roleToAdd = userManagement.GetRoleByName(roleName);
+                        if (roleToAdd != null)
+                        {
+                            // Rolle zum Benutzer hinzufügen
+                            user.AddRole(roleToAdd);
+
+                            // Änderungen in der Datei speichern
+                           
+
+                            Console.WriteLine($"Rolle '{roleName}' wurde Benutzer '{targetUsername}' erfolgreich hinzugefügt.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Rolle '{roleName}' nicht gefunden.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Benutzer '{targetUsername}' nicht gefunden.");
+                    }
+                    break;
+
 
                 case "datetime":
                     Console.WriteLine(DateTime.Now);

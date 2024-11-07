@@ -32,7 +32,7 @@ namespace AMIG.OS.UserSystemManagement
             UpdateCombinedPermissions();
         }
 
-        public void AddRole(Role role)
+        public void AddRole(Role role) // zu benutzer
         {
             Roles.Add(role);
             UpdateCombinedPermissions();
@@ -59,9 +59,9 @@ namespace AMIG.OS.UserSystemManagement
             combinedPermissions.Clear();
 
             // Berechtigungen der Rollen hinzufügen
-            foreach (var role in Roles)
+            foreach (var role in Roles) //für jedes objekt in rollen
             {
-                combinedPermissions.UnionWith(role.Permissions);
+                combinedPermissions.UnionWith(role.Permissions); //Unionwith 
             }
 
             // Individuelle Berechtigungen des Users hinzufügen
