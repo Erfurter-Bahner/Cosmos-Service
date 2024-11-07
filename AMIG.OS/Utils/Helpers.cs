@@ -132,10 +132,10 @@ namespace AMIG.OS.Utils
 
             } while (entscheidung != "y");
 
-            if (userManagement.ChangeUsername(loggedInUser, newUsername))
-            {
-                loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
-            }
+            //if (userManagement.ChangeUsername(loggedInUser, newUsername))
+            //{
+            //    loggedInUser = newUsername; // Aktualisiere den aktuellen Benutzernamen
+            //}
         }
 
         public void ChangePasswortHelper(string loggedInUser)
