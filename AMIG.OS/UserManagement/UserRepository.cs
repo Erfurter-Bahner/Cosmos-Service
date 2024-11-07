@@ -2,33 +2,31 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
-    
     public class UserRepository
-
     {
-        RoleRepository roleRepository;
+        // Speichert alle Benutzer mit dem Benutzernamen als Schlüssel
         public Dictionary<string, User> users = new Dictionary<string, User>();
         private readonly string dataFilePath = @"0:\user.txt"; // Pfad zur Benutzerdaten-Datei
+        private readonly RoleRepository roleRepository;
 
         public UserRepository(RoleRepository roleRepository)
         {
             this.roleRepository = roleRepository;
-            //InitializeTestUsers();
-            LoadUsers(); // Lädt Benutzer beim Erstellen der Klasse
+            LoadUsers();
+            InitializeTestUsers();
         }
 
+        // Speichert alle Benutzer in die Datei
         public void SaveUsers()
         {
             try
             {
                 if (File.Exists(dataFilePath))
                 {
-                    File.Delete(dataFilePath);
+                    File.Delete(dataFilePath); // Löscht bestehende Datei, um Überschneidungen zu vermeiden
                 }
 
                 using (var stream = File.Create(dataFilePath))
@@ -36,11 +34,15 @@ namespace AMIG.OS.UserSystemManagement
                 {
                     foreach (var user in users.Values)
                     {
-                        // Rollen als String zusammenfügen
+                        // Konvertiert Rollen und Berechtigungen in Strings zur Speicherung
                         string rolesString = string.Join(";", user.Roles.Select(r => r.RoleName));
-                        // Berechtigungen als String zusammenfügen
                         string permissionsString = string.Join(";", user.Permissions);
+                        string combinedPermissionsString = string.Join(";", user.CombinedPermissions);
 
+                        // Debug-Ausgabe zur Überprüfung der Daten
+                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
+
+                        // Benutzerinformationen in die Datei schreiben
                         writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
@@ -53,10 +55,14 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Lädt alle Benutzer aus der Datei
-        public void LoadUsers(/*RoleRepository roleRepository*/)
+        // Lädt alle Benutzer aus der Datei und weist Rollen und Berechtigungen zu
+        public void LoadUsers()
         {
-            if (!File.Exists(dataFilePath)) return;
+            if (!File.Exists(dataFilePath))
+            {
+                Console.WriteLine("Benutzerdaten-Datei nicht gefunden.");
+                return;
+            }
 
             using (var reader = new StreamReader(dataFilePath))
             {
@@ -71,28 +77,29 @@ namespace AMIG.OS.UserSystemManagement
                         string createdAt = parts[3];
                         string lastLogin = parts[4];
 
-                        // Rollen und Berechtigungen laden
-                        var roles = new Dictionary<string, Role>();
-                        var permissions = new HashSet<string> { "defaultPermission1", "defaultPermission2" }; // Beispiel-Berechtigungen
-                        var role = new Role("Admin", permissions); // Feste Rolle "Admin"
+                        // Rollen des Benutzers anhand der Rollennamen laden
+                        var roles = new List<Role>();
+                        foreach (var roleName in parts[2].Split(';'))
+                        {
+                            var role = roleRepository.GetRoleByName(roleName.Trim());
+                            if (role != null)
+                            {
+                                roles.Add(role);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Warnung: Rolle '{roleName.Trim()}' wurde nicht gefunden.");
+                            }
+                        }
 
-                        // Rolle zum Dictionary hinzufügen
-                        roles["Admin"] = role; // Rolle unter dem Schlüssel "Admin" speichern
+                        // Berechtigungen in ein HashSet konvertieren
+                        var permissions = new HashSet<string>(parts[5].Split(';'));
 
-                        // Laden der Rollen aus der CSV
-                        //foreach (var roleName in parts[2].Split(';'))
-                        //{
-                        //   // var role = roleRepository.GetRoleByName(roleName);
-                        //    if (role != null)
-                        //    {
-                        //        roles[roleName] = role; // Rolle zum Dictionary hinzufügen
-                        //    }
-                        //}
-
-                        //var permissions = new HashSet<string>(parts[5].Split(';'));
-                        Console.WriteLine("Test5");
-                        var user = new User(username, passwordHash, true, roles.Values.ToHashSet(), permissions); // Rollen als HashSet übergeben
-
+                        // Benutzerobjekt erstellen und in das Dictionary einfügen
+                        var user = new User(username, passwordHash, true, roles, permissions)
+                        {
+                            LastLogin = lastLogin
+                        };
                         users[username] = user;
                     }
                 }
@@ -101,177 +108,94 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
+        // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
         public void InitializeTestUsers()
         {
-      
-        //        //Testbenutzer hinzufügen und das aktuelle Datum als CreatedAt verwenden
-            var adminRole = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs" });
-             var userPermissions = new HashSet<string> { "viewReports" };
+            if (!File.Exists(dataFilePath) || users.Count == 0)
+            {
+                Console.WriteLine("Erstelle Testbenutzer...");
+                var adminRole = roleRepository.GetRoleByName("Admin");
+                var userPermissions = new HashSet<string> { "viewReports" };
 
-         users.Add("User1", new User("Admin", "adminPass", false, new HashSet<Role> { adminRole }, userPermissions));
-
-        //        ////Berechtigungen anzeigen
-        //        //foreach (var user in users.Values)
-        //        //{
-        //        //    user.DisplayPermissions();
-        //        //}
-
-        //        //Speichern der Benutzer in die Datei
-              SaveUsers();
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Benutzerdaten-Datei enthält Benutzer. Überspringe Testbenutzer-Erstellung.");
-        //    }
+                // Beispielbenutzer hinzufügen
+                users.Add("User1", new User("User1", "adminPass", false, new List<Role> { adminRole }, userPermissions));
+                SaveUsers();
+            }
+            else
+            {
+                Role newRole = roleRepository.GetRoleByName("StandardUser");
+                users["User1"].AddRole(newRole);
+                SaveUsers();
+            }
         }
 
-
+        // Gibt den Benutzer anhand des Benutzernamens zurück
         public User GetUserByUsername(string username)
         {
             users.TryGetValue(username, out User user);
             return user;
         }
 
+        // Fügt einen Benutzer hinzu und speichert die Benutzerliste in der Datei
         public void AddUser(User user)
         {
             if (!users.ContainsKey(user.Username))
             {
                 users[user.Username] = user;
-                SaveUsers(); // Speichere die Liste nach dem Hinzufügen
+                SaveUsers();
             }
             else
             {
-                Console.WriteLine("User already exists.");
+                Console.WriteLine("Benutzername existiert bereits.");
             }
         }
 
+        // Entfernt einen Benutzer und speichert die Benutzerliste in der Datei
         public void RemoveUser(string username)
         {
             if (users.Remove(username))
             {
-                SaveUsers(); // Speichere die Liste nach dem Entfernen
+                SaveUsers();
             }
             else
             {
-                Console.WriteLine("User not found.");
+                Console.WriteLine("Benutzer nicht gefunden.");
             }
         }
 
+        // Entfernt alle Benutzer und speichert die leere Benutzerliste
         public void RemoveAllUsers()
         {
             users.Clear();
+            SaveUsers();
         }
 
-        public bool ChangeUsername(string oldUsername, string newUsername)
-        {
-            if (users.ContainsKey(oldUsername))
-            {
-                if (!users.ContainsKey(newUsername)) // Überprüfen, ob der neue Benutzername bereits existiert
-                {
-                    User user = users[oldUsername];
-                    users.Remove(oldUsername); // Alten Benutzernamen entfernen
-                    user.Username = newUsername; // Benutzername in der User-Instanz ändern
-                    users.Add(newUsername, user); // Neuen Benutzernamen mit aktualisiertem User-Objekt hinzufügen
-
-                    Console.WriteLine($"Benutzername wurde von {oldUsername} auf {newUsername} geändert.");
-                    SaveUsers(); // Änderungen speichern
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine("Der neue Benutzername existiert bereits.");
-                    return false;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Benutzer existiert nicht.");
-                return false;
-            }
-        }
-
+        // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-            if (users.ContainsKey(username))
+            if (users.TryGetValue(username, out User user))
             {
-                User user = users[username];
-
-                // Überprüfen, ob das alte Passwort korrekt ist
                 if (user.VerifyPassword(oldPassword))
                 {
-                    // Setze das neue Passwort
                     user.ChangePassword(newPassword);
-
-                    // Speichere die Benutzer nach der Passwortänderung
                     SaveUsers();
-
                     Console.WriteLine("Passwort erfolgreich geändert.");
                     return true;
                 }
                 else
                 {
                     Console.WriteLine("Das alte Passwort ist falsch.");
-                    return false;
                 }
             }
             else
             {
                 Console.WriteLine("Benutzer nicht gefunden.");
-                return false;
             }
+
+            return false;
         }
 
-        // Zugriff auf einen Benutzer
-        //public void GetUserInfo(string username)
-        //{
-        //    if (users.ContainsKey(username))
-        //    {
-        //        User userInfo = users[username];
-        //        // Berechtigungen formatieren
-        //        Console.WriteLine($"Benutzer: {username}, " +
-        //                          $"Passwort-Hash: {userInfo.PasswordHash}, " +
-        //                          $"Rolle: {userInfo.Role}, " +
-        //                          $"Erstellt am: {userInfo.CreatedAt}, " +
-        //                          $"Letzter Login am: {userInfo.LastLogin}, "  );
-        //        userInfo.DisplayPermissions();
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Benutzer existiert nicht.");
-        //    }
-        //}
-
-        public string GetPasswordHash(string username)
-        {
-            if (users.ContainsKey(username))
-            {
-                // Passwort-Hash des Benutzers zurückgeben
-                return users[username].PasswordHash;
-            }
-            else
-            {
-                Console.WriteLine("Benutzer nicht gefunden.");
-                return null;
-            }
-        }
-
-        //public string GetUserRole(string username)
-        //{
-        //    if (users.ContainsKey(username))
-        //    {
-        //        return users[username].Roles; // Gibt die Rolle des Benutzers zurück
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Benutzer existiert nicht.");
-        //        return null; // Alternativ könnte auch ein Standardwert wie "Unbekannt" zurückgegeben werden
-        //    }
-        //}
-
-
-
-
-
+        // Gibt alle Benutzer im Repository zurück
         public Dictionary<string, User> GetAllUsers()
         {
             return users;

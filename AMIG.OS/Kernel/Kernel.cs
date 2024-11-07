@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sys = Cosmos.System;
+using System.Linq;
 using AMIG.OS.Utils;
 using AMIG.OS.UserSystemManagement;
 using AMIG.OS.FileManagement;
@@ -17,7 +18,7 @@ namespace AMIG.OS.Kernel
         private  CommandHandler commandHandler;
         private List<string> commandHistory = new List<string>(); // Liste für Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
-        private string loggedInUser;
+        private User LoggedInUser;
         DateTime starttime;
 
         protected override void BeforeRun()
@@ -78,7 +79,8 @@ namespace AMIG.OS.Kernel
             
             if (userManagement.Login(username, password))
             {
-                loggedInUser = username;
+                LoggedInUser = userManagement.GetUser(username);
+                Console.WriteLine($"Der eingeloggte User heißt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
                 commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
                 Console.WriteLine("Login successful!");
                 // Systemstart fortsetzen
@@ -141,7 +143,7 @@ namespace AMIG.OS.Kernel
                         historyIndex = -1; // Reset history index
 
                         // Process command
-                        commandHandler.ProcessCommand(currentInput, loggedInUser);
+                        commandHandler.ProcessCommand(currentInput, LoggedInUser.Username);
 
                         // Reset input and cursor position
                         currentInput = "";

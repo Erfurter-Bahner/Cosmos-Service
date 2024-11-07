@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
     public class RoleRepository
     {
+        // Speichert alle Rollen, wobei der Schlüssel der Rollenname ist
         public Dictionary<string, Role> roles = new Dictionary<string, Role>();
-        private readonly string dataFilePath = @"0:\role.txt"; // Pfad zur Benutzerdaten-Datei
+        private readonly string dataFilePath = @"0:\role.txt"; // Pfad zur Rollendaten-Datei
 
         public RoleRepository()
         {
             InitializeDefaultRoles();
+            LoadRoles();
         }
 
-        // Speichert alle Rollen in der Datei
+        // Speichert alle Rollen in der Datei, jede Rolle in einer neuen Zeile
         public void SaveRoles()
         {
             try
@@ -32,7 +32,7 @@ namespace AMIG.OS.UserSystemManagement
                 {
                     foreach (var role in roles.Values)
                     {
-                        // Berechtigungen als String zusammenfügen
+                        // Konvertiert die Berechtigungen in eine Zeichenkette, getrennt durch Semikolons
                         string permissionsString = string.Join(";", role.Permissions);
                         writer.WriteLine($"{role.RoleName},{permissionsString}");
                     }
@@ -46,7 +46,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Lädt alle Rollen aus der Datei
+        // Lädt alle Rollen aus der Datei und erstellt für jede Zeile eine Rolle
         public void LoadRoles()
         {
             if (!File.Exists(dataFilePath))
@@ -75,7 +75,7 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Rollendaten erfolgreich geladen.");
         }
 
-        // Initialisiert Standardrollen und speichert sie, falls keine Rollendaten existieren
+        // Initialisiert Standardrollen und speichert sie in der Datei, falls keine Rollendaten existieren
         public void InitializeDefaultRoles()
         {
             if (File.Exists(dataFilePath))
@@ -87,7 +87,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 Console.WriteLine("Erstelle Standardrollen, da keine Rollendaten-Datei existiert...");
 
-                // Standardrollen hinzufügen
+                // Hinzufügen der Standardrollen
                 roles["Admin"] = new Role("Admin", new HashSet<string> { "createUser", "deleteUser", "viewLogs", "modifySettings" });
                 roles["StandardUser"] = new Role("StandardUser", new HashSet<string> { "viewLogs" });
 
@@ -95,20 +95,20 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Rolle nach Name abrufen
+        // Gibt eine Rolle anhand ihres Namens zurück oder null, falls sie nicht existiert
         public Role GetRoleByName(string roleName)
         {
             roles.TryGetValue(roleName, out Role role);
             return role;
         }
 
-        // Neue Rolle hinzufügen
+        // Fügt eine neue Rolle hinzu, falls diese nicht existiert
         public void AddRole(Role role)
         {
             if (!roles.ContainsKey(role.RoleName))
             {
                 roles[role.RoleName] = role;
-                SaveRoles(); // Speichert die Liste nach dem Hinzufügen
+                SaveRoles(); // Speichert die Rollenliste nach dem Hinzufügen
             }
             else
             {
@@ -116,12 +116,12 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Rolle entfernen
+        // Entfernt eine Rolle anhand ihres Namens, falls sie existiert
         public void RemoveRole(string roleName)
         {
             if (roles.Remove(roleName))
             {
-                SaveRoles(); // Speichert die Liste nach dem Entfernen
+                SaveRoles(); // Speichert die Rollenliste nach dem Entfernen
             }
             else
             {
@@ -129,7 +129,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Alle Rollen abrufen
+        // Gibt alle Rollen zurück
         public Dictionary<string, Role> GetAllRoles()
         {
             return roles;
