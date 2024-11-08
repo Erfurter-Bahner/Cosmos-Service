@@ -31,21 +31,6 @@ namespace AMIG.OS.UserSystemManagement
             UpdateCombinedPermissions(); // Initialisiere die kombinierten Berechtigungen
         }
 
-
-        //// Aktualisiert die kombinierten Berechtigungen aus Rollen und individuellen Berechtigungen
-        //public void UpdateCombinedPermissions()
-        //{
-        //    CombinedPermissions.Clear(); //lösche alles heraus
-
-        //    foreach (var role in Roles)
-        //    {
-        //        CombinedPermissions.UnionWith(role.Permissions); //tu für jede rolle die Permissions in cP
-        //    }
-
-        //    // Individuelle Berechtigungen des Benutzers hinzufügen
-        //    CombinedPermissions.UnionWith(Permissions); 
-        //}
-
         public void UpdateCombinedPermissions()
         {
             Permissions.Clear(); //lösche alles heraus
@@ -96,7 +81,8 @@ namespace AMIG.OS.UserSystemManagement
         // Entfernt eine individuelle Berechtigung und aktualisiert die kombinierten Berechtigungen
         public void RemovePermission(string permission)
         {
-            Permissions.Remove(permission);
+            //Permissions.Remove(permission);
+            CustomPermissions.Remove(permission);
             UpdateCombinedPermissions();
         }
 

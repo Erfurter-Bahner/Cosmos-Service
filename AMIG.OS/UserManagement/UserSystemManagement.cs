@@ -91,6 +91,37 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+        public void DisplayUser(string loggedInUser)
+        {
+            var user = userRepository.GetUserByUsername(loggedInUser);
+
+            // Überprüfen, ob der Benutzer gefunden wurde
+            if (user != null)
+            {
+                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                    ? string.Join(", ", user.Roles)
+                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+
+                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                    ? string.Join(", ", user.Permissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
+                Console.WriteLine($"Username: {user.Username}, " +
+                    $"PW: {user.PasswordHash}, " +
+                    $"Role: {rolesDisplay}, " +
+                    $"Erstellt am: {user.CreatedAt}, " +
+                    $"Letzter Login: {user.LastLogin}, " +
+                    $"Perm: {permissionsDisplay}");
+            }
+            else
+            {
+                Console.WriteLine($"Benutzer '{loggedInUser}' wurde nicht gefunden.");
+            }
+        }
+
+
+
 
         // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)

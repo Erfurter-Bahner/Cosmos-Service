@@ -27,7 +27,6 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registrierungsprozess
-        // Registrierungsprozess
         public bool Register(string username, string password, string roleName)
         {
             // Rolle aus dem Rollen-Repository abrufen

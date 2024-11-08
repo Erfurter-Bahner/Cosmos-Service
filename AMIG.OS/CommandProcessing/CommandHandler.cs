@@ -23,7 +23,7 @@ namespace AMIG.OS.CommandProcessing
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
         private readonly Action showLoginOptions;
         private readonly Sys.FileSystem.CosmosVFS vfs; //damit freier speicherplatz angezeigt werden kann
-        //private readonly RoleService roleService;
+        
         public CommandHandler
             (UserManagement userMgmt,
             FileSystemManager fsManager,
@@ -40,7 +40,6 @@ namespace AMIG.OS.CommandProcessing
             this.vfs = vfs;
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
-            //this.roleService = roleService;
         }
 
         public void SetStartTime(DateTime loginTime)
@@ -57,41 +56,6 @@ namespace AMIG.OS.CommandProcessing
 
             switch (args[0].ToLower())
             { 
-
-                //case "userperm":
-                //    if (currentUser.HasPermission("SetUserPermission"))
-
-                //    {
-                //        // Überprüfen, ob die erforderlichen Argumente übergeben wurden
-                //        if (args.Length >= 3) // args[0] ist der Befehl, args[1] der Benutzername, args[2] die Berechtigung, args[3] der Wert
-                //        {
-                //            string targetUsername = args[1]; // Benutzername, dessen Berechtigung gesetzt werden soll
-                //            string permission = args[2]; // Die Berechtigung, die gesetzt werden soll
-                //            string value = args[3]; // Der Wert, der gesetzt werden soll (z.B. "true" oder "false")
-
-                //            // Berechtigungen setzen
-                //            userManagement.GetRoleService().SetUserPermission(targetUsername, permission, value);
-                //        }
-
-                //        else
-                //        {
-                //            Console.WriteLine("Ungültige Eingabe. Verwenden Sie: userperm <Benutzername> <Berechtigung> <Wert>");
-                //        }
-
-                //    }
-                //    else
-                //    {
-                //        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
-                //    }
-                //    break;
-
-                //case "addroletorepo":
-                //    string targetUsername = args[1];
-
-                //    //addrole to user erstmal ohne perm
-
-                //    break;
-
                 case "addrole": // to file roles.txt
                     {
                         Console.WriteLine("Geben Sie den Namen der neuen Rolle ein:");
@@ -406,9 +370,9 @@ namespace AMIG.OS.CommandProcessing
                         helpers.ShowAllHelper(true); // Admin hat die Berechtigung
                     break;
 
-                //case "showme": //Both
-                //    helpers.ShowMeHelper(loggedInUser);
-                //    break;
+                case "showme": //Both
+                    helpers.ShowMeHelper(loggedInUser);
+                    break;
 
                 case "removeuser": //Admin
                     if (currentUser.HasPermission("RemoveUser")) // Berechtigungsprüfung
@@ -585,13 +549,12 @@ namespace AMIG.OS.CommandProcessing
                         break;
                     }
                     
-
                 case "space": //both
                     var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");
                     Console.WriteLine($"Verfügbarer Speicherplatz: {availableSpace} Bytes");
                     break;
 
-                case "setperm": //admin
+                case "setfileperm": //admin
                     if (currentUser.HasPermission("SetFilePermission")) // Berechtigungsprüfung
                     {
                         helpers.setpermHelper(true, args, currentDirectory);

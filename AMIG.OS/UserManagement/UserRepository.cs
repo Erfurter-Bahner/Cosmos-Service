@@ -129,9 +129,6 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
-
-
-
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
         public void InitializeTestUsers()
         {

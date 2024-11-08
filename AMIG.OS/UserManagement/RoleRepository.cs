@@ -40,7 +40,6 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-
         // Speichert alle Rollen in der Datei
         public void SaveRoles()
         {
