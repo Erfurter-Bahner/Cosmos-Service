@@ -81,7 +81,14 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "adios":
-                    helpers.AdiosHelper(args);
+                    if (args.Length == 2 && args[1].Equals("amigos"))
+                    {
+                        helpers.AdiosHelper();
+                    }
+                    else
+                    {
+                        helpers.error1();
+                    }
                     break;
 
                 // Benutzerbefehle

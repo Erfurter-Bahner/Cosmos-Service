@@ -53,7 +53,7 @@ namespace AMIG.OS.Kernel
                 switch (key.Key)
                 {
                     case ConsoleKey.Escape:
-                        Sys.Power.Shutdown();
+                        helpers.AdiosHelper();
                         break;
                     case ConsoleKey.D1:
                     case ConsoleKey.NumPad1:
