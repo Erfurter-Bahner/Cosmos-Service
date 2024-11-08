@@ -7,6 +7,8 @@ using Sys = Cosmos.System;
 using System.Threading;
 using System.Data;
 using System.Security;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AMIG.OS.CommandProcessing
 {
@@ -14,6 +16,8 @@ namespace AMIG.OS.CommandProcessing
     {
         private readonly UserManagement userManagement;
         private readonly FileSystemManager fileSystemManager;
+        private readonly RoleRepository roleRepository;
+        private readonly UserRepository userRepository;
         private readonly Helpers helpers;
         private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
@@ -25,14 +29,17 @@ namespace AMIG.OS.CommandProcessing
             FileSystemManager fsManager,
             Action showLoginOptionsDelegate,
             Helpers _helpers,
-            Sys.FileSystem.CosmosVFS vfs
-            /*,RoleService roleService*/)
+            Sys.FileSystem.CosmosVFS vfs,
+            RoleRepository roleRepository,
+            UserRepository userRepository)
         {
             userManagement = userMgmt;
             fileSystemManager = fsManager;
             showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
             helpers = _helpers;
-            this.vfs = vfs; 
+            this.vfs = vfs;
+            this.roleRepository = roleRepository;
+            this.userRepository = userRepository;
             //this.roleService = roleService;
         }
 
@@ -46,9 +53,11 @@ namespace AMIG.OS.CommandProcessing
             var args = input.Split(' ');
             var currentUser = userManagement.GetUser(loggedInUser);
             //bool admin_true = true; //userManagement.GetUserRole(loggedInUser).ToLower() == "admin";
-            string role = "admin"; //userManagement.GetUserRole(loggedInUser).ToLower();
+            //userManagement.GetUserRole(loggedInUser).ToLower();
+
             switch (args[0].ToLower())
-            {
+            { 
+
                 //case "userperm":
                 //    if (currentUser.HasPermission("SetUserPermission"))
 
@@ -83,38 +92,306 @@ namespace AMIG.OS.CommandProcessing
 
                 //    break;
 
+                case "addrole": // to file roles.txt
+                    {
+                        Console.WriteLine("Geben Sie den Namen der neuen Rolle ein:");
+                        string roleName = Console.ReadLine();
+
+                        Console.WriteLine("Geben Sie die Berechtigungen für diese Rolle ein (mit Komma getrennt):");
+                        string permissionsInput = Console.ReadLine();
+
+                        // Erstellen eines HashSet aus den eingegebenen Berechtigungen
+                        HashSet<string> permissions = new HashSet<string>(permissionsInput.Split(','));
+                        roleRepository.AddRole(new Role(roleName, permissions));
+                        break;
+
+                    }
+
+                case "removerole": // from file roles.txt
+                    {
+                        Console.WriteLine("Geben Sie den Namen der zu löschenden Rolle ein:");
+                        string roleName = Console.ReadLine();
+
+                        // Entferne die Rolle aus dem Rollen-Repository
+                        roleRepository.RemoveRole(roleName);
+
+                        // Hole das Dictionary aller Benutzer
+                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+
+                        foreach (var user in usersDictionary.Values)
+                        {
+                            // Überprüfen, ob der Benutzer die zu löschende Rolle hat
+                            var role = user.Roles.FirstOrDefault(r => r.RoleName == roleName);
+
+                            if (role != null)
+                            {
+                                // Entferne die Rolle aus der Benutzerliste
+                                user.Roles.Remove(role);
+
+                                // Entferne alle Berechtigungen, die von dieser Rolle kommen
+                                foreach (var permission in role.Permissions)
+                                {
+                                    user.Permissions.Remove(permission); // Entferne die Berechtigung vom Benutzer
+                                }
+
+                                // Update der kombinierten Berechtigungen für den Benutzer
+                                user.UpdateCombinedPermissions();
+                            }
+                        }
+
+                        // Änderungen in den gespeicherten Benutzern und Rollen speichern
+                        userRepository.SaveUsers();
+                        roleRepository.SaveRoles();
+                        break;
+                    }
+
                 case "addroletouser":
-                    string targetUsername = args[1]; // Benutzername
-                    string roleName = args[2];       // Rollenname, der hinzugefügt werden soll
-
-                    // Überprüfen, ob der Benutzer existiert
-                    User user = userManagement.GetUser(targetUsername);
-                    
-                    if (user != null)
                     {
-                        // Überprüfen, ob die Rolle im RoleRepository existiert
-                        Role roleToAdd = userManagement.GetRoleByName(roleName);
-                        if (roleToAdd != null)
-                        {
-                            // Rolle zum Benutzer hinzufügen
-                            user.AddRole(roleToAdd);
+                        // Benutzername abfragen
+                        Console.Write("Benutzername: ");
+                        string username = Console.ReadLine();
 
-                            // Änderungen in der Datei speichern
-                           
+                        User user = userRepository.GetUserByUsername(username);
 
-                            Console.WriteLine($"Rolle '{roleName}' wurde Benutzer '{targetUsername}' erfolgreich hinzugefügt.");
-                        }
-                        else
+                        // Rollen abfragen und in eine Liste umwandeln
+                        Console.Write("Rollen hinzufügen (durch Leerzeichen getrennt, z. B. Admin User): ");
+                        string rolesInput = Console.ReadLine();
+                        var roleNames = rolesInput.Split(' ').Select(roleName => roleName.Trim());
+
+                        // Für jede Rolle überprüfen und hinzufügen
+                        foreach (string roleName in roleNames)
                         {
-                            Console.WriteLine($"Rolle '{roleName}' nicht gefunden.");
+                            Role role = roleRepository.GetRoleByName(roleName);
+
+                            // Überprüfen, ob die Rolle existiert
+                            if (role == null)
+                            {
+                                Console.WriteLine($"Rolle '{roleName}' existiert nicht.");
+                                continue; // Nächste Rolle prüfen
+                            }
+
+                            // Überprüfen, ob der Benutzer die Rolle bereits hat
+                            if (user.Roles.Any(r => r.RoleName == roleName))
+                            {
+                                Console.WriteLine($"Benutzer '{username}' hat bereits die Rolle '{roleName}'.");
+                                continue;
+                            }
+
+                            // Rolle und Berechtigungen zum Benutzer hinzufügen
+                            user.AddRole(role);
+
+                            Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
                         }
+
+                        // Benutzer speichern
+                        userRepository.SaveUsers();
+                        break;
                     }
-                    else
+
+                case "addpermtouser":
                     {
-                        Console.WriteLine($"Benutzer '{targetUsername}' nicht gefunden.");
-                    }
-                    break;
+                        // Benutzername abfragen
+                        Console.Write("Benutzername: ");
+                        string username = Console.ReadLine();
 
+                        User user = userRepository.GetUserByUsername(username);
+
+                        if (user == null)
+                        {
+                            Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                            break;
+                        }
+
+                        // Berechtigungen abfragen und in eine Liste umwandeln
+                        Console.Write("Berechtigungen hinzufügen (durch Leerzeichen getrennt, z. B. lesen schreiben): ");
+                        string permsInput = Console.ReadLine();
+                        var permNames = permsInput.Split(' ').Select(permName => permName.Trim());
+
+                        // Für jede Berechtigung überprüfen und hinzufügen
+                        foreach (string permName in permNames)
+                        {
+                            // Überprüfen, ob der Benutzer die Berechtigung bereits hat
+                            if (user.Permissions.Contains(permName))
+                            {
+                                Console.WriteLine($"Benutzer '{username}' hat bereits die Berechtigung '{permName}'.");
+                                continue;
+                            }
+
+                            // Berechtigung zum Benutzer hinzufügen
+                            user.AddPermission(permName);
+                            Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
+                        }
+
+                        // Benutzer speichern
+                        userRepository.SaveUsers();
+
+                        break;
+                    }
+
+                case "rmpermuser": //von user wird perm entfernt
+                    {
+                        // Benutzername abfragen
+                        Console.Write("Benutzername: ");
+                        string username = Console.ReadLine();
+
+                        User user = userRepository.GetUserByUsername(username);
+
+                        if (user == null)
+                        {
+                            Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                            break;
+                        }
+
+                        // Berechtigungen abfragen und in eine Liste umwandeln
+                        Console.Write("Berechtigungen entfernen (durch Leerzeichen getrennt, z. B. lesen schreiben): ");
+                        string permsInput = Console.ReadLine();
+                        var permNames = permsInput.Split(' ').Select(permName => permName.Trim());
+
+                        // Für jede Berechtigung überprüfen und hinzufügen
+                        foreach (string permName in permNames)
+                        {
+                            // Überprüfen, ob der Benutzer die Berechtigung bereits hat
+                            if (!user.Permissions.Contains(permName))
+                            {
+                                Console.WriteLine($"Benutzer '{username}' hat nicht die Berechtigung '{permName}'.");
+                                continue;
+                            }
+
+                            // Berechtigung zum Benutzer hinzufügen
+                            user.RemovePermission(permName);
+                            Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich vom Benutzer '{username}' gelöscht.");
+                        }
+
+                        // Benutzer speichern
+                        userRepository.SaveUsers();
+
+                        break;
+                    }
+
+                case "rmroleuser": //rolle mit perms wird entfernt
+                    {
+                        // Benutzername abfragen
+                        Console.Write("Benutzername: ");
+                        string username = Console.ReadLine();
+
+                        User user = userRepository.GetUserByUsername(username);
+
+                        if (user == null)
+                        {
+                            Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                            break;
+                        }
+
+                        // Rollen abfragen und in eine Liste umwandeln
+                        Console.Write("Rollen entfernen (durch Leerzeichen getrennt, z. B. Admin User): ");
+                        string rolesInput = Console.ReadLine();
+                        var roleNames = rolesInput.Split(' ').Select(roleName => roleName.Trim());
+
+                        // Für jede Rolle überprüfen und entfernen
+                        foreach (string roleName in roleNames)
+                        {
+                            Role role = roleRepository.GetRoleByName(roleName);
+
+                            // Falls die Rolle nicht existiert, wird eine Warnung ausgegeben
+                            if (role == null)
+                            {
+                                Console.WriteLine($"Rolle '{roleName}' existiert nicht.");
+                                continue;
+                            }
+
+                            // Überprüfen, ob der Benutzer die Rolle besitzt
+                            if (!user.Roles.Contains(role))
+                            {
+                                Console.WriteLine($"Benutzer '{username}' hat die Rolle '{roleName}' nicht.");
+                                continue;
+                            }
+
+                            // Rolle entfernen
+                            user.RemoveRole(role);
+                            Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich von Benutzer '{username}' entfernt.");
+                        }
+
+                        // Aktualisiere die kombinierten Berechtigungen nach dem Entfernen der Rollen
+                        user.UpdateCombinedPermissions();
+
+                        // Benutzer speichern
+                        userRepository.SaveUsers();
+
+                        break;
+                    }
+
+                case "rmpermrole":
+                    {
+                        Console.Write("Geben Sie den Rollennamen ein: ");
+                        string roleNameToRemovePermissions = Console.ReadLine();
+
+                        // Abfrage der Berechtigungen, getrennt durch Leerzeichen oder Kommas
+                        Console.Write("Geben Sie die Berechtigungen ein, die entfernt werden sollen (z. B. lesen, schreiben): ");
+                        string permissionsToRemoveInput = Console.ReadLine();
+
+                        // Berechtigungen in eine Liste umwandeln und Leerzeichen entfernen
+                        var permissionsToRemove = permissionsToRemoveInput.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                                          .Select(permission => permission.Trim())
+                                                                          .ToList();
+
+                        // Aufruf der Methode, um alle angegebenen Berechtigungen von der Rolle zu entfernen
+                        roleRepository.RemovePermissionsFromRole(roleNameToRemovePermissions, permissionsToRemove);
+
+                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+
+                        foreach (var user in usersDictionary.Values)
+                        {
+                            var role = user.Roles.FirstOrDefault(r => r.RoleName == roleNameToRemovePermissions);
+
+                            if (role != null)
+                            {
+                                // Update der kombinierten Berechtigungen für den Benutzer
+                                user.UpdateCombinedPermissions();
+                            }
+
+                        }
+
+                        // Änderungen in den gespeicherten Rollen und Benutzern speichern
+                        userRepository.SaveUsers();
+                        break;
+                    }
+
+                case "addpermtorole":
+                    {
+                        Console.Write("Geben Sie den Rollennamen ein: ");
+                        string roleNameToAddPermissions = Console.ReadLine();
+
+                        // Abfrage der Berechtigungen, getrennt durch Leerzeichen oder Kommas
+                        Console.Write("Geben Sie die Berechtigungen ein, die hinzugefügt werden sollen (z. B. lesen, schreiben): ");
+                        string permissionsToAddInput = Console.ReadLine();
+
+                        // Berechtigungen in eine Liste umwandeln und Leerzeichen entfernen
+                        var permissionsToAdd = permissionsToAddInput.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                                          .Select(permission => permission.Trim())
+                                                                          .ToList();
+
+                        // Aufruf der Methode, um alle angegebenen Berechtigungen von der Rolle zu entfernen
+                        roleRepository.RemovePermissionsFromRole(roleNameToAddPermissions, permissionsToAdd);
+
+                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+
+                        foreach (var user in usersDictionary.Values)
+                        {
+                            var role = user.Roles.FirstOrDefault(r => r.RoleName == roleNameToAddPermissions);
+
+                            if (role != null)
+                            {
+                                // Update der kombinierten Berechtigungen für den Benutzer
+                                user.UpdateCombinedPermissions();
+                            }
+
+                        }
+
+                        // Änderungen in den gespeicherten Rollen und Benutzern speichern
+                        userRepository.SaveUsers();
+                        break;
+
+                    }
 
                 case "datetime":
                     Console.WriteLine(DateTime.Now);
@@ -126,21 +403,14 @@ namespace AMIG.OS.CommandProcessing
 
                 // Benutzerbefehle
                 case "showall": //Admin
-                    if (currentUser.HasPermission("ShowAllUsers")) // Berechtigungsprüfung
-                    {
                         helpers.ShowAllHelper(true); // Admin hat die Berechtigung
-                    }
-                    else
-                    {
-                        Console.WriteLine("Keine Berechtigung für diesen Befehl.");
-                    }
                     break;
 
                 //case "showme": //Both
                 //    helpers.ShowMeHelper(loggedInUser);
                 //    break;
 
-                case "remove": //Admin
+                case "removeuser": //Admin
                     if (currentUser.HasPermission("RemoveUser")) // Berechtigungsprüfung
                     {
                         helpers.RemoveHelper(true); // Admin hat die Berechtigung
@@ -193,16 +463,56 @@ namespace AMIG.OS.CommandProcessing
                     showLoginOptions.Invoke();
                     break;
 
-                case "add": //admin
-                    if (currentUser.HasPermission("CreateUser")) // Berechtigungsprüfung
+                case "adduser":
                     {
-                        helpers.addHelper(true); // Admin hat die Berechtigung
+                        // Benutzerdaten abfragen
+                        Console.Write("Username: ");
+                        string username = Console.ReadLine();
+
+                        Console.Write("Password: ");
+                        string password = Console.ReadLine();
+
+                        // Rollen (durch Semikolon getrennt, z. B. Admin;User)
+                        Console.Write("Roles (durch Semikolon getrennt, z. B. Admin;User): ");
+                        string rolesInput = Console.ReadLine();
+
+                        var roles = new List<Role>();  // Rollen als Dictionary speichern
+                        var userPermissions = new HashSet<string>(); // Berechtigungen für den Benutzer werden hier gesammelt
+
+                        foreach (var roleName in rolesInput.Split(';'))  // Rollen durch Semikolon trennen
+                        {
+                            var trimmedRoleName = roleName.Trim();  // Leere Leerzeichen entfernen
+                            Role role = roleRepository.GetRoleByName(trimmedRoleName); // Beispielmethode, um Rolle nach Name zu finden
+
+                            if (role != null)
+                            {
+                                Console.WriteLine($"Rolle: {role.RoleName}");
+                                Console.WriteLine("Berechtigungen:");
+                                foreach (var permission in role.Permissions)
+                                {
+                                    Console.WriteLine($"- {permission}");
+                                }
+
+                                roles.Add(role);  // Rolle ins Dictionary einfügen, wobei der Schlüssel der Name der Rolle ist
+                                userPermissions.UnionWith(role.Permissions);  // Berechtigungen der Rolle hinzufügen
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Rolle '{trimmedRoleName}' nicht gefunden.");
+                            }
+                        }
+
+                        // Benutzer erstellen
+                        var user = new User(username, password, roles: roles, permissions: userPermissions);
+
+                        // Hinzufügen des Benutzers zur Sammlung
+                        userRepository.AddUser(user);  // Methode, um den Benutzer hinzuzufügen
+
+                        // Optional: Ausgabe zur Bestätigung
+                        Console.WriteLine("Benutzer erfolgreich hinzugefügt!");
+
+                        break;
                     }
-                    else
-                    {
-                        Console.WriteLine("Keine Berechtigung, um einen Benutzer hinzuzufügen.");
-                    }
-                    break;
 
                 // Datei- und Verzeichnisbefehle
                 case "mkdir": //admin
@@ -269,8 +579,12 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "cat": //both
-                    helpers.catHelper(args, currentDirectory, role);
-                    break;
+                    {
+                        string role = "admin";
+                        helpers.catHelper(args, currentDirectory, role);
+                        break;
+                    }
+                    
 
                 case "space": //both
                     var availableSpace = vfs.GetAvailableFreeSpace(@"0:\");

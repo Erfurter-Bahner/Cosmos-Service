@@ -16,7 +16,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             this.roleRepository = roleRepository;
             LoadUsers();
-            InitializeTestUsers();
+            //InitializeTestUsers();
         }
 
         // Speichert alle Benutzer in die Datei
@@ -37,13 +37,13 @@ namespace AMIG.OS.UserSystemManagement
                         // Konvertiert Rollen und Berechtigungen in Strings zur Speicherung
                         string rolesString = string.Join(";", user.Roles.Select(r => r.RoleName));
                         string permissionsString = string.Join(";", user.Permissions);
-                        string combinedPermissionsString = string.Join(";", user.CombinedPermissions);
+                        string customPermissionsString = string.Join(";", user.CustomPermissions);
 
                         // Debug-Ausgabe zur Überprüfung der Daten
-                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
+                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CustomPermissons: {customPermissionsString}");
 
                         // Benutzerinformationen in die Datei schreiben
-                        writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
+                        writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString},{customPermissionsString}");
                     }
                 }
 
@@ -55,7 +55,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Lädt alle Benutzer aus der Datei und weist Rollen und Berechtigungen zu
+        //lade benutzer aus datei
         public void LoadUsers()
         {
             if (!File.Exists(dataFilePath))
@@ -70,7 +70,8 @@ namespace AMIG.OS.UserSystemManagement
                 while ((line = reader.ReadLine()) != null)
                 {
                     var parts = line.Split(',');
-                    if (parts.Length >= 6)
+
+                    if (parts.Length >= 7)
                     {
                         string username = parts[0];
                         string passwordHash = parts[1];
@@ -81,32 +82,55 @@ namespace AMIG.OS.UserSystemManagement
                         var roles = new List<Role>();
                         foreach (var roleName in parts[2].Split(';'))
                         {
-                            var role = roleRepository.GetRoleByName(roleName.Trim());
+                           
+                            if (string.IsNullOrEmpty(roleName))  // Überprüft, ob die Rolle leer ist
+                            {
+                                Console.WriteLine($"Warnung: Leere Rolle gefunden für Benutzer '{username}'. Rolle wird übersprungen.");
+                                continue;  // Überspringe die leere Rolle
+                            }
+
+                            var role = roleRepository.GetRoleByName(roleName);
                             if (role != null)
                             {
                                 roles.Add(role);
                             }
                             else
                             {
-                                Console.WriteLine($"Warnung: Rolle '{roleName.Trim()}' wurde nicht gefunden.");
+                                Console.WriteLine($"Warnung: Rolle '{roleName}' wurde nicht gefunden für Benutzer '{username}'.");
                             }
                         }
 
                         // Berechtigungen in ein HashSet konvertieren
                         var permissions = new HashSet<string>(parts[5].Split(';'));
+                        var custompermissions = new HashSet<string>(parts[6].Split(';'));
 
                         // Benutzerobjekt erstellen und in das Dictionary einfügen
-                        var user = new User(username, passwordHash, true, roles, permissions)
+                        try
                         {
-                            LastLogin = lastLogin
-                        };
-                        users[username] = user;
+                            var user = new User(username, passwordHash, true, roles: roles, permissions: permissions, custompermissions: custompermissions)
+                            {
+                                LastLogin = lastLogin,
+                                CreatedAt = createdAt
+                            };
+                            users[username] = user;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Fehler beim Erstellen des Benutzers '{username}': {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Ungültiges Format in der Benutzerdaten-Datei.");
                     }
                 }
             }
 
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
+
+
+
 
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
         public void InitializeTestUsers()

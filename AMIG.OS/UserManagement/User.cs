@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using AMIG.OS.Utils;
 
@@ -12,45 +13,54 @@ namespace AMIG.OS.UserSystemManagement
         public string PasswordHash { get; private set; }
         public string CreatedAt { get; internal set; } // Zeitpunkt der Erstellung des Benutzerkontos
         public string LastLogin { get; set; } // Zeitpunkt der letzten Anmeldung
-
         // Rollen und Berechtigungen des Benutzers
-        public List<Role> Roles { get; private set; } // Zugewiesene Rollen
+        public List<Role> Roles { get; set; } // Zugewiesene Rollen
         public HashSet<string> Permissions { get; private set; } // Individuelle Berechtigungen
-        public HashSet<string> CombinedPermissions { get; private set; } // Kombinierte Berechtigungen aus Rollen und individuellen Berechtigungen
-
+        //public HashSet<string> CombinedPermissions { get; private set; } // Kombinierte Berechtigungen aus Rollen und individuellen Berechtigungen
+        public HashSet<string> CustomPermissions { get; private set; }
         // Konstruktor: Erstellt einen neuen Benutzer und initialisiert die Felder
-        public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, string created = null)
+        public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, HashSet<string> custompermissions = null, string created = null)
         {
             Username = username;
             PasswordHash = isHashed ? password : HashPassword(password);
             CreatedAt = created ?? DateTime.Now.ToString(); // Aktuelle Zeit, falls `created` null ist
-
             Roles = roles ?? new List<Role>();
             Permissions = permissions ?? new HashSet<string>();
-            CombinedPermissions = new HashSet<string>();
-
+            CustomPermissions = custompermissions ?? new HashSet<string>();
+            //CombinedPermissions = new HashSet<string>();// bei jedem start
             UpdateCombinedPermissions(); // Initialisiere die kombinierten Berechtigungen
         }
 
-        // Aktualisiert die kombinierten Berechtigungen aus Rollen und individuellen Berechtigungen
-        private void UpdateCombinedPermissions()
-        {
-            CombinedPermissions.Clear();
 
-            // Berechtigungen aus Rollen hinzufügen
+        //// Aktualisiert die kombinierten Berechtigungen aus Rollen und individuellen Berechtigungen
+        //public void UpdateCombinedPermissions()
+        //{
+        //    CombinedPermissions.Clear(); //lösche alles heraus
+
+        //    foreach (var role in Roles)
+        //    {
+        //        CombinedPermissions.UnionWith(role.Permissions); //tu für jede rolle die Permissions in cP
+        //    }
+
+        //    // Individuelle Berechtigungen des Benutzers hinzufügen
+        //    CombinedPermissions.UnionWith(Permissions); 
+        //}
+
+        public void UpdateCombinedPermissions()
+        {
+            Permissions.Clear(); //lösche alles heraus
+
             foreach (var role in Roles)
             {
-                CombinedPermissions.UnionWith(role.Permissions);
+                Permissions.UnionWith(role.Permissions); //tu für jede rolle die Permissions in cP
             }
-
-            // Individuelle Berechtigungen des Benutzers hinzufügen
-            CombinedPermissions.UnionWith(Permissions);
+            Permissions.UnionWith(CustomPermissions);
         }
 
         // Überprüft, ob der Benutzer eine bestimmte Berechtigung hat
         public bool HasPermission(string permission)
         {
-            return CombinedPermissions.Contains(permission);
+            return Permissions.Contains(permission);
         }
 
         // Fügt eine Rolle hinzu und aktualisiert die kombinierten Berechtigungen
@@ -61,6 +71,7 @@ namespace AMIG.OS.UserSystemManagement
                 Roles.Add(role);
                 UpdateCombinedPermissions();
             }
+
         }
 
         // Entfernt eine Rolle und aktualisiert die kombinierten Berechtigungen
@@ -77,7 +88,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (!Permissions.Contains(permission))
             {
-                Permissions.Add(permission);
+                CustomPermissions.Add(permission);
                 UpdateCombinedPermissions();
             }
         }

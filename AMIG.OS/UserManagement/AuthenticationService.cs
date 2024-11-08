@@ -5,10 +5,12 @@ namespace AMIG.OS.UserSystemManagement
     public class AuthenticationService
     {
         private readonly UserRepository userRepository;
+        private readonly RoleRepository roleRepository; 
 
-        public AuthenticationService(UserRepository repository)
+        public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository)
         {
-            userRepository = repository;
+            this.userRepository = userRepository;
+            this.roleRepository = roleRepository;
         }
 
         // Login-Prozess
@@ -25,18 +27,38 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registrierungsprozess
-        public bool Register(string username, string password, string role)
+        // Registrierungsprozess
+        public bool Register(string username, string password, string roleName)
         {
+            // Rolle aus dem Rollen-Repository abrufen
+            var roleToAssign = roleRepository.GetRoleByName(roleName);
+
+            // Überprüfen, ob die Rolle existiert
+            if (roleToAssign == null)
+            {
+                Console.WriteLine("Die angegebene Rolle existiert nicht.");
+                return false;
+            }
+
+            // Überprüfen, ob der Benutzername bereits vergeben ist
             if (userRepository.GetUserByUsername(username) == null)
             {
+                // Benutzer mit der angegebenen Rolle erstellen
                 var newUser = new User(username, password, false);
+                newUser.AddRole(roleToAssign);  // Rolle hinzufügen
+
+                // Benutzer zum Repository hinzufügen und sofort speichern
                 userRepository.AddUser(newUser);
-                userRepository.SaveUsers(); // Benutzer sofort speichern
+                //userRepository.SaveUsers(); // Benutzer sofort speichern
+
+                Console.WriteLine("Registrierung erfolgreich. Rolle zugewiesen.");
                 return true;
             }
-            Console.WriteLine("Username already taken.");
+
+            Console.WriteLine("Benutzername ist bereits vergeben.");
             return false;
         }
+
 
         // Prüfen, ob ein Benutzername existiert
         public bool UserExists(string username)

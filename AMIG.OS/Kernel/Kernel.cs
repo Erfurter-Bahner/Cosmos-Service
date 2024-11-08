@@ -12,7 +12,9 @@ namespace AMIG.OS.Kernel
     public class Kernel : Sys.Kernel
     {
         private Sys.FileSystem.CosmosVFS fs1;
-        private  static UserManagement userManagement = new UserManagement();
+        private static readonly RoleRepository roleRepository = new RoleRepository();
+        private static readonly UserRepository userRepository = new UserRepository(roleRepository);
+        private  static UserManagement userManagement = new UserManagement(roleRepository, userRepository);
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
         private static Helpers helpers = new Helpers(userManagement, fileSystemManager);
         private  CommandHandler commandHandler;
@@ -37,7 +39,9 @@ namespace AMIG.OS.Kernel
                                                 fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,
-                                                fs1);
+                                                fs1,
+                                                roleRepository,
+                                                userRepository);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -47,7 +51,7 @@ namespace AMIG.OS.Kernel
 
         public void ShowLoginOptions()
         {
-            userManagement.DisplayAllUsers(); // nur zum testen
+            //userManagement.DisplayAllUsers(); // nur zum testen
             Console.WriteLine("1: Login");
             Console.WriteLine("2: Register");
             Console.Write("Select an option: ");

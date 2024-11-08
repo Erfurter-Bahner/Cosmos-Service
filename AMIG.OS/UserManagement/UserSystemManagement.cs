@@ -2,6 +2,7 @@
 using AMIG.OS.FileManagement;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -13,18 +14,23 @@ namespace AMIG.OS.UserSystemManagement
         private readonly RoleRepository roleRepository;  // Speichert Rollen und Berechtigungen
         private static FileSystemManager fileSystemManager = new FileSystemManager();
 
-        public UserManagement()
+        public UserManagement(RoleRepository roleRepository, UserRepository userRepository)
         {
             // Initialisiere Repositorys und den Authentifizierungsdienst
-            roleRepository = new RoleRepository();
-            userRepository = new UserRepository(roleRepository);
-            authService = new AuthenticationService(userRepository);
+            this.roleRepository = roleRepository;
+            this.userRepository = userRepository;
+            authService = new AuthenticationService(userRepository, roleRepository);
         }
 
         // Führt die Benutzeranmeldung durch
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
+        }
+
+        public Role GetRoleByName(string roleName)
+        {
+           return roleRepository.GetRoleByName(roleName);   
         }
 
         // Registriert einen neuen Benutzer mit Benutzernamen, Passwort und zugewiesener Rolle
@@ -67,13 +73,24 @@ namespace AMIG.OS.UserSystemManagement
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
+                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                    ? string.Join(", ", user.Roles)
+                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+
+                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                    ? string.Join(", ", user.Permissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
                 Console.WriteLine($"Username: {user.Username}, " +
                     $"PW: {user.PasswordHash}, " +
-                    $"Role: {string.Join(", ", user.Roles)}, " +
+                    $"Role: {rolesDisplay}, " +
                     $"Erstellt am: {user.CreatedAt}, " +
-                    $"Letzter Login: {user.LastLogin}");
+                    $"Letzter Login: {user.LastLogin}, " +
+                    $"Perm: {permissionsDisplay}");
             }
         }
+
 
         // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)
@@ -100,5 +117,11 @@ namespace AMIG.OS.UserSystemManagement
         {
             return authService.UserExists(username);
         }
+
+
+ 
+        
+
+
     }
 }
