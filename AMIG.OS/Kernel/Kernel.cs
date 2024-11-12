@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sys = Cosmos.System;
+using System.Linq;
 using AMIG.OS.Utils;
 using AMIG.OS.UserSystemManagement;
 using AMIG.OS.FileManagement;
@@ -11,13 +12,15 @@ namespace AMIG.OS.Kernel
     public class Kernel : Sys.Kernel
     {
         private Sys.FileSystem.CosmosVFS fs1;
-        private  static UserManagement userManagement = new UserManagement();
+        private static readonly RoleRepository roleRepository = new RoleRepository();
+        private static readonly UserRepository userRepository = new UserRepository(roleRepository);
+        private  static UserManagement userManagement = new UserManagement(roleRepository, userRepository);
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
         private static Helpers helpers = new Helpers(userManagement, fileSystemManager);
         private  CommandHandler commandHandler;
         private List<string> commandHistory = new List<string>(); // Liste für Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
-        private string loggedInUser;
+        private User LoggedInUser;
         DateTime starttime;
 
         protected override void BeforeRun()
@@ -36,7 +39,9 @@ namespace AMIG.OS.Kernel
                                                 fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,
-                                                fs1);
+                                                fs1,
+                                                roleRepository,
+                                                userRepository);
 
             Console.WriteLine("Cosmos booted successfully.");
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -46,7 +51,7 @@ namespace AMIG.OS.Kernel
 
         public void ShowLoginOptions()
         {
-            userManagement.DisplayAllUsers(); // nur zum testen
+            //userManagement.DisplayAllUsers(); // nur zum testen
             Console.WriteLine("1: Login");
             Console.WriteLine("2: Register");
             Console.Write("Select an option: ");
@@ -78,7 +83,8 @@ namespace AMIG.OS.Kernel
             
             if (userManagement.Login(username, password))
             {
-                loggedInUser = username;
+                LoggedInUser = userManagement.GetUser(username);
+                Console.WriteLine($"Der eingeloggte User heißt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
                 commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
                 Console.WriteLine("Login successful!");
                 // Systemstart fortsetzen
@@ -99,7 +105,7 @@ namespace AMIG.OS.Kernel
             var password = ConsoleHelpers.GetPassword();
 
             Console.Write("Choose a role (Admin or Standard): ");
-            var roleInput = Console.ReadLine();
+            var roleInput = Console.ReadLine().ToLower();
             
             if (userManagement.Register(username, password, roleInput))
             {
@@ -141,7 +147,7 @@ namespace AMIG.OS.Kernel
                         historyIndex = -1; // Reset history index
 
                         // Process command
-                        commandHandler.ProcessCommand(currentInput, loggedInUser);
+                        commandHandler.ProcessCommand(currentInput, LoggedInUser.Username);
 
                         // Reset input and cursor position
                         currentInput = "";

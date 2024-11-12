@@ -1,44 +1,57 @@
-﻿using System;
+﻿using AMIG.OS.Utils;
+using AMIG.OS.FileManagement;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace AMIG.OS.UserSystemManagement
 {
+    // Zentraler Dienst für Benutzerverwaltung, Rollen- und Berechtigungsmanagement
     public class UserManagement
     {
-        private readonly UserRepository userRepository;
-        private readonly AuthenticationService authService;
-        private readonly RoleService roleService;
+        private readonly UserRepository userRepository;  // Verwaltet alle Benutzerinformationen
+        private readonly AuthenticationService authService;  // Zuständig für Authentifizierung
+        private readonly RoleRepository roleRepository;  // Speichert Rollen und Berechtigungen
+        private static FileSystemManager fileSystemManager = new FileSystemManager();
 
-        public UserManagement()
+        public UserManagement(RoleRepository roleRepository, UserRepository userRepository)
         {
-            userRepository = new UserRepository(); // UserRepository initialisieren
-            userRepository.LoadUsers(); // Benutzer laden
-            authService = new AuthenticationService(userRepository); // Authentifizierungsdienst mit geladenen Benutzern initialisieren
-            roleService = new RoleService(); // Rolle-Service initialisieren
+            // Initialisiere Repositorys und den Authentifizierungsdienst
+            this.roleRepository = roleRepository;
+            this.userRepository = userRepository;
+            authService = new AuthenticationService(userRepository, roleRepository);
         }
 
+        // Führt die Benutzeranmeldung durch
         public bool Login(string username, string password)
         {
             return authService.Login(username, password);
         }
 
+        public Role GetRoleByName(string roleName)
+        {
+           return roleRepository.GetRoleByName(roleName);   
+        }
+
+        // Registriert einen neuen Benutzer mit Benutzernamen, Passwort und zugewiesener Rolle
         public bool Register(string username, string password, string role)
         {
             return authService.Register(username, password, role);
         }
 
+        // Entfernt einen Benutzer aus dem System
         public void RemoveUser(string username)
         {
             userRepository.RemoveUser(username);
         }
-        
+
+        // Fügt einen Benutzer mit einer Rolle und einem Passwort hinzu, falls er noch nicht existiert
         public void AddUserWithRoleAndPassword(string username, string password, string role)
         {
             if (!authService.UserExists(username))
             {
-                DateTime created = DateTime.Now;
-                var user = new User(username, password, role, DateTime.Now.ToString()); // Neues User-Objekt erstellen
+                var user = new User(username, password, isHashed: true); // Neues Benutzerobjekt mit Passwort-Hash erstellen
                 userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
-                //userRepository.SaveUsers(); // Änderungen speichern
                 Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
             }
             else
@@ -47,54 +60,99 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
+        // Entfernt alle Benutzer aus dem System
         public void RemoveAllUser()
         {
             userRepository.RemoveAllUsers();
-            Console.WriteLine("Alle Benutzer wurden entfernt");
-            userRepository.SaveUsers(); // Speichere die Änderungen
+            Console.WriteLine("Alle Benutzer wurden entfernt.");
         }
+
+        // Gibt Informationen aller Benutzer in der Konsole aus
         public void DisplayAllUsers()
         {
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
-                Console.WriteLine($"Username: {user.Username}," +
-                    $"PW: {user.PasswordHash} " +
-                    $"Role: {user.Role}, " +
-                    $"Erstellt am {user.CreatedAt},"+
-                    $"Letzter Login am {user.LastLogin}");
+                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                    ? string.Join(", ", user.Roles)
+                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+
+                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                    ? string.Join(", ", user.Permissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
+                Console.WriteLine($"Username: {user.Username}, " +
+                    $"PW: {user.PasswordHash}, " +
+                    $"Role: {rolesDisplay}, " +
+                    $"Erstellt am: {user.CreatedAt}, " +
+                    $"Letzter Login: {user.LastLogin}, " +
+                    $"Perm: {permissionsDisplay}");
             }
         }
 
-        public bool ChangeUsername(string oldUsername, string newUsername)
+        public void DisplayUser(string loggedInUser)
         {
-           return userRepository.ChangeUsername(oldUsername, newUsername);
+            var user = userRepository.GetUserByUsername(loggedInUser);
+
+            // Überprüfen, ob der Benutzer gefunden wurde
+            if (user != null)
+            {
+                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                    ? string.Join(", ", user.Roles)
+                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+
+                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                    ? string.Join(", ", user.Permissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
+                Console.WriteLine($"Username: {user.Username}, " +
+                    $"PW: {user.PasswordHash}, " +
+                    $"Role: {rolesDisplay}, " +
+                    $"Erstellt am: {user.CreatedAt}, " +
+                    $"Letzter Login: {user.LastLogin}, " +
+                    $"Perm: {permissionsDisplay}");
+            }
+            else
+            {
+                Console.WriteLine($"Benutzer '{loggedInUser}' wurde nicht gefunden.");
+            }
         }
 
+
+
+
+        // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-           return userRepository.ChangePassword(username, oldPassword, newPassword);    
+            return userRepository.ChangePassword(username, oldPassword, newPassword);
         }
 
-        public string GetPasswordHash(string username)
+        // Gibt das Benutzerobjekt anhand des Benutzernamens zurück, falls vorhanden
+        public User GetUser(string username)
         {
-            return userRepository.GetPasswordHash(username);
+            if (userRepository.users.ContainsKey(username))
+            {
+                return userRepository.users[username];
+            }
+            else
+            {
+                Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                return null;
+            }
         }
 
-        // Zugriff auf einen Benutzer
-        public void GetUserInfo(string username)
-        {
-            userRepository.GetUserInfo(username);
-        }
-
-        public string GetUserRole(string username)
-        {
-            return userRepository.GetUserRole(username);
-        }
-
+        // Überprüft, ob ein Benutzer im System existiert
         public bool UserExists(string username)
         {
             return authService.UserExists(username);
         }
+
+
+ 
+        
+
+
     }
 }
