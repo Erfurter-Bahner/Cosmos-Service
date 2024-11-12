@@ -37,13 +37,13 @@ namespace AMIG.OS.UserSystemManagement
                         // Konvertiert Rollen und Berechtigungen in Strings zur Speicherung
                         string rolesString = string.Join(";", user.Roles.Select(r => r.RoleName));
                         string permissionsString = string.Join(";", user.Permissions);
-                        string customPermissionsString = string.Join(";", user.CustomPermissions);
+                        string combinedPermissionsString = string.Join(";", user.CombinedPermissions);
 
                         // Debug-Ausgabe zur Überprüfung der Daten
-                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CustomPermissons: {customPermissionsString}");
+                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
 
                         // Benutzerinformationen in die Datei schreiben
-                        writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString},{customPermissionsString}");
+                        writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
 
@@ -55,40 +55,45 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        //lade benutzer aus datei
+        //lade benutzer aus Datei
         public void LoadUsers()
         {
+            // Überprüfen, ob die Benutzerdaten-Datei existiert
             if (!File.Exists(dataFilePath))
             {
                 Console.WriteLine("Benutzerdaten-Datei nicht gefunden.");
                 return;
             }
 
+            // Datei mit StreamReader öffnen und Zeilenweise auslesen
             using (var reader = new StreamReader(dataFilePath))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    // Zeile anhand des Trennzeichens ',' in Teile splitten
                     var parts = line.Split(',');
 
-                    if (parts.Length >= 7)
+                    // Sicherstellen, dass genügend Teile vorhanden sind, um alle Felder zu laden
+                    if (parts.Length >= 6)
                     {
                         string username = parts[0];
                         string passwordHash = parts[1];
                         string createdAt = parts[3];
                         string lastLogin = parts[4];
 
-                        // Rollen des Benutzers anhand der Rollennamen laden
+                        // Rollen des Benutzers basierend auf den Rollennamen laden
                         var roles = new List<Role>();
                         foreach (var roleName in parts[2].Split(';'))
                         {
-                           
-                            if (string.IsNullOrEmpty(roleName))  // Überprüft, ob die Rolle leer ist
+                            // Leere Rollennamen überspringen und warnen
+                            if (string.IsNullOrEmpty(roleName))
                             {
                                 Console.WriteLine($"Warnung: Leere Rolle gefunden für Benutzer '{username}'. Rolle wird übersprungen.");
-                                continue;  // Überspringe die leere Rolle
+                                continue;
                             }
 
+                            // Rolle abrufen und hinzufügen, falls gefunden
                             var role = roleRepository.GetRoleByName(roleName);
                             if (role != null)
                             {
@@ -100,14 +105,13 @@ namespace AMIG.OS.UserSystemManagement
                             }
                         }
 
-                        // Berechtigungen in ein HashSet konvertieren
+                        // Berechtigungen anhand von Semikolon getrennten Werten in ein HashSet laden
                         var permissions = new HashSet<string>(parts[5].Split(';'));
-                        var custompermissions = new HashSet<string>(parts[6].Split(';'));
 
                         // Benutzerobjekt erstellen und in das Dictionary einfügen
                         try
                         {
-                            var user = new User(username, passwordHash, true, roles: roles, permissions: permissions, custompermissions: custompermissions)
+                            var user = new User(username, passwordHash, true, roles: roles, permissions: permissions)
                             {
                                 LastLogin = lastLogin,
                                 CreatedAt = createdAt
@@ -128,6 +132,7 @@ namespace AMIG.OS.UserSystemManagement
 
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
+
 
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
         public void InitializeTestUsers()

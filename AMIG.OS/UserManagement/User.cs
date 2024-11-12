@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
 using AMIG.OS.Utils;
 
@@ -13,39 +12,45 @@ namespace AMIG.OS.UserSystemManagement
         public string PasswordHash { get; private set; }
         public string CreatedAt { get; internal set; } // Zeitpunkt der Erstellung des Benutzerkontos
         public string LastLogin { get; set; } // Zeitpunkt der letzten Anmeldung
+
         // Rollen und Berechtigungen des Benutzers
-        public List<Role> Roles { get; set; } // Zugewiesene Rollen
+        public List<Role> Roles { get; private set; } // Zugewiesene Rollen
         public HashSet<string> Permissions { get; private set; } // Individuelle Berechtigungen
-        //public HashSet<string> CombinedPermissions { get; private set; } // Kombinierte Berechtigungen aus Rollen und individuellen Berechtigungen
-        public HashSet<string> CustomPermissions { get; private set; }
+        public HashSet<string> CombinedPermissions { get; private set; } // Kombinierte Berechtigungen aus Rollen und individuellen Berechtigungen
+
         // Konstruktor: Erstellt einen neuen Benutzer und initialisiert die Felder
-        public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, HashSet<string> custompermissions = null, string created = null)
+        public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, string created = null)
         {
             Username = username;
             PasswordHash = isHashed ? password : HashPassword(password);
             CreatedAt = created ?? DateTime.Now.ToString(); // Aktuelle Zeit, falls `created` null ist
+
             Roles = roles ?? new List<Role>();
             Permissions = permissions ?? new HashSet<string>();
-            CustomPermissions = custompermissions ?? new HashSet<string>();
-            //CombinedPermissions = new HashSet<string>();// bei jedem start
+            CombinedPermissions = new HashSet<string>();
+
             UpdateCombinedPermissions(); // Initialisiere die kombinierten Berechtigungen
         }
 
-        public void UpdateCombinedPermissions()
+        // Aktualisiert die kombinierten Berechtigungen aus Rollen und individuellen Berechtigungen
+        private void UpdateCombinedPermissions()
         {
-            Permissions.Clear(); //lösche alles heraus
+            CombinedPermissions.Clear();
 
+            // Berechtigungen aus Rollen hinzufügen
             foreach (var role in Roles)
             {
-                Permissions.UnionWith(role.Permissions); //tu für jede rolle die Permissions in cP
+                CombinedPermissions.UnionWith(role.Permissions);
             }
-            Permissions.UnionWith(CustomPermissions);
+
+            // Individuelle Berechtigungen des Benutzers hinzufügen
+            CombinedPermissions.UnionWith(Permissions);
         }
 
         // Überprüft, ob der Benutzer eine bestimmte Berechtigung hat
         public bool HasPermission(string permission)
         {
-            return Permissions.Contains(permission);
+            return CombinedPermissions.Contains(permission);
         }
 
         // Fügt eine Rolle hinzu und aktualisiert die kombinierten Berechtigungen
@@ -56,7 +61,6 @@ namespace AMIG.OS.UserSystemManagement
                 Roles.Add(role);
                 UpdateCombinedPermissions();
             }
-
         }
 
         // Entfernt eine Rolle und aktualisiert die kombinierten Berechtigungen
@@ -73,7 +77,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (!Permissions.Contains(permission))
             {
-                CustomPermissions.Add(permission);
+                Permissions.Add(permission);
                 UpdateCombinedPermissions();
             }
         }
@@ -81,8 +85,7 @@ namespace AMIG.OS.UserSystemManagement
         // Entfernt eine individuelle Berechtigung und aktualisiert die kombinierten Berechtigungen
         public void RemovePermission(string permission)
         {
-            //Permissions.Remove(permission);
-            CustomPermissions.Remove(permission);
+            Permissions.Remove(permission);
             UpdateCombinedPermissions();
         }
 
