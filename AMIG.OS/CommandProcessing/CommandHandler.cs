@@ -362,7 +362,14 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "adios":
-                    helpers.AdiosHelper(args);
+                    if (args.Length == 2 && args[1].Equals("amigos"))
+                    {
+                        helpers.AdiosHelper();
+                    }
+                    else
+                    {
+                        helpers.error1();
+                    }
                     break;
 
                 // Benutzerbefehle
@@ -424,6 +431,7 @@ namespace AMIG.OS.CommandProcessing
                     break;
 
                 case "logout": //both
+                    Console.Clear();
                     showLoginOptions.Invoke();
                     break;
 
@@ -574,6 +582,10 @@ namespace AMIG.OS.CommandProcessing
                     {
                         Console.WriteLine("Keine Berechtigung, um den Benutzer zu entsperren.");
                     }
+                    break;
+
+                case "clear": //both
+                    Console.Clear();
                     break;
 
                 // Beispiel für andere Befehle

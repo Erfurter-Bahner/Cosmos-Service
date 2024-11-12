@@ -22,6 +22,7 @@ namespace AMIG.OS.Utils
             this.fileSystemManager = fileSystemManager;
         }
 
+        public String preInput = "Input: ";
         // Neue Methode zum Hinzufügen eines Benutzers
         public void addHelper(bool admin_true)
         {
@@ -70,14 +71,12 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command"); 
         }
 
-        public void AdiosHelper(string[] args)
+        public void AdiosHelper()
         {
-            if (args.Length == 2 && args[1].Equals("amigos"))
-            {
+                Console.Clear();
                 Console.WriteLine("\n\tHASTA LA VISTA");
                 Thread.Sleep(1500);
                 Sys.Power.Shutdown();
-            }
         }
 
         public void ShowAllHelper(bool admin_true)
@@ -316,6 +315,10 @@ namespace AMIG.OS.Utils
             }
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
+
+        public void error1() {
+                Console.WriteLine("Missing or unknown argument");
+            }
         //hier kommen noch die anderen befehle
 
     }

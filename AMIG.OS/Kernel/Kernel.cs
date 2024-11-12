@@ -18,7 +18,7 @@ namespace AMIG.OS.Kernel
         private  static FileSystemManager fileSystemManager = new FileSystemManager();
         private static Helpers helpers = new Helpers(userManagement, fileSystemManager);
         private  CommandHandler commandHandler;
-        private List<string> commandHistory = new List<string>(); // Liste für Befehle
+        private List<string> commandHistory = new List<string>(); // Liste fÃ¼r Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
         private User LoggedInUser;
         DateTime starttime;
@@ -34,16 +34,14 @@ namespace AMIG.OS.Kernel
             var fs_type = fs1.GetFileSystemType(@"0:\");
              Console.WriteLine("file system type: " + fs_type);
 
-            // Initialisiere CommandHandler mit Abhängigkeiten
+            // Initialisiere CommandHandler mit AbhÃ¤ngigkeiten
             commandHandler = new CommandHandler(userManagement,
                                                 fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,
-                                                fs1,
-                                                roleRepository,
-                                                userRepository);
+                                                fs1);
 
-            Console.WriteLine("Cosmos booted successfully.");
+            Console.Clear();
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
 
             ShowLoginOptions();
@@ -52,29 +50,34 @@ namespace AMIG.OS.Kernel
         public void ShowLoginOptions()
         {
             //userManagement.DisplayAllUsers(); // nur zum testen
-            Console.WriteLine("1: Login");
-            Console.WriteLine("2: Register");
-            Console.Write("Select an option: ");
-            var option = Console.ReadLine();
-
-            if (option == "1")
-            {
-                Login();
-            }
-            else if (option == "2")
-            {
-                Register();
-                ShowLoginOptions(); // Nach der Registrierung erneut Login/Registrierung anzeigen
-            }
-            else
-            {
-                Console.WriteLine("Invalid option, try again.");
-                ShowLoginOptions();
-            }
+            Console.WriteLine("Select an option: ");
+            Console.WriteLine("[1] Login");
+            Console.WriteLine("[2] Register");
+                var key = Console.ReadKey(intercept: true);
+                switch (key.Key)
+                {
+                    case ConsoleKey.Escape:
+                        helpers.AdiosHelper();
+                        break;
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
+                        Login();
+                        break;
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        Register();
+                        ShowLoginOptions();
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option! Please use a Number as an Input");
+                        ShowLoginOptions();
+                        break;
+                }
         }
 
         private void Login()
         {
+            Console.WriteLine("");
             Console.Write("Username: ");
             var username = Console.ReadLine();
             Console.Write("Password: ");
@@ -84,7 +87,7 @@ namespace AMIG.OS.Kernel
             if (userManagement.Login(username, password))
             {
                 LoggedInUser = userManagement.GetUser(username);
-                Console.WriteLine($"Der eingeloggte User heißt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
+                Console.WriteLine($"Der eingeloggte User heiÃŸt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
                 commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
                 Console.WriteLine("Login successful!");
                 // Systemstart fortsetzen
@@ -118,10 +121,10 @@ namespace AMIG.OS.Kernel
             
         }
 
-        //mussin utils oder so
+        //muss in utils oder so
         public static void ClearCurrentLine()
         {
-            // stellt sicher, dass während der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
+            // stellt sicher, dass wÃ¤hrend der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
             int currentLineCursor = Console.CursorTop;
             Console.SetCursorPosition(0, currentLineCursor);
             Console.Write(new string(' ', Console.WindowWidth - 1));
@@ -130,7 +133,7 @@ namespace AMIG.OS.Kernel
 
         protected override void Run()
         {
-            Console.Write("Input: ");
+            Console.Write(helpers.preInput);
             var currentInput = "";
             int cursorPosInInput = 0; // Track cursor position in the current input string
 
@@ -152,7 +155,7 @@ namespace AMIG.OS.Kernel
                         // Reset input and cursor position
                         currentInput = "";
                         cursorPosInInput = 0;
-                        Console.Write("Input: ");
+                        Console.Write(helpers.preInput);
                     }
                 }
 
@@ -166,8 +169,8 @@ namespace AMIG.OS.Kernel
 
                         // Clear the line and re-write the input with updated cursor position
                         ClearCurrentLine();
-                        Console.Write("Input: " + currentInput);
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop); // Adjust cursor
+                        Console.Write(helpers.preInput + currentInput);
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop); // Adjust cursor
                     }
                 }
 
@@ -176,7 +179,7 @@ namespace AMIG.OS.Kernel
                     if (cursorPosInInput > 0)
                     {
                         cursorPosInInput--; // Move cursor left within the input
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                     }
                 }
 
@@ -185,7 +188,7 @@ namespace AMIG.OS.Kernel
                     if (cursorPosInInput < currentInput.Length)
                     {
                         cursorPosInInput++; // Move cursor right within the input
-                        Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                        Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                     }
                 }
 
@@ -196,17 +199,19 @@ namespace AMIG.OS.Kernel
                     {
                         if (historyIndex == -1) // Wenn historyIndex -1 ist, von aktueller Eingabe starten
                         {
-                            historyIndex = 0; // Setze Index auf 0 für den ersten Befehl
+                            historyIndex = 0; // Setze Index auf 0 fÃ¼r den ersten Befehl
                         }
                         else
                         {
-                            historyIndex++; // Gehe zum nächsten Befehl
+                            historyIndex++; // Gehe zum nÃ¤chsten Befehl
                         }
 
                         currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
-                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        ClearCurrentLine(); // LÃ¶sche die aktuelle Zeile
+                        Console.Write(helpers.preInput);
                         Console.Write(currentInput); // Zeige den aktuellen Befehl an
-                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                        cursorPosInInput = (currentInput.Length);
+                        Console.SetCursorPosition(currentInput.Length + helpers.preInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
                 }
 
@@ -217,17 +222,20 @@ namespace AMIG.OS.Kernel
                     {
                         historyIndex--;
                         currentInput = commandHistory[commandHistory.Count - 1 - historyIndex];
-                        ClearCurrentLine(); // Lösche die aktuelle Zeile
+                        ClearCurrentLine(); // LÃ¶sche die aktuelle Zeile
+                        Console.Write(helpers.preInput);
                         Console.Write(currentInput); // Zeige den aktuellen Befehl an
-                        Console.SetCursorPosition(currentInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
+                        cursorPosInInput = (currentInput.Length);
+                        Console.SetCursorPosition(currentInput.Length + helpers.preInput.Length, Console.CursorTop); // Setze den Cursor an das Ende der Eingabe
                     }
                     else if (historyIndex == 0) // Wenn wir am Anfang der Historie sind
                     {
-                        historyIndex = -1; // Setze den Index auf -1 für eine leere Eingabe
+                        historyIndex = -1; // Setze den Index auf -1 fÃ¼r eine leere Eingabe
                         currentInput = ""; // Leere Eingabe
-                        ClearCurrentLine(); // Lösche die aktuelle Zeile
-                        Console.Write("Input: "); // Eingabeaufforderung zurücksetzen
-                        Console.SetCursorPosition(7, Console.CursorTop); // Setze den Cursor nach "Input: "
+                        ClearCurrentLine(); // LÃ¶sche die aktuelle Zeile
+                        Console.Write(helpers.preInput); // Eingabeaufforderung zurÃ¼cksetzen
+                        cursorPosInInput = (currentInput.Length);
+                        Console.SetCursorPosition(helpers.preInput.Length, Console.CursorTop); // Setze den Cursor nach "Input: "
                     }
                 }
 
@@ -239,8 +247,8 @@ namespace AMIG.OS.Kernel
 
                     // Clear line, reprint, and reposition cursor
                     ClearCurrentLine();
-                    Console.Write("Input: " + currentInput);
-                    Console.SetCursorPosition(cursorPosInInput + 7, Console.CursorTop);
+                    Console.Write(helpers.preInput + currentInput);
+                    Console.SetCursorPosition(cursorPosInInput + helpers.preInput.Length, Console.CursorTop);
                 }
             }
         }
