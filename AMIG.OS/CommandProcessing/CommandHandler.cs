@@ -15,9 +15,6 @@ namespace AMIG.OS.CommandProcessing
     public class CommandHandler
     {
         private readonly UserManagement userManagement;
-        private readonly FileSystemManager fileSystemManager;
-        private readonly RoleRepository roleRepository;
-        private readonly UserRepository userRepository;
         private readonly Helpers helpers;
         private DateTime starttime;
         private string currentDirectory = @"0:\"; // Root-Verzeichnis als Startpunkt
@@ -26,20 +23,16 @@ namespace AMIG.OS.CommandProcessing
         
         public CommandHandler
             (UserManagement userMgmt,
-            FileSystemManager fsManager,
             Action showLoginOptionsDelegate,
             Helpers _helpers,
-            Sys.FileSystem.CosmosVFS vfs,
-            RoleRepository roleRepository,
-            UserRepository userRepository)
+            Sys.FileSystem.CosmosVFS vfs)
+            
         {
-            userManagement = userMgmt;
-            fileSystemManager = fsManager;
+            this.userManagement = userMgmt;
             showLoginOptions = showLoginOptionsDelegate; // Delegate speichern
-            helpers = _helpers;
+            this.helpers = _helpers;
             this.vfs = vfs;
-            this.roleRepository = roleRepository;
-            this.userRepository = userRepository;
+
         }
 
         public void SetStartTime(DateTime loginTime)
@@ -66,7 +59,7 @@ namespace AMIG.OS.CommandProcessing
 
                         // Erstellen eines HashSet aus den eingegebenen Berechtigungen
                         HashSet<string> permissions = new HashSet<string>(permissionsInput.Split(','));
-                        roleRepository.AddRole(new Role(roleName, permissions));
+                        userManagement.roleRepository.AddRole(new Role(roleName, permissions));
                         break;
 
                     }
@@ -77,10 +70,10 @@ namespace AMIG.OS.CommandProcessing
                         string roleName = Console.ReadLine();
 
                         // Entferne die Rolle aus dem Rollen-Repository
-                        roleRepository.RemoveRole(roleName);
+                        userManagement.roleRepository.RemoveRole(roleName);
 
                         // Hole das Dictionary aller Benutzer
-                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+                        Dictionary<string, User> usersDictionary = userManagement.userRepository.GetAllUsers();
 
                         foreach (var user in usersDictionary.Values)
                         {
@@ -104,8 +97,8 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Änderungen in den gespeicherten Benutzern und Rollen speichern
-                        userRepository.SaveUsers();
-                        roleRepository.SaveRoles();
+                        userManagement.userRepository.SaveUsers();
+                        userManagement.roleRepository.SaveRoles();
                         break;
                     }
 
@@ -115,7 +108,7 @@ namespace AMIG.OS.CommandProcessing
                         Console.Write("Benutzername: ");
                         string username = Console.ReadLine();
 
-                        User user = userRepository.GetUserByUsername(username);
+                        User user = userManagement.userRepository.GetUserByUsername(username);
 
                         // Rollen abfragen und in eine Liste umwandeln
                         Console.Write("Rollen hinzufügen (durch Leerzeichen getrennt, z. B. Admin User): ");
@@ -125,7 +118,7 @@ namespace AMIG.OS.CommandProcessing
                         // Für jede Rolle überprüfen und hinzufügen
                         foreach (string roleName in roleNames)
                         {
-                            Role role = roleRepository.GetRoleByName(roleName);
+                            Role role = userManagement.roleRepository.GetRoleByName(roleName);
 
                             // Überprüfen, ob die Rolle existiert
                             if (role == null)
@@ -148,7 +141,7 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Benutzer speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
                         break;
                     }
 
@@ -158,7 +151,7 @@ namespace AMIG.OS.CommandProcessing
                         Console.Write("Benutzername: ");
                         string username = Console.ReadLine();
 
-                        User user = userRepository.GetUserByUsername(username);
+                        User user = userManagement.userRepository.GetUserByUsername(username);
 
                         if (user == null)
                         {
@@ -187,7 +180,7 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Benutzer speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
 
                         break;
                     }
@@ -198,7 +191,7 @@ namespace AMIG.OS.CommandProcessing
                         Console.Write("Benutzername: ");
                         string username = Console.ReadLine();
 
-                        User user = userRepository.GetUserByUsername(username);
+                        User user = userManagement.userRepository.GetUserByUsername(username);
 
                         if (user == null)
                         {
@@ -227,7 +220,7 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Benutzer speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
 
                         break;
                     }
@@ -238,7 +231,7 @@ namespace AMIG.OS.CommandProcessing
                         Console.Write("Benutzername: ");
                         string username = Console.ReadLine();
 
-                        User user = userRepository.GetUserByUsername(username);
+                        User user = userManagement.userRepository.GetUserByUsername(username);
 
                         if (user == null)
                         {
@@ -254,7 +247,7 @@ namespace AMIG.OS.CommandProcessing
                         // Für jede Rolle überprüfen und entfernen
                         foreach (string roleName in roleNames)
                         {
-                            Role role = roleRepository.GetRoleByName(roleName);
+                            Role role = userManagement.roleRepository.GetRoleByName(roleName);
 
                             // Falls die Rolle nicht existiert, wird eine Warnung ausgegeben
                             if (role == null)
@@ -279,7 +272,7 @@ namespace AMIG.OS.CommandProcessing
                         user.UpdateCombinedPermissions();
 
                         // Benutzer speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
 
                         break;
                     }
@@ -299,9 +292,9 @@ namespace AMIG.OS.CommandProcessing
                                                                           .ToList();
 
                         // Aufruf der Methode, um alle angegebenen Berechtigungen von der Rolle zu entfernen
-                        roleRepository.RemovePermissionsFromRole(roleNameToRemovePermissions, permissionsToRemove);
+                        userManagement.roleRepository.RemovePermissionsFromRole(roleNameToRemovePermissions, permissionsToRemove);
 
-                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+                        Dictionary<string, User> usersDictionary = userManagement.userRepository.GetAllUsers();
 
                         foreach (var user in usersDictionary.Values)
                         {
@@ -316,7 +309,7 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Änderungen in den gespeicherten Rollen und Benutzern speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
                         break;
                     }
 
@@ -335,9 +328,9 @@ namespace AMIG.OS.CommandProcessing
                                                                           .ToList();
 
                         // Aufruf der Methode, um alle angegebenen Berechtigungen von der Rolle zu entfernen
-                        roleRepository.RemovePermissionsFromRole(roleNameToAddPermissions, permissionsToAdd);
+                        userManagement.roleRepository.RemovePermissionsFromRole(roleNameToAddPermissions, permissionsToAdd);
 
-                        Dictionary<string, User> usersDictionary = userRepository.GetAllUsers();
+                        Dictionary<string, User> usersDictionary = userManagement.userRepository.GetAllUsers();
 
                         foreach (var user in usersDictionary.Values)
                         {
@@ -352,7 +345,7 @@ namespace AMIG.OS.CommandProcessing
                         }
 
                         // Änderungen in den gespeicherten Rollen und Benutzern speichern
-                        userRepository.SaveUsers();
+                        userManagement.userRepository.SaveUsers();
                         break;
 
                     }
@@ -454,7 +447,7 @@ namespace AMIG.OS.CommandProcessing
                         foreach (var roleName in rolesInput.Split(';'))  // Rollen durch Semikolon trennen
                         {
                             var trimmedRoleName = roleName.Trim();  // Leere Leerzeichen entfernen
-                            Role role = roleRepository.GetRoleByName(trimmedRoleName); // Beispielmethode, um Rolle nach Name zu finden
+                            Role role = userManagement.roleRepository.GetRoleByName(trimmedRoleName); // Beispielmethode, um Rolle nach Name zu finden
 
                             if (role != null)
                             {
@@ -478,7 +471,7 @@ namespace AMIG.OS.CommandProcessing
                         var user = new User(username, password, roles: roles, permissions: userPermissions);
 
                         // Hinzufügen des Benutzers zur Sammlung
-                        userRepository.AddUser(user);  // Methode, um den Benutzer hinzuzufügen
+                        userManagement.userRepository.AddUser(user);  // Methode, um den Benutzer hinzuzufügen
 
                         // Optional: Ausgabe zur Bestätigung
                         Console.WriteLine("Benutzer erfolgreich hinzugefügt!");

@@ -33,7 +33,7 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Aktualisiert die kombinierten Berechtigungen aus Rollen und individuellen Berechtigungen
-        private void UpdateCombinedPermissions()
+        public void UpdateCombinedPermissions()
         {
             CombinedPermissions.Clear();
 
