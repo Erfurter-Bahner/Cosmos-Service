@@ -39,7 +39,9 @@ namespace AMIG.OS.Kernel
                                                 fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,
-                                                fs1);
+                                                fs1,
+                                                roleRepository,
+                                                userRepository);
 
             Console.Clear();
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
