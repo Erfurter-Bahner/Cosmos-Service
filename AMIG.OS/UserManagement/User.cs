@@ -37,23 +37,23 @@ namespace AMIG.OS.UserSystemManagement
         {
             CombinedPermissions.Clear();
 
-            // Berechtigungen aus Rollen hinzufügen
+            // Berechtigungen aus Rollen hinzufÃ¼gen
             foreach (var role in Roles)
             {
                 CombinedPermissions.UnionWith(role.Permissions);
             }
 
-            // Individuelle Berechtigungen des Benutzers hinzufügen
+            // Individuelle Berechtigungen des Benutzers hinzufÃ¼gen
             CombinedPermissions.UnionWith(Permissions);
         }
 
-        // Überprüft, ob der Benutzer eine bestimmte Berechtigung hat
+        // ÃœberprÃ¼ft, ob der Benutzer eine bestimmte Berechtigung hat
         public bool HasPermission(string permission)
         {
             return CombinedPermissions.Contains(permission);
         }
 
-        // Fügt eine Rolle hinzu und aktualisiert die kombinierten Berechtigungen
+        // FÃ¼gt eine Rolle hinzu und aktualisiert die kombinierten Berechtigungen
         public void AddRole(Role role)
         {
             if (!Roles.Contains(role))
@@ -72,7 +72,7 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Fügt eine individuelle Berechtigung hinzu und aktualisiert die kombinierten Berechtigungen
+        // FÃ¼gt eine individuelle Berechtigung hinzu und aktualisiert die kombinierten Berechtigungen
         public void AddPermission(string permission)
         {
             if (!Permissions.Contains(permission))
@@ -89,21 +89,21 @@ namespace AMIG.OS.UserSystemManagement
             UpdateCombinedPermissions();
         }
 
-        // Überprüft, ob das übergebene Passwort mit dem gespeicherten Hash übereinstimmt
+        // ÃœberprÃ¼ft, ob das Ã¼bergebene Passwort mit dem gespeicherten Hash Ã¼bereinstimmt
         public bool VerifyPassword(string password)
         {
             Console.WriteLine($"Verifying password. Input: {password}, Hash: {PasswordHash}");
             return PasswordHash == HashPassword(password);
         }
 
-        // Hash-Funktion zum Erstellen eines SHA256-Hashes für das Passwort
+        // Hash-Funktion zum Erstellen eines SHA256-Hashes fÃ¼r das Passwort
         private string HashPassword(string input)
         {
             byte[] hashBytes = SHA256.Hash(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
 
-        // Ändert das Passwort und aktualisiert den Hash-Wert
+        // Ã„ndert das Passwort und aktualisiert den Hash-Wert
         public void ChangePassword(string newPassword)
         {
             PasswordHash = HashPassword(newPassword);

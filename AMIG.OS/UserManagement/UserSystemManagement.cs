@@ -76,7 +76,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                 string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles)
+                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
                     : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
                 string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
@@ -101,7 +101,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                 string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles)
+                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
                     : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
                 string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
