@@ -9,17 +9,18 @@ namespace AMIG.OS.UserSystemManagement
     // Zentraler Dienst für Benutzerverwaltung, Rollen- und Berechtigungsmanagement
     public class UserManagement
     {
-        private readonly UserRepository userRepository;  // Verwaltet alle Benutzerinformationen
-        private readonly AuthenticationService authService;  // Zuständig für Authentifizierung
-        private readonly RoleRepository roleRepository;  // Speichert Rollen und Berechtigungen
-        private static FileSystemManager fileSystemManager = new FileSystemManager();
+        public UserRepository userRepository { get; private set; }  // Verwaltet alle Benutzerinformationen
+       public AuthenticationService authService { get; private set; } // Zuständig für Authentifizierung
+        public RoleRepository roleRepository { get; private set; }  // Speichert Rollen und Berechtigungen
+        public FileSystemManager fileSystemManager { get; private set; } // Initialisert Fileoperations
 
-        public UserManagement(RoleRepository roleRepository, UserRepository userRepository)
+        public UserManagement()
         {
             // Initialisiere Repositorys und den Authentifizierungsdienst
-            this.roleRepository = roleRepository;
-            this.userRepository = userRepository;
-            authService = new AuthenticationService(userRepository, roleRepository);
+            this.roleRepository = new RoleRepository();
+            this.userRepository = new UserRepository(roleRepository);
+            this.fileSystemManager = new FileSystemManager();
+            this.authService = new AuthenticationService(userRepository, roleRepository);
         }
 
         // Führt die Benutzeranmeldung durch
@@ -75,7 +76,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                 string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles)
+                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
                     : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
                 string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
@@ -100,7 +101,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                 string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles)
+                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
                     : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
                 string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0

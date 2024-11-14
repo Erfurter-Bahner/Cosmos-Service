@@ -15,11 +15,11 @@ namespace AMIG.OS.Utils
     public class Helpers
     {
         private readonly UserManagement userManagement;
-        private readonly FileSystemManager fileSystemManager;
-        public Helpers(UserManagement userManagement, FileSystemManager fileSystemManager)
+        
+        public Helpers(UserManagement userManagement)
         {
             this.userManagement = userManagement;
-            this.fileSystemManager = fileSystemManager;
+            
         }
 
         public String preInput = "Input: ";
@@ -155,7 +155,7 @@ namespace AMIG.OS.Utils
                 if (args.Length > 1)
                 {
                     string dirName = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.CreateDirectory(dirName);
+                    userManagement.fileSystemManager.CreateDirectory(dirName);
                 }
                 else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
             }
@@ -227,7 +227,7 @@ namespace AMIG.OS.Utils
                 string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
                 Console.WriteLine("Bitte Inhalt eingeben");
                 string content = Console.ReadLine();
-                fileSystemManager.WriteToFile(fileName, content);
+                userManagement.fileSystemManager.WriteToFile(fileName, content);
             }
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
@@ -239,7 +239,7 @@ namespace AMIG.OS.Utils
                 if (args.Length > 1)
                 {
                     string filePath = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.DeleteFile(filePath);
+                    userManagement.fileSystemManager.DeleteFile(filePath);
                 }
                 else Console.WriteLine("Bitte geben Sie eine Datei an.");
             }
@@ -253,7 +253,7 @@ namespace AMIG.OS.Utils
                 if (args.Length > 1)
                 {
                     string dirPath = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.DeleteDirectory(dirPath);
+                    userManagement.fileSystemManager.DeleteDirectory(dirPath);
                 }
                 else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
             }
@@ -267,7 +267,7 @@ namespace AMIG.OS.Utils
                 if (args.Length > 1)
                 {
                     string filePath = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.CreateFile(filePath, "");
+                    userManagement.fileSystemManager.CreateFile(filePath, "");
                 }
                 else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
 
@@ -280,7 +280,7 @@ namespace AMIG.OS.Utils
             if (args.Length > 1)
             {
                 string filePath = Path.Combine(currentDirectory, args[1]);
-                fileSystemManager.ReadFile(filePath, role);
+                userManagement.fileSystemManager.ReadFile(filePath, role);
             }
             else Console.WriteLine("Bitte geben Sie eine Datei an.");
         }
@@ -293,7 +293,7 @@ namespace AMIG.OS.Utils
                 {
                     string path = Path.Combine(currentDirectory, args[1]);
                     string permission = args[2];
-                    fileSystemManager.SetPermission(path, permission);
+                    userManagement.fileSystemManager.SetPermission(path, permission);
                     Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
                 }
                 else Console.WriteLine("Ungültige Argumente für setperm.");
@@ -308,7 +308,7 @@ namespace AMIG.OS.Utils
                 if (args.Length == 2)
                 {
                     string path = Path.Combine(currentDirectory, args[1]);
-                    fileSystemManager.UnlockFile(path);
+                    userManagement.fileSystemManager.UnlockFile(path);
                 }
                 else Console.WriteLine("Ungültige Argumente für unlock.");
 

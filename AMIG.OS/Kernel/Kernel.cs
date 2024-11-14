@@ -12,11 +12,8 @@ namespace AMIG.OS.Kernel
     public class Kernel : Sys.Kernel
     {
         private Sys.FileSystem.CosmosVFS fs1;
-        private static readonly RoleRepository roleRepository = new RoleRepository();
-        private static readonly UserRepository userRepository = new UserRepository(roleRepository);
-        private  static UserManagement userManagement = new UserManagement(roleRepository, userRepository);
-        private  static FileSystemManager fileSystemManager = new FileSystemManager();
-        private static Helpers helpers = new Helpers(userManagement, fileSystemManager);
+        private  static UserManagement userManagement = new UserManagement();
+        private static Helpers helpers = new Helpers(userManagement);
         private  CommandHandler commandHandler;
         private List<string> commandHistory = new List<string>(); // Liste für Befehle
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
@@ -36,10 +33,9 @@ namespace AMIG.OS.Kernel
 
             // Initialisiere CommandHandler mit Abhängigkeiten
             commandHandler = new CommandHandler(userManagement,
-                                                fileSystemManager,
                                                 ShowLoginOptions,
                                                 helpers,
-                                                fs1);
+                                                fs1); 
 
             Console.Clear();
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
@@ -80,10 +76,25 @@ namespace AMIG.OS.Kernel
             Console.WriteLine("");
             Console.Write("Username: ");
             var username = Console.ReadLine();
+            // Prüfen, ob der Benutzername leer oder nur Leerzeichen ist
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                Console.WriteLine("Username cannot be empty. Please try again.");
+                ShowLoginOptions();
+                return;
+            }
+
             Console.Write("Password: ");
             var password = ConsoleHelpers.GetPassword();
 
-            
+            // Prüfen, ob das Passwort leer oder nur Leerzeichen ist
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                Console.WriteLine("Password cannot be empty. Please try again.");
+                ShowLoginOptions();
+                return;
+            }
+
             if (userManagement.Login(username, password))
             {
                 LoggedInUser = userManagement.GetUser(username);
@@ -102,14 +113,37 @@ namespace AMIG.OS.Kernel
 
         private void Register()
         {
-            Console.Write("Choose a username: ");
+            Console.WriteLine("");
+            Console.Write("Username: ");
             var username = Console.ReadLine();
-            Console.Write("Choose a password: ");
+            // Prüfen, ob der Benutzername leer oder nur Leerzeichen ist
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                Console.WriteLine("Username cannot be empty. Please try again.");
+                ShowLoginOptions();
+                return;
+            }
+
+            Console.Write("Password: ");
             var password = ConsoleHelpers.GetPassword();
+
+            // Prüfen, ob das Passwort leer oder nur Leerzeichen ist
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                Console.WriteLine("Password cannot be empty. Please try again.");
+                ShowLoginOptions();
+                return;
+            }
 
             Console.Write("Choose a role (Admin or Standard): ");
             var roleInput = Console.ReadLine().ToLower();
-            
+            if (string.IsNullOrWhiteSpace(roleInput))
+            {
+                Console.WriteLine("Role cannot be empty. Please try again.");
+                ShowLoginOptions();
+                return;
+            }
+
             if (userManagement.Register(username, password, roleInput))
             {
                 Console.WriteLine("Registration successful! Please log in.");
