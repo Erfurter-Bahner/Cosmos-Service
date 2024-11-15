@@ -119,23 +119,23 @@ namespace AMIG.OS.UserSystemManagement
         // Initialisiert Standardrollen und speichert sie, falls keine Rollendaten existieren
         public void InitializeDefaultRoles()
         {
-            if (File.Exists(dataFilePath))
-            {
-                Console.WriteLine("Lade Rollen aus Datei...");
-                LoadRoles();
-            }
-            else
-            {
+            //if (File.Exists(dataFilePath))
+            //{
+            //    Console.WriteLine("Lade Rollen aus Datei...");
+            //    LoadRoles();
+            //}
+            //else
+            //{
                 Console.WriteLine("Erstelle Standardrollen, da keine Rollendaten-Datei existiert...");
 
                 // Standardrollen hinzufügen7
                 string admin = "admin";
                 string standarduser = "standarduser";
-                roles[admin] = new Role(admin, new HashSet<string> { "CreateUser", "DeleteUser", "ViewLogs", "ModifySettings", "AddRole" });
+                roles[admin] = new Role(admin, new HashSet<string> { "CreateUser", "DeleteUser", "ViewLogs", "ModifySettings", "addrole" });
                 roles[standarduser] = new Role(standarduser, new HashSet<string> { "viewLogs" });
 
                 SaveRoles();
-            }
+            //}
         }
 
         // Rolle nach Name abrufen

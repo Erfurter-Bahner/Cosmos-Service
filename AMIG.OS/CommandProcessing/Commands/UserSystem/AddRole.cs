@@ -9,7 +9,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class AddRole : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "CreateUser"; // Required permission name
+        public string PermissionName { get; } = "addrole"; // Required permission name
         public string Description => "Add a role";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
@@ -39,10 +39,10 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (args.Length > 2)
+            if (args.Length >= 2)
             {
-                string roleName = args[1];
-                string[] permissions = args.Skip(2).ToArray();
+                string roleName = args[0];
+                string[] permissions = args.Skip(1).ToArray();
 
                 // Create a HashSet from the entered permissions
                 HashSet<string> permissionsHash = new HashSet<string>(permissions);

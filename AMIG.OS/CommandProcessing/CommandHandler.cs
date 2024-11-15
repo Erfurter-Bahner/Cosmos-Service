@@ -22,6 +22,8 @@ namespace AMIG.OS.CommandProcessing
                 //{ "ls", new ListDirectoryCommand(fileSystem) },
                 //{ "mkdir", new MakeDirectoryCommand(fileSystem) },
                 { "addrole", new AddRole(userManagement) },
+                { "rmrole", new RemoveRole(userManagement) },
+                { "addroletouser", new AddRoleToUser(userManagement)}
                 // Weitere Befehle hinzufügen ...
             };
         }
