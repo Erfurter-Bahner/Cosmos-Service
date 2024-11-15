@@ -148,19 +148,19 @@ namespace AMIG.OS.Utils
             userManagement.ChangePassword(loggedInUser, oldPassword, newPassword);
         }
 
-        public void mkdirHelper(bool admin_true, string[]args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length > 1)
-                {
-                    string dirName = Path.Combine(currentDirectory, args[1]);
-                    userManagement.fileSystemManager.CreateDirectory(dirName);
-                }
-                else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //public void mkdirHelper(bool admin_true, string[]args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length > 1)
+        //        {
+        //            string dirName = Path.Combine(currentDirectory, args[1]);
+        //            userManagement.fileSystemManager.CreateDirectory(dirName);
+        //        }
+        //        else Console.WriteLine("Bitte geben Sie einen Verzeichnisnamen an.");
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
         public void cdHelper(string[] args, ref string currentDirectory) 
         {
@@ -220,101 +220,101 @@ namespace AMIG.OS.Utils
             }
         }
 
-        public void writeHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
-                Console.WriteLine("Bitte Inhalt eingeben");
-                string content = Console.ReadLine();
-                userManagement.fileSystemManager.WriteToFile(fileName, content);
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //public void writeHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        string fileName = Path.Combine(currentDirectory, args[1]); // Kombiniere den aktuellen Pfad mit dem Dateinamen
+        //        Console.WriteLine("Bitte Inhalt eingeben");
+        //        string content = Console.ReadLine();
+        //        userManagement.fileSystemManager.WriteToFile(fileName, content);
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
-        public void rmHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length > 1)
-                {
-                    string filePath = Path.Combine(currentDirectory, args[1]);
-                    userManagement.fileSystemManager.DeleteFile(filePath);
-                }
-                else Console.WriteLine("Bitte geben Sie eine Datei an.");
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //public void rmHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length > 1)
+        //        {
+        //            string filePath = Path.Combine(currentDirectory, args[1]);
+        //            userManagement.fileSystemManager.DeleteFile(filePath);
+        //        }
+        //        else Console.WriteLine("Bitte geben Sie eine Datei an.");
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
-        public void rmdirHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length > 1)
-                {
-                    string dirPath = Path.Combine(currentDirectory, args[1]);
-                    userManagement.fileSystemManager.DeleteDirectory(dirPath);
-                }
-                else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //public void rmdirHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length > 1)
+        //        {
+        //            string dirPath = Path.Combine(currentDirectory, args[1]);
+        //            userManagement.fileSystemManager.DeleteDirectory(dirPath);
+        //        }
+        //        else Console.WriteLine("Bitte geben Sie ein Verzeichnis an.");
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
-        public void touchHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length > 1)
-                {
-                    string filePath = Path.Combine(currentDirectory, args[1]);
-                    userManagement.fileSystemManager.CreateFile(filePath, "");
-                }
-                else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
+        //public void touchHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length > 1)
+        //        {
+        //            string filePath = Path.Combine(currentDirectory, args[1]);
+        //            userManagement.fileSystemManager.CreateFile(filePath, "");
+        //        }
+        //        else Console.WriteLine("Bitte geben Sie einen Dateinamen an.");
 
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
-        public void catHelper(string[] args, string currentDirectory, string role)
-        {
-            if (args.Length > 1)
-            {
-                string filePath = Path.Combine(currentDirectory, args[1]);
-                userManagement.fileSystemManager.ReadFile(filePath, role);
-            }
-            else Console.WriteLine("Bitte geben Sie eine Datei an.");
-        }
+        //public void catHelper(string[] args, string currentDirectory, string role)
+        //{
+        //    if (args.Length > 1)
+        //    {
+        //        string filePath = Path.Combine(currentDirectory, args[1]);
+        //        userManagement.fileSystemManager.ReadFile(filePath, role);
+        //    }
+        //    else Console.WriteLine("Bitte geben Sie eine Datei an.");
+        //}
 
-        public void setpermHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length == 3)
-                {
-                    string path = Path.Combine(currentDirectory, args[1]);
-                    string permission = args[2];
-                    userManagement.fileSystemManager.SetPermission(path, permission);
-                    Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
-                }
-                else Console.WriteLine("Ungültige Argumente für setperm.");
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //public void setpermHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length == 3)
+        //        {
+        //            string path = Path.Combine(currentDirectory, args[1]);
+        //            string permission = args[2];
+        //            userManagement.fileSystemManager.SetPermission(path, permission);
+        //            Console.WriteLine($"Berechtigung '{permission}' für '{path}' gesetzt.");
+        //        }
+        //        else Console.WriteLine("Ungültige Argumente für setperm.");
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
-        public void unlockHelper(bool admin_true, string[] args, string currentDirectory)
-        {
-            if (admin_true)
-            {
-                if (args.Length == 2)
-                {
-                    string path = Path.Combine(currentDirectory, args[1]);
-                    userManagement.fileSystemManager.UnlockFile(path);
-                }
-                else Console.WriteLine("Ungültige Argumente für unlock.");
+        //public void unlockHelper(bool admin_true, string[] args, string currentDirectory)
+        //{
+        //    if (admin_true)
+        //    {
+        //        if (args.Length == 2)
+        //        {
+        //            string path = Path.Combine(currentDirectory, args[1]);
+        //            userManagement.fileSystemManager.UnlockFile(path);
+        //        }
+        //        else Console.WriteLine("Ungültige Argumente für unlock.");
 
-            }
-            else Console.WriteLine("Keine Berechtigung für diesen Command");
-        }
+        //    }
+        //    else Console.WriteLine("Keine Berechtigung für diesen Command");
+        //}
 
         public void error1() {
                 Console.WriteLine("Missing or unknown argument");

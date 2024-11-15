@@ -10,16 +10,14 @@ namespace AMIG.OS.UserSystemManagement
     public class UserManagement
     {
         public UserRepository userRepository { get; private set; }  // Verwaltet alle Benutzerinformationen
-       public AuthenticationService authService { get; private set; } // Zuständig für Authentifizierung
+        public AuthenticationService authService { get; private set; } // Zuständig für Authentifizierung
         public RoleRepository roleRepository { get; private set; }  // Speichert Rollen und Berechtigungen
-        public FileSystemManager fileSystemManager { get; private set; } // Initialisert Fileoperations
 
         public UserManagement()
         {
             // Initialisiere Repositorys und den Authentifizierungsdienst
             this.roleRepository = new RoleRepository();
             this.userRepository = new UserRepository(roleRepository);
-            this.fileSystemManager = new FileSystemManager();
             this.authService = new AuthenticationService(userRepository, roleRepository);
         }
 
