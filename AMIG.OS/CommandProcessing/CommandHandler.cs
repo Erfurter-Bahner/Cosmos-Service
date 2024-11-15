@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AMIG.OS.FileManagement;
 using AMIG.OS.CommandProcessing.Commands.UserSystem;
 using AMIG.OS.Utils;
+using AMIG.OS.CommandProcessing.Commands.extra;
 
 namespace AMIG.OS.CommandProcessing
 {
@@ -23,7 +24,8 @@ namespace AMIG.OS.CommandProcessing
                 //{ "mkdir", new MakeDirectoryCommand(fileSystem) },
                 { "addrole", new AddRole(userManagement) },
                 { "rmrole", new RemoveRole(userManagement) },
-                { "addroletouser", new AddRoleToUser(userManagement)}
+                { "addroletouser", new AddRoleToUser(userManagement)},
+                { "adios", new Adios()}
                 // Weitere Befehle hinzufügen ...
             };
         }
