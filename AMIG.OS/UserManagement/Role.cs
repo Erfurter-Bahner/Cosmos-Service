@@ -20,10 +20,10 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Überprüft, ob eine bestimmte Berechtigung in der Menge der Berechtigungen enthalten ist
-        public bool HasPermission(string permission)
-        {
-            return Permissions.Contains(permission);
-        }
+        //public bool HasPermission(string permission)
+        //{
+        //    return Permissions.Contains(permission);
+        //}
     }
 }
 
