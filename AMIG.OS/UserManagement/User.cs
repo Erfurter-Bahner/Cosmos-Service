@@ -21,7 +21,7 @@ namespace AMIG.OS.UserSystemManagement
         // Konstruktor: Erstellt einen neuen Benutzer und initialisiert die Felder
         public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, string created = null)
         {
-            Username = username;
+            Username = username;     
             PasswordHash = isHashed ? password : HashPassword(password);
             CreatedAt = created ?? DateTime.Now.ToString(); // Aktuelle Zeit, falls `created` null ist
 
