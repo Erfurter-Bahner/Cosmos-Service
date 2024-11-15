@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
     {
         private readonly UserManagement userManagement;
         public string Description => "shutdown the system";
-        public string PermissionName { get; } = "NormalCmd"; // Required permission name
+        public string PermissionName { get; } = "ShutdownSys"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-amigos", "needed to use shutdown command."},
@@ -36,7 +36,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
                 ShowHelp();
                 return;
             }
-            if (args.Length == 2 && args[1].Equals("amigos"))
+            if (args.Length == 1 && args[0].Equals("amigos"))
             {
                 Console.Clear();
                 Console.WriteLine("\n\tHASTA LA VISTA");
