@@ -131,7 +131,7 @@ namespace AMIG.OS.UserSystemManagement
                 // Standardrollen hinzufügen7
                 string admin = "admin";
                 string standarduser = "standarduser";
-                roles[admin] = new Role(admin, new HashSet<string> { "CreateUser", "DeleteUser", "ViewLogs", "ModifySettings", "addrole", "ShutdownSys" });
+                roles[admin] = new Role(admin, new HashSet<string> { "CreateUser", "DeleteUser", "ViewLogs", "ModifySettings", "addrole", "ShutdownSys", "LogOutSys" });
                 roles[standarduser] = new Role(standarduser, new HashSet<string> { "viewLogs", "ShutdownSys" });
 
                 SaveRoles();
