@@ -9,17 +9,21 @@ using AMIG.OS.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AMIG.OS.Kernel;
+using System.Linq.Expressions;
+using System.Drawing;
+
 
 namespace AMIG.OS.CommandProcessing.Commands.extra
 {
-    public class Adios : ICommand
+    public class Logout : ICommand
     {
         private readonly UserManagement userManagement;
-        public string Description => "shutdown the system";
-        public string PermissionName { get; } = "ShutdownSys"; // Required permission name
+        public string Description => "logout to start screen";
+        public string PermissionName { get; } = "LogOutSys"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-amigos", "needed to use shutdown command."},
+            {"'logout' usr", "to logout of current user."},
         };
 
         // Implementing CanExecute as defined in the custom ICommand interface
@@ -34,26 +38,25 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             if (args.Contains("-help"))
             {
                 ShowHelp();
-                return;
             }
-            if (args.Length == 1 && args[0].Equals("amigos"))
-            {
+            if (args.Length == 1 && args[1].Equals("usr")) {
                 Console.Clear();
-                Console.WriteLine("\n\tHASTA LA VISTA");
-                Thread.Sleep(1500);
-                Sys.Power.Shutdown();
+                //Sys.Kernel.ShowLoginOptions.Invoke();
+                // FUNKTIONIERT NICHT, kein zugriff auf KERNEL 
+                
+                
             }
             else
             {
                 Console.WriteLine("Insufficient arguments. Use -help to see usage.");
-            }
+            }            
         }
 
         // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: adios [options]");
+            Console.WriteLine("Usage: logout [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");
