@@ -15,7 +15,7 @@ namespace AMIG.OS.UserSystemManagement
         public UserRepository(RoleRepository roleRepository)
         {
             this.roleRepository = roleRepository;
-            InitializeTestUsers();
+            //InitializeTestUsers();
             LoadUsers();
             
         }
@@ -225,7 +225,16 @@ namespace AMIG.OS.UserSystemManagement
         // Gibt alle Benutzer im Repository zurück
         public Dictionary<string, User> GetAllUsers()
         {
-            return users;
+            if (users == null)
+            {
+                Console.WriteLine("Es gibt keine Benutzer.");
+                return null;
+            }
+            else
+            {
+                return users;               
+            }
+            
         }
     }
 }

@@ -26,7 +26,7 @@ namespace AMIG.OS.CommandProcessing
                 { "rmrole", new RemoveRole(userManagement) },
                 { "addroletouser", new AddRoleToUser(userManagement)},
                 { "adios", new Adios()},
-                { "logout", new Logout()},
+                { "logout", new Logout(userManagement)},
                 // Weitere Befehle hinzufügen ...
             };
         }
@@ -36,7 +36,7 @@ namespace AMIG.OS.CommandProcessing
             var args = input.Split(' ');
             var commandName = args[0].ToLower();
 
-            if (commands.TryGetValue(commandName, out var command) && command.CanExecute(currentUser))
+            if (commands.TryGetValue(commandName, out var command) /*&& command.CanExecute(currentUser)*/)
             {
                 command.Execute(args.Skip(1).ToArray(), currentUser); // Übergeben der Parameter an Execute
             }

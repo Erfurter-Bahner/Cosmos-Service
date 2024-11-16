@@ -20,7 +20,9 @@ namespace AMIG.OS.UserSystemManagement
             if (user != null && user.VerifyPassword(password))
             {
                 user.LastLogin = DateTime.Now.ToString(); // Datum der letzten Anmeldung aktualisieren
+               
                 userRepository.SaveUsers(); // Änderungen speichern
+                
                 return true;
             }
             return false;

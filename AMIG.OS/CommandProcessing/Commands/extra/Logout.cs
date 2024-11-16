@@ -19,13 +19,17 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
     public class Logout : ICommand
     {
         private readonly UserManagement userManagement;
+        private User LoggedInUser;
         public string Description => "logout to start screen";
         public string PermissionName { get; } = "LogOutSys"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"'logout' usr", "to logout of current user."},
         };
-
+        public Logout(UserManagement userManagement)
+        {
+            this.userManagement = userManagement;
+        }
         // Implementing CanExecute as defined in the custom ICommand interface
         public bool CanExecute(User currentUser)
         {
@@ -39,11 +43,9 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             {
                 ShowHelp();
             }
-            if (args.Length == 1 && args[1].Equals("usr")) {
-                Console.Clear();
-                //Sys.Kernel.ShowLoginOptions.Invoke();
-                // FUNKTIONIERT NICHT, kein zugriff auf KERNEL 
-                
+            if (args.Length == 1 && args[0].Equals("usr")) {
+
+                userManagement.loginManager.ShowLoginOptions();
                 
             }
             else
