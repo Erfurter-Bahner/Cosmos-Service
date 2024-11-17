@@ -31,26 +31,52 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         }
 
         // Implementing Execute as defined in the custom ICommand interface
-        public void Execute(string[] args, User currentUser)
+        public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (args.Contains("-help"))
+            if (parameters==null)
             {
-                ShowHelp();
-                return;
+                Console.WriteLine("parameters null in addrole");
+            }
+            // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
+            if (parameters.TryGetValue("help", out _))
+            {
+                ShowHelp();                
             }
 
-            if (args.Length >= 2) //problem leerzeichen werden als input gezählt
-            {
-                string roleName = args[0];
-                string[] permissions = args.Skip(1).ToArray(); //skip den befehl und den rolen namen
 
-                // Create a HashSet from the entered permissions
-                HashSet<string> permissionsHash = new HashSet<string>(permissions);
-                userManagement.roleRepository.AddRole(new Role(roleName, permissionsHash));
+            if (parameters.TryGetValue("permissions", out string permissionsRaw))
+            {
+                Console.WriteLine($"Gefundene Berechtigungen: {permissionsRaw}");
+
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                Console.WriteLine("Debug: Der Schlüssel 'permissions' wurde nicht gefunden.");
+            }
+            // Überprüfen, ob der notwendige Parameter "role" vorhanden ist
+            if (parameters.TryGetValue("role", out string roleName))
+            {
+                Console.WriteLine($"Gefundene Berechtigungen: {roleName}");
+                // Überprüfen, ob der "permissions"-Parameter vorhanden ist
+                //if (parameters.TryGetValue("permissions".Trim(), out string permissionsRaw))
+                //{
+                Console.WriteLine($"Gefundene Berechtigungen: {permissionsRaw}");
+                // Erstelle ein HashSet der angegebenen Berechtigungen
+                var permissions = permissionsRaw.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                HashSet<string> permissionsHash = new HashSet<string>(permissions);
+
+                // Neue Rolle hinzufügen
+                userManagement.roleRepository.AddRole(new Role(roleName, permissionsHash));
+                Console.WriteLine($"Rolle '{roleName}' mit Berechtigungen '{string.Join(", ", permissions)}' hinzugefügt.");
+                //}
+                //else
+                //{
+                //    Console.WriteLine("Fehler: Es wurden keine Berechtigungen angegeben. Verwenden Sie -permissions <Liste>");
+                //}
+            }
+            else
+            {
+                Console.WriteLine("Fehler: Der Parameter '-role' fehlt. Verwenden Sie -help, um die Syntax zu sehen.");
             }
         }
 

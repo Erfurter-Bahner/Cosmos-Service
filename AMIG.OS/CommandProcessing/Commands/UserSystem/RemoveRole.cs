@@ -30,17 +30,16 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         }
 
         // Implementing Execute as defined in the custom ICommand interface
-        public void Execute(string[] args, User currentUser)
+        public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (args.Contains("-help"))
+            if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
                 return;
-            }
+            }      
 
-            if (args.Length == 1)
-            {
-                string roleName = args[0];
+            if (parameters.TryGetValue("role", out string roleName))
+            {               
                 // Entferne die Rolle aus dem Rollen-Repository
                 userManagement.roleRepository.RemoveRole(roleName);
 
@@ -81,7 +80,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine($"Usage: {PermissionName} [options]");
+            Console.WriteLine($"Usage: rmrole [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

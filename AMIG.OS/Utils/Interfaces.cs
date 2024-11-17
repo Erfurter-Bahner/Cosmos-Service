@@ -13,7 +13,7 @@ namespace AMIG.OS.Utils
         string PermissionName { get; } // Name der benötigten Permission
         Dictionary<string, string> Parameters { get; } // Mögliche Parameter und ihre Beschreibungen
 
-        void Execute(string[] args, User currentUser);
+        void Execute(CommandParameters parameters, User currentUser);
         bool CanExecute(User currentUser);
 
         // Gibt eine Übersicht über den Befehl und seine Parameter zurück

@@ -37,13 +37,13 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
         }
 
         // Implementing Execute as defined in the custom ICommand interface
-        public void Execute(string[] args, User currendUser)
+        public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (args.Contains("-help"))
+            if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
             }
-            if (args.Length == 0) {
+            if (parameters.Parameters.Count == 0) {
 
                 userManagement.loginManager.ShowLoginOptions();
                 

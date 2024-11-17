@@ -38,7 +38,9 @@ namespace AMIG.OS.CommandProcessing
 
             if (commands.TryGetValue(commandName, out var command) /*&& command.CanExecute(currentUser)*/)
             {
-                command.Execute(args.Skip(1).ToArray(), currentUser); // Übergeben der Parameter an Execute
+                var parameters = ParseParameters(args.Skip(1).ToArray());
+                command.Execute(parameters, currentUser);
+                // Übergeben der Parameter an Execute
                 // command: zusatz1 zusatz2
             }
             else if (commandName == "-help")
@@ -50,6 +52,57 @@ namespace AMIG.OS.CommandProcessing
                 Console.WriteLine("Unbekannter Befehl oder fehlende Berechtigung.");
             }
         }
+        private CommandParameters ParseParameters(string[] args)
+        {
+            var parameters = new CommandParameters();
+            string currentKey = null;
+            var currentValues = new HashSet<string>();
+
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Keine Argumente übergeben.");
+                return parameters;
+            }
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                Console.WriteLine($"Verarbeite Argument {i}: {args[i]}");
+
+                // Wenn das Argument mit einem Bindestrich beginnt, dann ist es ein Schlüssel
+                if (args[i].StartsWith("-"))
+                {
+                    Console.WriteLine("inside parseparam0");
+
+                    // Speichere vorherigen Schlüssel und Werte
+                    if (currentKey != null)
+                    {
+                        Console.WriteLine($"Speichere Schlüssel: {currentKey}");
+                        parameters.AddParameter(currentKey, string.Join(" ", currentValues));
+                        currentValues.Clear();
+                    }
+
+                    // Setze den neuen Schlüssel
+                    currentKey = args[i].TrimStart('-');
+                    Console.WriteLine($"Neuer Schlüssel gesetzt: {currentKey}");
+                }
+                else
+                {
+                    // Füge den aktuellen Wert der Liste hinzu
+                    Console.WriteLine($"Hinzufügen des Werts: {args[i]} zum Schlüssel: {currentKey}");
+                    currentValues.Add(args[i]);
+                }
+            }
+
+            // Letzten Parameter und Werte speichern
+            if (currentKey != null)
+            {
+                Console.WriteLine($"Speichere letzten Schlüssel: {currentKey}");
+                parameters.AddParameter(currentKey, string.Join(" ", currentValues));
+            }
+
+            return parameters;
+        }
+
 
         private void ShowAllCommandsHelp()
         {

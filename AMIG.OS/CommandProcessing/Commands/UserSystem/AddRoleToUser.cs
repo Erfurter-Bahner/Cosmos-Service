@@ -30,20 +30,32 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         }
 
         // Implementing Execute as defined in the custom ICommand interface
-        public void Execute(string[] args, User currentUser)
+        public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (args.Contains("-help"))
+            // Wenn der 'help'-Parameter übergeben wird, zeige die Hilfe
+            if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
                 return;
             }
 
-            if (args.Length >= 2)
-            {             
-                string username = args[0];
+            // Wenn genügend Argumente übergeben werden
+            if (parameters.TryGetValue("username", out string username)) //anpassem 
+            {
+                // Benutzername ist das erste Argument
+                //-string username = parameters.Parameters.FirstOrDefault().Value;
+
+                // Überprüfen, ob der Benutzer existiert
                 User user = userManagement.userRepository.GetUserByUsername(username);
-                string[] rolesNameInputs = args.Skip(1).ToArray();
-                               
+                if (user == null)
+                {
+                    Console.WriteLine($"Benutzer '{username}' wurde nicht gefunden.");
+                    return;
+                }
+
+                // Die restlichen Argumente als Rollennamen behandeln
+                string[] rolesNameInputs = parameters.Parameters.Skip(1).Select(p => p.Value).ToArray();
+
                 // Für jede Rolle überprüfen und hinzufügen
                 foreach (string roleName in rolesNameInputs)
                 {
@@ -65,7 +77,6 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
                     // Rolle und Berechtigungen zum Benutzer hinzufügen
                     user.AddRole(role);
-
                     Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
                 }
 
@@ -77,6 +88,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 Console.WriteLine("Insufficient arguments. Use -help to see usage.");
             }
         }
+
 
         // Show help method as defined in the custom ICommand interface
         public void ShowHelp()

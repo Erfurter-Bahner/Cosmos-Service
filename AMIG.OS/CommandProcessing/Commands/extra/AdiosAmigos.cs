@@ -28,24 +28,26 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             return currentUser.HasPermission(PermissionName);
         }
 
-        // Implementing Execute as defined in the custom ICommand interface
-        public void Execute(string[] args, User currendUser)
+        public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (args.Contains("-help"))
+            // Wenn der 'help'-Parameter übergeben wird, zeige die Hilfe
+            if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
                 return;
             }
-            if (args.Length == 1 && args[0].Equals("amigos"))
+
+            // Prüfen, ob der Befehl "amigos" ohne weitere Argumente aufgerufen wurde
+            if (parameters.Parameters.Count == 1 && parameters.Parameters.ContainsKey("amigos"))
             {
                 Console.Clear();
                 Console.WriteLine("\n\tHASTA LA VISTA");
                 Thread.Sleep(1500);
-                Sys.Power.Shutdown();
+                Sys.Power.Shutdown(); // Simuliert das Herunterfahren des Systems
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                Console.WriteLine("Fehlende oder ungültige Argumente. Verwenden Sie -help für weitere Informationen.");
             }
         }
 
