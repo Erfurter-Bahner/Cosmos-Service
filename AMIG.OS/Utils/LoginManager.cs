@@ -9,7 +9,6 @@ namespace AMIG.OS.Utils
 {
     public class LoginManager
     {
-
         private RoleRepository roleRepository;
         private UserRepository userRepository;
         private AuthenticationService authService;
@@ -89,7 +88,6 @@ namespace AMIG.OS.Utils
                 Console.WriteLine("Invalid credentials. Try again.");
                 ShowLoginOptions();
             }
-
         }
 
         private void Register()
@@ -135,7 +133,5 @@ namespace AMIG.OS.Utils
             }
 
         }
-
-
     }
 }

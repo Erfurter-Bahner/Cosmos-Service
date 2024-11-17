@@ -36,7 +36,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
                 ShowHelp();
                 return;
             }
-            if (args.Length == 1 && args[0].Equals("amigos"))
+            if (args.Length == 2 && args[1].Equals("amigos"))
             {
                 Console.Clear();
                 Console.WriteLine("\n\tHASTA LA VISTA");

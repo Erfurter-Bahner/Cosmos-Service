@@ -24,7 +24,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
         public string PermissionName { get; } = "LogOutSys"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"'logout' usr", "to logout of current user."},
+            {"logout", "to logout of current user."},
         };
         public Logout(UserManagement userManagement)
         {
@@ -43,7 +43,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             {
                 ShowHelp();
             }
-            if (args.Length == 1 && args[0].Equals("usr")) {
+            if (args.Length == 1) {
 
                 userManagement.loginManager.ShowLoginOptions();
                 

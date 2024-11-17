@@ -39,10 +39,10 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (args.Length >= 2)
+            if (args.Length >= 3)
             {
-                string roleName = args[0];
-                string[] permissions = args.Skip(1).ToArray();
+                string roleName = args[1];
+                string[] permissions = args.Skip(2).ToArray(); //skip den befehl und den rolen namen
 
                 // Create a HashSet from the entered permissions
                 HashSet<string> permissionsHash = new HashSet<string>(permissions);
