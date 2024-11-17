@@ -38,11 +38,11 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (args.Length >= 3)
+            if (args.Length >= 2)
             {             
-                string username = args[1];
+                string username = args[0];
                 User user = userManagement.userRepository.GetUserByUsername(username);
-                string[] rolesNameInputs = args.Skip(2).ToArray();
+                string[] rolesNameInputs = args.Skip(1).ToArray();
                                
                 // Für jede Rolle überprüfen und hinzufügen
                 foreach (string roleName in rolesNameInputs)

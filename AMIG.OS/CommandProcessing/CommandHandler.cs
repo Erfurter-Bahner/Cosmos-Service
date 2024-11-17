@@ -38,8 +38,8 @@ namespace AMIG.OS.CommandProcessing
 
             if (commands.TryGetValue(commandName, out var command) /*&& command.CanExecute(currentUser)*/)
             {
-                command.Execute(args.ToArray(), currentUser); // Übergeben der Parameter an Execute
-                // command: name zusatz1 zusatz2
+                command.Execute(args.Skip(1).ToArray(), currentUser); // Übergeben der Parameter an Execute
+                // command: zusatz1 zusatz2
             }
             else if (commandName == "-help")
             {

@@ -38,9 +38,9 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (args.Length == 2)
+            if (args.Length == 1)
             {
-                string roleName = args[1];
+                string roleName = args[0];
                 // Entferne die Rolle aus dem Rollen-Repository
                 userManagement.roleRepository.RemoveRole(roleName);
 

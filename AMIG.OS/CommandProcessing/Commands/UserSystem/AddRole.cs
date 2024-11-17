@@ -39,10 +39,10 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (args.Length >= 3)
+            if (args.Length >= 2) //problem leerzeichen werden als input gezählt
             {
-                string roleName = args[1];
-                string[] permissions = args.Skip(2).ToArray(); //skip den befehl und den rolen namen
+                string roleName = args[0];
+                string[] permissions = args.Skip(1).ToArray(); //skip den befehl und den rolen namen
 
                 // Create a HashSet from the entered permissions
                 HashSet<string> permissionsHash = new HashSet<string>(permissions);

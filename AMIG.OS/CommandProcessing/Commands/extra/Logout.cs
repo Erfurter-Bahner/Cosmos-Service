@@ -43,7 +43,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             {
                 ShowHelp();
             }
-            if (args.Length == 1) {
+            if (args.Length == 0) {
 
                 userManagement.loginManager.ShowLoginOptions();
                 
