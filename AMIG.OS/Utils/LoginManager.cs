@@ -131,7 +131,6 @@ namespace AMIG.OS.Utils
             {
                 Console.WriteLine("Registration failed. Username may already exist.");
             }
-
         }
     }
 }
