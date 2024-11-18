@@ -6,20 +6,20 @@ using System.Linq;
 
 namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
-    public class AddRoleToUser : ICommand
+    public class RemoveRoleUser : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addroletouser"; // Required permission name
-        public string Description => "add a role to a user";
+        public string PermissionName { get; } = "rmroleuser"; // Required permission name
+        public string Description => "remove a role from a user";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             { "-user", "Name of the user" },
-            { "-role", "Name of the new role" },
+            { "-role", "Name of the role/s to remove" },
             { "-help", "Shows usage information for the command." }
         };
 
-        public AddRoleToUser(UserManagement userManagement)
+        public RemoveRoleUser(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -73,15 +73,15 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         }
 
                         // Überprüfen, ob der Benutzer die Rolle bereits hat
-                        if (user.Roles.Any(r => r.RoleName == roleName))
+                        if (!user.Roles.Contains(role))
                         {
-                            Console.WriteLine($"Benutzer '{username}' hat bereits die Rolle '{roleName}'.");
+                            Console.WriteLine($"Benutzer '{username}' hat nicht die Rolle '{roleName}'.");
                             continue;
                         }
 
                         // Rolle und Berechtigungen zum Benutzer hinzufügen
-                        user.AddRole(role);
-                        Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
+                        user.RemoveRole(role);
+                        Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich vom Benutzer '{username}' entfernt.");
                     }
 
                     // Benutzer speichern

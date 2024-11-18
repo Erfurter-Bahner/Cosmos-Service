@@ -6,20 +6,20 @@ using System.Linq;
 
 namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
-    public class AddRole : ICommand
+    public class RemovePermRole : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addrole"; // Required permission name
-        public string Description => "Add a role";
+        public string PermissionName { get; } = "rmpermrole"; // Required permission name
+        public string Description => "Remove permissions form a role";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            { "-role", "Name of the new role/s" },
-            { "-permissions", "Permissions of the new role" },
+            { "-role", "Name of the role, to remove perms from" },
+            { "-permissions", "Permissions to remove from the role" },
             { "-help", "Shows usage information for the command." }
         };
 
-        public AddRole(UserManagement userManagement)
+        public RemovePermRole(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -53,14 +53,30 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 // Überprüfen, ob der "permissions"-Parameter vorhanden ist
                 if (!string.IsNullOrEmpty(permissionsRaw))
                 {
-                
-                // Erstelle ein HashSet der angegebenen Berechtigungen
-                var permissions = permissionsRaw.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                HashSet<string> permissionsHash = new HashSet<string>(permissions);
+                    // Erstelle ein HashSet der angegebenen Berechtigungen
+                    var permissionsToRemove = permissionsRaw.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                                                                              .Select(permission => permission.Trim())
+                                                                                              .ToList();
 
-                // Neue Rolle hinzufügen
-                userManagement.roleRepository.AddRole(new Role(roleName, permissionsHash));
-                Console.WriteLine($"Rolle '{roleName}' mit Berechtigungen '{string.Join(", ", permissions)}' hinzugefügt.");
+                    // Aufruf der Methode, um alle angegebenen Berechtigungen von der Rolle zu entfernen
+                    userManagement.roleRepository.RemovePermissionsFromRole(roleName, permissionsToRemove);
+
+                    Dictionary<string, User> usersDictionary = userManagement.userRepository.GetAllUsers();
+
+                    foreach (var user in usersDictionary.Values)
+                    {
+                        var role = user.Roles.FirstOrDefault(r => r.RoleName == roleName);
+
+                        if (role != null)
+                        {
+                            // Update der kombinierten Berechtigungen für den Benutzer
+                            user.UpdateCombinedPermissions();
+                        }
+
+                    }
+
+                    // Änderungen in den gespeicherten Rollen und Benutzern speichern
+                    userManagement.userRepository.SaveUsers();
                 }
                 else
                 {
@@ -77,7 +93,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: AddRole [options]");
+            Console.WriteLine("Usage: rmpermrole [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

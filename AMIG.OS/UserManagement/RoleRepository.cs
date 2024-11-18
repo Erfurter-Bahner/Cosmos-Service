@@ -179,10 +179,10 @@ namespace AMIG.OS.UserSystemManagement
             {
                 foreach (var permission in permissionsToAdd)
                 {
-                    if (role.Permissions.Contains(permission))
+                    if (!role.Permissions.Contains(permission))
                     {
                         role.Permissions.Add(permission);
-                        Console.WriteLine($"Berechtigung '{permission}' wurde aus der Rolle '{roleName}' hinzugefügt.");
+                        Console.WriteLine($"Berechtigung '{permission}' wurde der Rolle '{roleName}' hinzugefügt.");
                     }
                     else
                     {

@@ -6,20 +6,20 @@ using System.Linq;
 
 namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
-    public class AddRoleToUser : ICommand
+    public class RemovePermUser : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addroletouser"; // Required permission name
-        public string Description => "add a role to a user";
+        public string PermissionName { get; } = "rmpermuser"; // Required permission name
+        public string Description => "remove a perm from a user";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             { "-user", "Name of the user" },
-            { "-role", "Name of the new role" },
+            { "-permissions", "Permissions to remove" },
             { "-help", "Shows usage information for the command." }
         };
 
-        public AddRoleToUser(UserManagement userManagement)
+        public RemovePermUser(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -55,35 +55,24 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 }
 
                 // Die restlichen Argumente als Rollennamen behandeln
-
-                if (parameters.TryGetValue("role", out string roleNames) && !string.IsNullOrEmpty(roleNames))
+                if (parameters.TryGetValue("permissions", out string permNames) && !string.IsNullOrEmpty(permNames))
                 {
-                    string[] rolesNameInputs = roleNames.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    string[] permNameInputs = permNames.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     // Für jede Rolle überprüfen und hinzufügen
-                    foreach (string roleName in rolesNameInputs)
+                    foreach (string permName in permNameInputs)
                     {
-                        Role role = userManagement.roleRepository.GetRoleByName(roleName);
-
-                        // Überprüfen, ob die Rolle existiert
-                        if (role == null)
+                        // Überprüfen, ob der Benutzer die Berechtigung bereits hat
+                        if (!user.Permissions.Contains(permName))
                         {
-                            Console.WriteLine($"Rolle '{roleName}' existiert nicht.");
-                            continue; // Nächste Rolle prüfen
-                        }
-
-                        // Überprüfen, ob der Benutzer die Rolle bereits hat
-                        if (user.Roles.Any(r => r.RoleName == roleName))
-                        {
-                            Console.WriteLine($"Benutzer '{username}' hat bereits die Rolle '{roleName}'.");
+                            Console.WriteLine($"Benutzer '{username}' hat nicht die Berechtigung '{permName}'.");
                             continue;
                         }
 
-                        // Rolle und Berechtigungen zum Benutzer hinzufügen
-                        user.AddRole(role);
-                        Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
+                        // Berechtigung zum Benutzer hinzufügen
+                        user.RemovePermission(permName);
+                        Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich von Benutzer '{username}' entfernt.");
                     }
-
                     // Benutzer speichern
                     userManagement.userRepository.SaveUsers();
                 }

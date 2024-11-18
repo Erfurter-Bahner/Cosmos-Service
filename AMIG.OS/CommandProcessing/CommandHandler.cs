@@ -25,8 +25,13 @@ namespace AMIG.OS.CommandProcessing
                 { "addrole", new AddRole(userManagement) },
                 { "rmrole", new RemoveRole(userManagement) },
                 { "addroletouser", new AddRoleToUser(userManagement)},
+                { "rmroleuser", new RemoveRoleUser(userManagement)},
                 { "adios", new Adios()},
                 { "logout", new Logout(userManagement)},
+                { "addpermtouser", new AddPermToUser(userManagement)},
+                { "rmpermuser", new RemovePermUser(userManagement)},
+                { "rmpermrole", new RemovePermRole(userManagement)},
+                { "addpermtorole", new AddPermToRole(userManagement)}
                 // Weitere Befehle hinzufügen ...
             };
         }

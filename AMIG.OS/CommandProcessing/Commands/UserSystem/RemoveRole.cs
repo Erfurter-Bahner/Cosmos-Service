@@ -14,7 +14,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            { "-rolename", "Name of the new role" },
+            { "-role", "Name of the new role" },
             { "-help", "Shows usage information for the command." }
         };
 
@@ -38,7 +38,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }      
 
-            if (parameters.TryGetValue("role", out string roleName))
+            if (parameters.TryGetValue("role", out string roleName) && !string.IsNullOrEmpty(roleName))
             {               
                 // Entferne die Rolle aus dem Rollen-Repository
                 userManagement.roleRepository.RemoveRole(roleName);
