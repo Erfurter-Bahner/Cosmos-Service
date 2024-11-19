@@ -1,11 +1,8 @@
 
 using System;
 using System.Collections.Generic;
-using Sys = Cosmos.System;
-using System.Linq;
 using AMIG.OS.Utils;
 using AMIG.OS.UserSystemManagement;
-using AMIG.OS.FileManagement;
 using AMIG.OS.CommandProcessing;
 
 namespace AMIG.OS.Kernel
@@ -30,7 +27,7 @@ namespace AMIG.OS.Kernel
             Console.SetCursorPosition(0, currentLineCursor);
         }
         public void inputs()
-        {
+        { 
             var currentInput = "";
             int cursorPosInInput = 0;
             while (true)

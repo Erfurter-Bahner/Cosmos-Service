@@ -16,9 +16,6 @@ namespace AMIG.OS.Kernel
         private UserManagement userManagement;
         private CommandHandler commandHandler;
         private SystemServices systemServices;
-        //private List<string> commandHistory = new List<string>(); // Liste für Befehle
-        //private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
-        //private User LoggedInUser;
         DateTime starttime;
 
         protected override void BeforeRun()
@@ -42,12 +39,11 @@ namespace AMIG.OS.Kernel
             Console.Clear();
             Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");           
             userManagement.loginManager.ShowLoginOptions();
-            
         }
 
         protected override void Run()
         {
-            Console.Write(Helper.preInput);         //Console.Write(helpers.preInput);
+            Console.Write(Helper.preInput);
             systemServices.inputs();
         }
     }
