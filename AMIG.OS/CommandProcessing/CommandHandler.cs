@@ -11,7 +11,7 @@ using AMIG.OS.CommandProcessing.Commands.extra;
 
 namespace AMIG.OS.CommandProcessing
 {
-    internal class CommandHandler
+    public class CommandHandler
     {
         private readonly Dictionary<string, ICommand> commands;
 
