@@ -31,7 +31,9 @@ namespace AMIG.OS.CommandProcessing
                 { "addpermtouser", new AddPermToUser(userManagement)},
                 { "rmpermuser", new RemovePermUser(userManagement)},
                 { "rmpermrole", new RemovePermRole(userManagement)},
-                { "addpermtorole", new AddPermToRole(userManagement)}
+                { "addpermtorole", new AddPermToRole(userManagement)},
+                { "adduser", new AddUser(userManagement) },
+                { "rmuser", new RemoveUser(userManagement) }
                 // Weitere Befehle hinzufügen ...
             };
         }
@@ -63,37 +65,43 @@ namespace AMIG.OS.CommandProcessing
             string currentKey = null;
             var currentValues = new HashSet<string>();
 
-            if (args.Length == 0)
+            if (args == null || args.Length == 0)
             {
-                Console.WriteLine("Keine Argumente übergeben.");
+                //Console.WriteLine("Keine Argumente übergeben.");
                 return parameters;
             }
 
             for (int i = 0; i < args.Length; i++)
             {
-                Console.WriteLine($"Verarbeite Argument {i}: {args[i]}");
+                if (string.IsNullOrWhiteSpace(args[i]))
+                {
+                    //Console.WriteLine($"Leeres oder ungültiges Argument bei Index {i} übersprungen.");
+                    continue; // Überspringe ungültige oder leere Argumente
+                }
+
+                //Console.WriteLine($"Verarbeite Argument {i}: {args[i]}");
 
                 // Wenn das Argument mit einem Bindestrich beginnt, dann ist es ein Schlüssel
                 if (args[i].StartsWith("-"))
                 {
-                    Console.WriteLine("inside parseparam0");
+                    //Console.WriteLine("inside parseparam0");
 
                     // Speichere vorherigen Schlüssel und Werte
                     if (currentKey != null)
                     {
-                        Console.WriteLine($"Speichere Schlüssel: {currentKey}");
+                        //Console.WriteLine($"Speichere Schlüssel: {currentKey}");
                         parameters.AddParameter(currentKey, string.Join(" ", currentValues));
                         currentValues.Clear();
                     }
 
                     // Setze den neuen Schlüssel
                     currentKey = args[i].TrimStart('-');
-                    Console.WriteLine($"Neuer Schlüssel gesetzt: {currentKey}");
+                    //Console.WriteLine($"Neuer Schlüssel gesetzt: {currentKey}");
                 }
                 else
                 {
                     // Füge den aktuellen Wert der Liste hinzu
-                    Console.WriteLine($"Hinzufügen des Werts: {args[i]} zum Schlüssel: {currentKey}");
+                    //Console.WriteLine($"Hinzufügen des Werts: {args[i]} zum Schlüssel: {currentKey}");
                     currentValues.Add(args[i]);
                 }
             }
@@ -101,12 +109,17 @@ namespace AMIG.OS.CommandProcessing
             // Letzten Parameter und Werte speichern
             if (currentKey != null)
             {
-                Console.WriteLine($"Speichere letzten Schlüssel: {currentKey}");
+                //Console.WriteLine($"Speichere letzten Schlüssel: {currentKey}");
                 parameters.AddParameter(currentKey, string.Join(" ", currentValues));
+            }
+            else
+            {
+                Console.WriteLine("Es wurde kein gültiger Schlüssel erkannt.");
             }
 
             return parameters;
         }
+
 
 
         private void ShowAllCommandsHelp()

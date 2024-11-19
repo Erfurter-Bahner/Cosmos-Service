@@ -15,9 +15,8 @@ namespace AMIG.OS.UserSystemManagement
         public UserRepository(RoleRepository roleRepository)
         {
             this.roleRepository = roleRepository;
-            InitializeTestUsers();
-            LoadUsers();
-            
+            //InitializeTestUsers();
+            LoadUsers();            
         }
 
         // Speichert alle Benutzer in die Datei
@@ -134,7 +133,6 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
-
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
         public void InitializeTestUsers()
         {
@@ -183,10 +181,6 @@ namespace AMIG.OS.UserSystemManagement
             if (users.Remove(username))
             {
                 SaveUsers();
-            }
-            else
-            {
-                Console.WriteLine("Benutzer nicht gefunden.");
             }
         }
 

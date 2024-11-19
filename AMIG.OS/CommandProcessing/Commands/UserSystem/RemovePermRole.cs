@@ -33,10 +33,6 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         // Implementing Execute as defined in the custom ICommand interface
         public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (parameters==null)
-            {
-                Console.WriteLine("parameters null in addrole");
-            }
             // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
             if (parameters.TryGetValue("help", out _))
             {

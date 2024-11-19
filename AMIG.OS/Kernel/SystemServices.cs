@@ -43,7 +43,7 @@ namespace AMIG.OS.Kernel
                         historyIndex = -1; // Reset history index
 
                         // Process command
-                        commandHandler.ProcessCommand(currentInput, userManagement.loginManager.LoggedInUser);
+                        commandHandler.ProcessCommand(currentInput.Trim(), userManagement.loginManager.LoggedInUser);
 
                         // Reset input and cursor position
                         currentInput = "";

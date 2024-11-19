@@ -19,7 +19,7 @@ namespace AMIG.OS.CommandProcessing
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                Console.WriteLine("Fehler: Der Schlüssel darf nicht leer sein.");
+                //Console.WriteLine("Fehler: Der Schlüssel darf nicht leer sein.");
                 return;
             }
 
@@ -39,10 +39,10 @@ namespace AMIG.OS.CommandProcessing
 
         public bool TryGetValue(string key, out string value)
         {
-            foreach (var param in Parameters)
-            {
-                Console.WriteLine($"Schlüssel: {param.Key}, Wert: {param.Value}");
-            }
+            //foreach (var param in Parameters)
+            //{
+            //    Console.WriteLine($"Schlüssel: {param.Key}, Wert: {param.Value}"); 
+            //}
             return Parameters.TryGetValue(key, out value);
         }
 

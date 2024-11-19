@@ -15,7 +15,6 @@ namespace AMIG.OS.Utils
             int window_width = Console.WindowWidth;
             Console.ForegroundColor = ConsoleColor.Magenta;
 
-            //Console.WriteLine("\n\t\t\t _____\r\n\t\t\t/     \\\r\n\t_______/_______\\_______\r\n\t\\\\______AMIG.OS______//\n");
             for (int i = 0; i < logo.Length; i++)
             {
                 Console.Write(logo[i]);
@@ -30,7 +29,7 @@ namespace AMIG.OS.Utils
             {
                 Console.SetCursorPosition(1 + i, Console.CursorTop);
                 Console.Write("||");
-                Thread.Sleep(50); // Punkt alle 300ms hinzufügen
+                Thread.Sleep(50); 
             }
 
             Thread.Sleep(2000);

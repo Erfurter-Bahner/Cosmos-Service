@@ -29,7 +29,7 @@ namespace AMIG.OS.Utils
             switch (key.Key)
             {
                 case ConsoleKey.Escape:
-                    //helpers.AdiosHelper();
+                    Helper.AdiosHelper();
                     break;
                 case ConsoleKey.D1:
                 case ConsoleKey.NumPad1:
