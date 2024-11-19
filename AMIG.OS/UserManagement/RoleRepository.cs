@@ -14,7 +14,7 @@ namespace AMIG.OS.UserSystemManagement
 
         public RoleRepository()
         {
-            InitializeDefaultRoles();
+            //InitializeDefaultRoles();
             LoadRoles();
         }
 

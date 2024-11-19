@@ -17,7 +17,6 @@ namespace AMIG.OS.UserSystemManagement
         public UserManagement()
         {
             // Initialisiere Repositorys und den Authentifizierungsdienst
-
             this.roleRepository = new RoleRepository();
             this.userRepository = new UserRepository(roleRepository);
             this.authService = new AuthenticationService(userRepository, roleRepository);
