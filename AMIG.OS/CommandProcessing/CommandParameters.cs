@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AMIG.OS.Utils
+namespace AMIG.OS.CommandProcessing
 {
     public class CommandParameters
     {
-        public Dictionary<string, string> Parameters = new Dictionary<string, string>();/*(StringComparer.OrdinalIgnoreCase)*/ 
+        public Dictionary<string, string> Parameters = new Dictionary<string, string>();/*(StringComparer.OrdinalIgnoreCase)*/
 
         public CommandParameters()
         {
-            
+
         }
 
         public void AddParameter(string key, string value)
