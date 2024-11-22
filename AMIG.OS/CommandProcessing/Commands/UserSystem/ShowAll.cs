@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 using System.Drawing;
 
 
-namespace AMIG.OS.CommandProcessing.Commands.extra
+namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
     public class ShowAll : ICommand
     {

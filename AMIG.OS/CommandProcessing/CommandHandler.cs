@@ -5,7 +5,7 @@ using System.Linq;
 using AMIG.OS.FileManagement;
 using AMIG.OS.CommandProcessing.Commands.UserSystem;
 using AMIG.OS.Utils;
-using AMIG.OS.CommandProcessing.Commands.extra;
+using AMIG.OS.CommandProcessing.Commands.Extra;
 
 namespace AMIG.OS.CommandProcessing
 {
@@ -32,7 +32,7 @@ namespace AMIG.OS.CommandProcessing
                 { "addpermtorole", new AddPermToRole(userManagement)},
                 { "adduser", new AddUser(userManagement) },
                 { "rmuser", new RemoveUser(userManagement) },
-                { "datetime", new Commands.extra.DateTime()},
+                { "datetime", new Commands.Extra.DateTime()},
                 { "showall", new ShowAll(userManagement)},
                 { "showme", new ShowMe(userManagement)},
                 { "changename", new ChangeName(userManagement)},
@@ -123,9 +123,6 @@ namespace AMIG.OS.CommandProcessing
 
             return parameters;
         }
-
-
-
         private void ShowAllCommandsHelp()
         {
             Console.WriteLine("Available commands:");

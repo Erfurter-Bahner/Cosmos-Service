@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace AMIG.OS.CommandProcessing.Commands.extra
+namespace AMIG.OS.CommandProcessing.Commands.Extra
 {
     public class Logout : ICommand
     {
