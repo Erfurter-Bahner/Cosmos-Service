@@ -1,34 +1,32 @@
-﻿using System.Diagnostics.Contracts;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Sys = Cosmos.System;
-
-using AMIG.OS.UserSystemManagement;
-using AMIG.OS.Utils;
+﻿using AMIG.OS.UserSystemManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AMIG.OS.Kernel;
-using System.Linq.Expressions;
-using System.Drawing;
+using System.Text;
+using System.Threading.Tasks;
+using AMIG.OS.Utils;
+using AMIG.OS.FileManagement;
+using Sys = Cosmos.System;
+using System.IO;
 
 
-namespace AMIG.OS.CommandProcessing.Commands.Extra
+namespace AMIG.OS.CommandProcessing.Commands.FileSystem
 {
-    public class Clear : ICommand
+    
+    internal class CAT : ICommand
     {
-        private readonly UserManagement userManagement;
+        private readonly FileSystemManager fileSystemManager;
         private User LoggedInUser;
-        public string Description => "clear screen";
-        public string PermissionName { get; } = Permissions.extra; // Required permission name
+
+        public string Description => "show file";
+        public string PermissionName { get; } = Permissions.cat;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help", "show help"},
         };
-        public Clear(UserManagement userManagement)
+        public CAT(FileSystemManager fileSystemManagement)
         {
-            this.userManagement = userManagement;
+            this.fileSystemManager = fileSystemManagement;
         }
         // Implementing CanExecute as defined in the custom ICommand interface
         public bool CanExecute(User currentUser)
@@ -43,24 +41,28 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
             {
                 ShowHelp();
             }
-            if (parameters.Parameters.Count == 0) {
-                Console.Clear();
+            
+            if (parameters.TryGetValue("file", out string value))
+            {
+                string filePath = Path.Combine(fileSystemManager.CurrentDirectory, value);
+                fileSystemManager.ReadFile(filePath);
             }
             else
             {
                 Console.WriteLine("Insufficient arguments. Use -help to see usage.");
-            }            
+            }
         }
 
         // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: clearscreen ");
+            Console.WriteLine("Usage: ls ");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");
             }
         }
+
     }
 }

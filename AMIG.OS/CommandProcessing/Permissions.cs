@@ -20,7 +20,11 @@ namespace AMIG.OS.CommandProcessing
         public const string showme = nameof(showme);
         public const string changename = nameof(changename);
         public const string changepw = nameof(changepw);
-
+        //file
+        public const string ls = nameof(ls);
+        public const string cat = nameof(cat);
+        public const string touch = nameof(touch);
+        public const string cd = nameof(cd);
         // Liste aller Berechtigungen
         public static readonly List<string> AllPermissions = new List<string>
         {
@@ -38,7 +42,11 @@ namespace AMIG.OS.CommandProcessing
             showme,
             changename,
             changepw,
-            extra
+            extra,
+            ls,
+            cat,
+            touch,
+            cd
         };
 
         // Prüft, ob die Berechtigung existiert (Case-Insensitive)

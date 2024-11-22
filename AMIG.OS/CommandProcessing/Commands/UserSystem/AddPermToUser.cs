@@ -78,6 +78,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
                         // Berechtigung hinzufügen
                         user.AddPermission(permName);
+                        userManagement.userRepository.SaveUsers();
                         Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich dem Benutzer '{username}' hinzugefügt.");
                     }
                 }

@@ -6,6 +6,7 @@ using AMIG.OS.FileManagement;
 using AMIG.OS.CommandProcessing.Commands.UserSystem;
 using AMIG.OS.Utils;
 using AMIG.OS.CommandProcessing.Commands.Extra;
+using AMIG.OS.CommandProcessing.Commands.FileSystem;
 
 namespace AMIG.OS.CommandProcessing
 {
@@ -39,6 +40,10 @@ namespace AMIG.OS.CommandProcessing
                 { "changepw", new ChangePW(userManagement)},//
                 { "clear", new Clear(userManagement)}, //extra
                 // Weitere Befehle hinzufügen ...
+                { "ls", new LS(fileSystemManager)},
+                { "cat", new CAT(fileSystemManager)},
+                { "touch", new TOUCH(fileSystemManager)},
+                { "cd", new CD(fileSystemManager)},
             };
         }
 
@@ -47,7 +52,7 @@ namespace AMIG.OS.CommandProcessing
             var args = input.Split(' ');
             var commandName = args[0].ToLower();
 
-            if (commands.TryGetValue(commandName, out var command) && command.CanExecute(currentUser))
+            if (commands.TryGetValue(commandName, out var command) /*&& command.CanExecute(currentUser)*/)
             {
                 var parameters = ParseParameters(args.Skip(1).ToArray());
                 command.Execute(parameters, currentUser);
