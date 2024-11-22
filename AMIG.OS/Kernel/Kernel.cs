@@ -19,17 +19,12 @@ namespace AMIG.OS.Kernel
         DateTime starttime;
 
         protected override void BeforeRun()
-        {
+        {                    
             StartScreen.DisplayLogoLoading();
+
             // Initialisiere das Dateisystem und registriere VFS
             fs1 = new Sys.FileSystem.CosmosVFS();
             Sys.FileSystem.VFS.VFSManager.RegisterVFS(fs1);
-
-            var available_space = fs1.GetAvailableFreeSpace(@"0:\");
-            Console.WriteLine("available free space: " + available_space);
-
-            var fs_type = fs1.GetFileSystemType(@"0:\");
-            Console.WriteLine("file system type: " + fs_type);
 
             userManagement = new UserManagement();
             fileSystemManager = new FileSystemManager();
@@ -38,11 +33,18 @@ namespace AMIG.OS.Kernel
             systemServices = new SystemServices(commandHandler, userManagement);
 
             Console.Clear();
+            var available_space = fs1.GetAvailableFreeSpace(@"0:\");
+            Console.WriteLine("available free space: " + available_space);
+
+            var fs_type = fs1.GetFileSystemType(@"0:\");
+            Console.WriteLine("file system type: " + fs_type);
+
             userManagement.loginManager.ShowLoginOptions();
         }
 
         protected override void Run()
         {
+           
             Console.Write(Helper.preInput);
             systemServices.inputs();
         }

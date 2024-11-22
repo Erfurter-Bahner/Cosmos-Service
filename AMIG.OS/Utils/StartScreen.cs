@@ -13,7 +13,7 @@ namespace AMIG.OS.Utils
         {
             Console.Clear();
             int window_width = Console.WindowWidth;
-            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
 
             for (int i = 0; i < logo.Length; i++)
             {

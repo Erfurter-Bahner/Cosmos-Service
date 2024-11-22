@@ -85,7 +85,7 @@ namespace AMIG.OS.Utils
             else Console.WriteLine("Keine Berechtigung für diesen Command");
         }
 
-        public void ShowMeHelper(string loggedInUser)
+        public void ShowMeHelper(User loggedInUser)
         {
             Console.WriteLine("Benutzerinformationen:");
             userManagement.DisplayUser(loggedInUser); // Benutzerinfo nur für den angemeldeten Benutzer
@@ -106,7 +106,7 @@ namespace AMIG.OS.Utils
         {
             string newUsername;
             string entscheidung;
-
+            
             do
             {
                 Console.Write("Neuer Benutzername: ");
@@ -130,6 +130,8 @@ namespace AMIG.OS.Utils
                 } while (entscheidung != "y" && entscheidung != "n");
 
             } while (entscheidung != "y");
+
+
 
             //if (userManagement.ChangeUsername(loggedInUser, newUsername))
             //{

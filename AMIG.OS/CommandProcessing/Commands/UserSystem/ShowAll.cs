@@ -16,17 +16,17 @@ using System.Drawing;
 
 namespace AMIG.OS.CommandProcessing.Commands.extra
 {
-    public class Logout : ICommand
+    public class ShowAll : ICommand
     {
         private readonly UserManagement userManagement;
         private User LoggedInUser;
-        public string Description => "logout to start screen";
-        public string PermissionName { get; } = "LogOutSys"; // Required permission name
+        public string Description => "show all users";
+        public string PermissionName { get; } = "showall"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "to show help"},
+            
         };
-        public Logout(UserManagement userManagement)
+        public ShowAll(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -45,8 +45,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             }
             if (parameters.Parameters.Count == 0) {
 
-                userManagement.loginManager.ShowLoginOptions();
-                
+                userManagement.DisplayAllUsers();
             }
             else
             {
@@ -58,11 +57,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: logout [options]");
-            foreach (var param in Parameters)
-            {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
-            }
+            Console.WriteLine("Usage: showall");           
         }
     }
 }

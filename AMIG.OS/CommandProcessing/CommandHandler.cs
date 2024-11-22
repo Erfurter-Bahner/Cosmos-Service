@@ -33,7 +33,13 @@ namespace AMIG.OS.CommandProcessing
                 { "rmpermrole", new RemovePermRole(userManagement)},
                 { "addpermtorole", new AddPermToRole(userManagement)},
                 { "adduser", new AddUser(userManagement) },
-                { "rmuser", new RemoveUser(userManagement) }
+                { "rmuser", new RemoveUser(userManagement) },
+                { "datetime", new Commands.extra.DateTime()},
+                { "showall", new ShowAll(userManagement)},
+                { "showme", new ShowMe(userManagement)},
+                { "changename", new ChangeName(userManagement)},
+                { "changepw", new ChangePW(userManagement)},
+                { "clear", new Clear(userManagement)},
                 // Weitere Befehle hinzufügen ...
             };
         }

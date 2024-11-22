@@ -13,20 +13,19 @@ using AMIG.OS.Kernel;
 using System.Linq.Expressions;
 using System.Drawing;
 
-
 namespace AMIG.OS.CommandProcessing.Commands.extra
 {
-    public class Logout : ICommand
+    public class ChangeName : ICommand
     {
         private readonly UserManagement userManagement;
         private User LoggedInUser;
-        public string Description => "logout to start screen";
-        public string PermissionName { get; } = "LogOutSys"; // Required permission name
+        public string Description => "change username";
+        public string PermissionName { get; } = "changename"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help", "to show help"},
         };
-        public Logout(UserManagement userManagement)
+        public ChangeName(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -45,8 +44,34 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             }
             if (parameters.Parameters.Count == 0) {
 
-                userManagement.loginManager.ShowLoginOptions();
-                
+                string newUsername;
+                string entscheidung;
+
+                do
+                {
+                    Console.Write("Neuer Benutzername: ");
+                    newUsername = Console.ReadLine();
+
+                    do
+                    {
+                        Console.Write("Bestätigen: y/n ");
+                        entscheidung = Console.ReadLine().ToLower();
+
+                        if (entscheidung == "n")
+                        {
+                            Console.WriteLine("Benutzername nicht bestätigt. Bitte erneut eingeben.");
+                            break;  // Schleife verlassen, um neuen Benutzernamen einzugeben
+                        }
+                        else if (entscheidung != "y" && entscheidung != "n")
+                        {
+                            Console.WriteLine("Ungültige Eingabe: y/n ");
+                        }
+
+                    } while (entscheidung != "y" && entscheidung != "n");
+
+                } while (entscheidung != "y");
+                currentUser.Username = newUsername;
+                userManagement.userRepository.SaveUsers();
             }
             else
             {
@@ -58,7 +83,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: logout [options]");
+            Console.WriteLine("Usage: changename [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

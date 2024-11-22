@@ -22,9 +22,15 @@ namespace AMIG.OS.Utils
         public void ShowLoginOptions()
         {
             //userManagement.DisplayAllUsers(); // nur zum testen
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Select an option: ");
+            Console.ResetColor();
+
+
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("[1] Login");
             Console.WriteLine("[2] Register");
+            Console.ResetColor();
             var key = Console.ReadKey(intercept: true);
             switch (key.Key)
             {

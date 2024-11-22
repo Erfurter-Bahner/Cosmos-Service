@@ -16,19 +16,19 @@ using System.Drawing;
 
 namespace AMIG.OS.CommandProcessing.Commands.extra
 {
-    public class Logout : ICommand
+    public class DateTime : ICommand
     {
         private readonly UserManagement userManagement;
         private User LoggedInUser;
-        public string Description => "logout to start screen";
-        public string PermissionName { get; } = "LogOutSys"; // Required permission name
+        public string Description => "show current date";
+        public string PermissionName { get; } = "datetime"; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "to show help"},
+            {"datetime", "show current date"},
         };
-        public Logout(UserManagement userManagement)
+        public DateTime()
         {
-            this.userManagement = userManagement;
+            
         }
         // Implementing CanExecute as defined in the custom ICommand interface
         public bool CanExecute(User currentUser)
@@ -45,8 +45,8 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
             }
             if (parameters.Parameters.Count == 0) {
 
-                userManagement.loginManager.ShowLoginOptions();
-                
+                Console.WriteLine(System.DateTime.Now);
+
             }
             else
             {
@@ -58,7 +58,7 @@ namespace AMIG.OS.CommandProcessing.Commands.extra
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: logout [options]");
+            Console.WriteLine("Usage: datetime [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

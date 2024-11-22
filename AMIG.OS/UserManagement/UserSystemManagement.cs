@@ -92,10 +92,8 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        public void DisplayUser(string loggedInUser)
+        public void DisplayUser(User user)
         {
-            var user = userRepository.GetUserByUsername(loggedInUser);
-
             // Überprüfen, ob der Benutzer gefunden wurde
             if (user != null)
             {
@@ -117,12 +115,9 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine($"Benutzer '{loggedInUser}' wurde nicht gefunden.");
+                Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
             }
         }
-
-
-
 
         // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)
@@ -149,11 +144,5 @@ namespace AMIG.OS.UserSystemManagement
         {
             return authService.UserExists(username);
         }
-
-
- 
-        
-
-
     }
 }

@@ -9,7 +9,7 @@ namespace AMIG.OS.UserSystemManagement
     {
         // Basisinformationen des Benutzers
         public string Username { get; internal set; }
-        public string PasswordHash { get; private set; }
+        public string PasswordHash { get; internal set; }
         public string CreatedAt { get; internal set; } // Zeitpunkt der Erstellung des Benutzerkontos
         public string LastLogin { get; set; } // Zeitpunkt der letzten Anmeldung
 
@@ -97,7 +97,7 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Hash-Funktion zum Erstellen eines SHA256-Hashes für das Passwort
-        private string HashPassword(string input)
+        internal string HashPassword(string input)
         {
             byte[] hashBytes = SHA256.Hash(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
