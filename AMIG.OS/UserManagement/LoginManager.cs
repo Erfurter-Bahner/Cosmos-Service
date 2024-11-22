@@ -1,18 +1,15 @@
-﻿using AMIG.OS.UserSystemManagement;
+﻿using AMIG.OS.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AMIG.OS.Utils
+namespace AMIG.OS.UserSystemManagement
 {
     public class LoginManager
     {
         private RoleRepository roleRepository;
         private UserRepository userRepository;
         private AuthenticationService authService;
-        internal  User LoggedInUser;
+        internal User LoggedInUser;
         public LoginManager(RoleRepository roleRepository, UserRepository userRepository, AuthenticationService authService)
         {
             this.roleRepository = roleRepository;
