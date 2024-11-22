@@ -27,11 +27,10 @@ namespace AMIG.OS.Kernel
             Console.SetCursorPosition(0, currentLineCursor);
         }
         public void inputs()
-        {           
-            var currentInput = "";
-           
+        {                                 
             while (true)
-            {                                          
+            {   
+                var currentInput = "";
                 while (true)
                 {
                     var key = Console.ReadKey(intercept: true); //input erkennung für mögliche Eingabe von Pfeil hoch, runter und Backspace
@@ -42,6 +41,7 @@ namespace AMIG.OS.Kernel
                             if (!string.IsNullOrWhiteSpace(currentInput))
                             {
                                 commandHistory.Add(currentInput);
+                                ClearCurrentLine();
                                 commandHandler.ProcessCommand(currentInput.Trim(), userManagement.loginManager.LoggedInUser);
                                 historyIndex = commandHistory.Count;
                             }
@@ -93,6 +93,7 @@ namespace AMIG.OS.Kernel
                     }
                     if (key.Key == ConsoleKey.Enter) // End the loop after an "Enter" press
                     {
+                        ClearCurrentLine();
                         Console.Write(Helper.preInput);
                         break;
                     }
