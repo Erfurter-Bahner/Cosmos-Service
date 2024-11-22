@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AMIG.OS.FileManagement;
 using AMIG.OS.CommandProcessing.Commands.UserSystem;
 using AMIG.OS.Utils;

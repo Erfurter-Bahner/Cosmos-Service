@@ -1,17 +1,7 @@
-﻿using System.Diagnostics.Contracts;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Sys = Cosmos.System;
-
-using AMIG.OS.UserSystemManagement;
+﻿using AMIG.OS.UserSystemManagement;
 using AMIG.OS.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using AMIG.OS.Kernel;
-using System.Linq.Expressions;
-using System.Drawing;
 
 
 namespace AMIG.OS.CommandProcessing.Commands.extra
