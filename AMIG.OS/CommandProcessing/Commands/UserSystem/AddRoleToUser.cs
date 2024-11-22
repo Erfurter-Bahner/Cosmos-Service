@@ -9,7 +9,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class AddRoleToUser : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addroletouser"; // Required permission name
+        public string PermissionName { get; } = Permissions.addroletouser; // Required permission name
         public string Description => "add a role to a user";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>

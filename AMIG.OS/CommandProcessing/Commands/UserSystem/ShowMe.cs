@@ -21,7 +21,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         private readonly UserManagement userManagement;
         private User LoggedInUser;
         public string Description => "show logged in user";
-        public string PermissionName { get; } = "showme"; // Required permission name
+        public string PermissionName { get; } = Permissions.showme; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
            

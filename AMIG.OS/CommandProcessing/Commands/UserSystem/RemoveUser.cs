@@ -8,7 +8,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class RemoveUser : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "rmuser"; // Required permission name
+        public string PermissionName { get; } = Permissions.rmuser; // Required permission name
         public string Description => "remove a user";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>

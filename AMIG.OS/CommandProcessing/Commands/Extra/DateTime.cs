@@ -21,7 +21,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         private readonly UserManagement userManagement;
         private User LoggedInUser;
         public string Description => "show current date";
-        public string PermissionName { get; } = "datetime"; // Required permission name
+        public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"datetime", "show current date"},

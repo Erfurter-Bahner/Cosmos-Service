@@ -9,7 +9,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class AddPermToUser : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addpermtouser"; // Required permission name
+        public string PermissionName { get; } = Permissions.addpermtouser; // Required permission name
         public string Description => "add a perm to a user";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
@@ -59,39 +59,43 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 {
                     string[] permNameInputs = permNames.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                    // Für jede Rolle überprüfen und hinzufügen
+                    // Hinzufügen der Berechtigungen
                     foreach (string permName in permNameInputs)
                     {
-                        // Überprüfen, ob der Benutzer die Berechtigung bereits hat
-                        if (user.Permissions.Contains(permName))
+                        // Überprüfen, ob die Berechtigung gültig ist
+                        if (!Permissions.IsValidPermission(permName))
                         {
-                            Console.WriteLine($"Benutzer '{username}' hat bereits die Berechtigung '{permName}'.");
+                            Console.WriteLine($"Warnung: '{permName}' ist keine gültige Berechtigung und wurde übersprungen.");
                             continue;
                         }
 
-                        // Berechtigung zum Benutzer hinzufügen
+                        // Überprüfen, ob der Benutzer die Berechtigung bereits hat
+                        if (user.Permissions.Contains(permName))
+                        {
+                            Console.WriteLine($"Hinweis: Benutzer '{username}' hat bereits die Berechtigung '{permName}'.");
+                            continue;
+                        }
+
+                        // Berechtigung hinzufügen
                         user.AddPermission(permName);
-                        Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
+                        Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich dem Benutzer '{username}' hinzugefügt.");
                     }
-                    // Benutzer speichern
-                    userManagement.userRepository.SaveUsers();
+                }
+                else
+                {
+                    Console.WriteLine("Insufficient arguments. Use -help to see usage.");
                 }
             }
-            else
-            {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
-            }
         }
-
-        // Show help method as defined in the custom ICommand interface
-        public void ShowHelp()
-        {
-            Console.WriteLine(Description);
-            Console.WriteLine($"Usage: {PermissionName} [options]");
-            foreach (var param in Parameters)
+            // Show help method as defined in the custom ICommand interface
+            public void ShowHelp()
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
-            }
-        }
+                Console.WriteLine(Description);
+                Console.WriteLine($"Usage: {PermissionName} [options]");
+                foreach (var param in Parameters)
+                {
+                    Console.WriteLine($"  {param.Key}\t{param.Value}");
+                }
+            }        
     }
 }

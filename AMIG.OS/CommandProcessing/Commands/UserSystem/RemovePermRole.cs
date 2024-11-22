@@ -9,7 +9,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class RemovePermRole : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "rmpermrole"; // Required permission name
+        public string PermissionName { get; } = Permissions.rmpermrole; // Required permission name
         public string Description => "Remove permissions form a role";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>

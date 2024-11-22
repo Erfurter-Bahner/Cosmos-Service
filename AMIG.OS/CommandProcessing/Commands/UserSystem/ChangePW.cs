@@ -20,7 +20,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         private readonly UserManagement userManagement;
         private User LoggedInUser;
         public string Description => "change password";
-        public string PermissionName { get; } = "changepassword"; // Required permission name
+        public string PermissionName { get; } = Permissions.changepw; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help", "to show help"},

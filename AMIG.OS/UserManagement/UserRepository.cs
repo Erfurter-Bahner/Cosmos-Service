@@ -146,12 +146,7 @@ namespace AMIG.OS.UserSystemManagement
                 users.Add("User1", new User("User1", "adminPass", false, new List<Role> { adminRole }, userPermissions));
                 SaveUsers();
             }
-            //else
-            //{
-            //    Role newRole = roleRepository.GetRoleByName("standarduser");
-            //    users["User1"].AddRole(newRole);
-            //    SaveUsers();
-            //}
+ 
         }
 
         // Gibt den Benutzer anhand des Benutzernamens zurück

@@ -21,7 +21,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         private readonly UserManagement userManagement;
         private User LoggedInUser;
         public string Description => "clear screen";
-        public string PermissionName { get; } = "clearscreen"; // Required permission name
+        public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help", "show help"},

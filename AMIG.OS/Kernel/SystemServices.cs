@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using AMIG.OS.Utils;
@@ -13,11 +12,14 @@ namespace AMIG.OS.Kernel
         private int historyIndex = -1; // Aktuelle Position in der Befehlsliste
         CommandHandler commandHandler;
         UserManagement userManagement;
+        private int cursorPosition = 0; // Position des Cursors
+
         public SystemServices(CommandHandler commandHandler, UserManagement userManagement)
         {
             this.userManagement = userManagement;
             this.commandHandler = commandHandler;
         }
+
         public void ClearCurrentLine()
         {
             // stellt sicher, dass während der Navigation mit Pfeiltasten keine neue Zeile begonnen wird.
@@ -26,14 +28,16 @@ namespace AMIG.OS.Kernel
             Console.Write(new string(' ', Console.WindowWidth - 1));
             Console.SetCursorPosition(0, currentLineCursor);
         }
+
         public void inputs()
-        {                                 
+        {
             while (true)
-            {   
+            {
                 var currentInput = "";
+                cursorPosition = 0; // Reset Cursorposition für jede neue Eingabe
                 while (true)
                 {
-                    var key = Console.ReadKey(intercept: true); //input erkennung für mögliche Eingabe von Pfeil hoch, runter und Backspace
+                    var key = Console.ReadKey(intercept: true); // Eingabeerkennung für Pfeiltasten und Backspace
                     switch (key.Key)
                     {
                         case ConsoleKey.Enter:
@@ -48,57 +52,78 @@ namespace AMIG.OS.Kernel
                             break;
 
                         case ConsoleKey.Backspace:
-                            if (currentInput.Length > 0)
+                            if (currentInput.Length > 0 && cursorPosition > 0)
                             {
-                                currentInput = currentInput.Substring(0, currentInput.Length - 1);
+                                currentInput = currentInput.Substring(0, cursorPosition - 1) + currentInput.Substring(cursorPosition);
+                                cursorPosition--; // Cursor nach links verschieben
                                 ClearCurrentLine();
                                 Console.Write(Helper.preInput + currentInput);
                             }
                             break;
 
-                        case ConsoleKey.UpArrow: //schreibt letzten command 
+                        case ConsoleKey.LeftArrow:
+                            if (cursorPosition > 0)
+                            {
+                                cursorPosition--; // Cursor nach links bewegen
+                                Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
+                            }
+                            break;
+
+                        case ConsoleKey.RightArrow:
+                            if (cursorPosition < currentInput.Length)
+                            {
+                                cursorPosition++; // Cursor nach rechts bewegen
+                                Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
+                            }
+                            break;
+
+                        case ConsoleKey.UpArrow: // schreibt letzten command 
                             if (historyIndex > 0)
                             {
                                 historyIndex--;
                                 currentInput = commandHistory[historyIndex]; // Fetch command from history
+                                cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
                                 ClearCurrentLine();
                                 Console.Write(Helper.preInput + currentInput);
                             }
                             break;
 
-                        case ConsoleKey.DownArrow: //schreibt nächsten command
+                        case ConsoleKey.DownArrow: // schreibt nächsten command
                             if (historyIndex < commandHistory.Count - 1)
                             {
                                 historyIndex++;
                                 currentInput = commandHistory[historyIndex]; // Fetch next command from history
+                                cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
                                 ClearCurrentLine();
                                 Console.Write(Helper.preInput + currentInput);
                             }
                             else
                             {
-                                currentInput = ""; // No more commands, clear input
+                                currentInput = ""; // Keine weiteren Befehle, Eingabe leeren
+                                cursorPosition = 0;
                                 ClearCurrentLine();
-
                             }
                             break;
 
                         default:
-
-                            if (key.KeyChar > 31)
+                            if (key.KeyChar > 31) // Für alle Zeichen, die gedrückt werden (außer Steuerzeichen)
                             {
-                                currentInput += key.KeyChar;
-                                Console.Write(key.KeyChar);
+                                currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
+                                cursorPosition++; // Cursor nach rechts verschieben
+                                ClearCurrentLine();
+                                Console.Write(Helper.preInput + currentInput);
+                                Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); // Setze den Cursor an die richtige Position
                             }
                             break;
                     }
-                    if (key.Key == ConsoleKey.Enter) // End the loop after an "Enter" press
+
+                    if (key.Key == ConsoleKey.Enter) // Endet die Schleife nach einem "Enter"
                     {
                         ClearCurrentLine();
                         Console.Write(Helper.preInput);
                         break;
                     }
                 }
-
             }
         }
     }

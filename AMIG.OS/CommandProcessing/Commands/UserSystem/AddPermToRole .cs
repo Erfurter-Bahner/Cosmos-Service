@@ -9,7 +9,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class AddPermToRole : ICommand
     {
         private readonly UserManagement userManagement;
-        public string PermissionName { get; } = "addpermtorole"; // Required permission name
+        public string PermissionName { get; } = Permissions.addpermtorole; // Required permission name
         public string Description => "Add permission/s to a role";
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
@@ -54,12 +54,12 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 if (!string.IsNullOrEmpty(permissionsRaw))
                 {
                     // Erstelle ein HashSet der angegebenen Berechtigungen
-                    var permissionsToRemove = permissionsRaw.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    var permissionsToAdd = permissionsRaw.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
                                                                                               .Select(permission => permission.Trim())
                                                                                               .ToList();
 
                     // Aufruf der Methode, um alle angegebenen Berechtigungen zu der Rolle hinzuzufügen
-                    userManagement.roleRepository.AddPermissionToRole(roleName, permissionsToRemove);
+                    userManagement.roleRepository.AddPermissionToRole(roleName, permissionsToAdd);
 
                     Dictionary<string, User> usersDictionary = userManagement.userRepository.GetAllUsers();
 
