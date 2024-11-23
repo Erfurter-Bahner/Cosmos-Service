@@ -138,6 +138,7 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.rmuser,
                     Permissions.showall,
                     Permissions.showme,
+                    Permissions.showuser,
                     Permissions.changename,
                     Permissions.changepw,
                     Permissions.extra,
@@ -147,7 +148,8 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.cd,
                     Permissions.write,
                     Permissions.rmfile,
-                    Permissions.rmdir
+                    Permissions.rmdir,
+                    Permissions.mkdir
 
                 });
             }
@@ -168,6 +170,7 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.rmuser,
                     Permissions.showall,
                     Permissions.showme,
+                    Permissions.showuser,
                     Permissions.changename,
                     Permissions.changepw,
                     Permissions.extra,
@@ -177,7 +180,8 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.cd,
                     Permissions.write,
                     Permissions.rmfile,
-                    Permissions.rmdir
+                    Permissions.rmdir,
+                    Permissions.mkdir
                 };
             }
 

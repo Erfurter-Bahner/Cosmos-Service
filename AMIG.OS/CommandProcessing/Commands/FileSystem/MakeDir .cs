@@ -1,34 +1,32 @@
-﻿using System.Diagnostics.Contracts;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Sys = Cosmos.System;
-
-using AMIG.OS.UserSystemManagement;
-using AMIG.OS.Utils;
+﻿using AMIG.OS.UserSystemManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AMIG.OS.Kernel;
-using System.Linq.Expressions;
-using System.Drawing;
+using System.Text;
+using System.Threading.Tasks;
+using AMIG.OS.Utils;
+using AMIG.OS.FileManagement;
+using Sys = Cosmos.System;
+using System.IO;
 
 
-namespace AMIG.OS.CommandProcessing.Commands.UserSystem
+namespace AMIG.OS.CommandProcessing.Commands.FileSystem
 {
-    public class ShowAll : ICommand
+
+    internal class MakeDir : ICommand
     {
-        private readonly UserManagement userManagement;
+        private readonly FileSystemManager fileSystemManager;
         private User LoggedInUser;
-        public string Description => "show all users";
-        public string PermissionName { get; } = Permissions.showall; // Required permission name
+        public string Description => "create a directory";
+        public string PermissionName { get; } = Permissions.mkdir;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "show help"}
+            {"-dir", "directory to create"},
+            {"-help", "show help"},
         };
-        public ShowAll(UserManagement userManagement)
+        public MakeDir(FileSystemManager fileSystemManagement)
         {
-            this.userManagement = userManagement;
+            this.fileSystemManager = fileSystemManagement;
         }
         // Implementing CanExecute as defined in the custom ICommand interface
         public bool CanExecute(User currentUser)
@@ -44,25 +42,32 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 ShowHelp();
                 return;
             }
-            if (parameters.Parameters.Count == 0) {
+            parameters.TryGetValue("dir", out string dir);
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                string dirPath = Path.Combine(fileSystemManager.CurrentDirectory, dir);
 
-                userManagement.DisplayAllUsers();
+                if (!Directory.Exists(dirPath))
+                {
+                    fileSystemManager.CreateDirectory(dirPath);
+                }
             }
             else
             {
                 Console.WriteLine("Insufficient arguments. Use -help to see usage.");
-            }            
+            }
         }
 
         // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: showall");
+            Console.WriteLine("Usage: mkdir [options] ");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");
             }
         }
+
     }
 }

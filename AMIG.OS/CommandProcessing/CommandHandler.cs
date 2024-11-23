@@ -33,6 +33,7 @@ namespace AMIG.OS.CommandProcessing
                 { "rmuser", new RemoveUser(userManagement) },//              
                 { "showall", new ShowAll(userManagement)},//
                 { "showme", new ShowMe(userManagement)},//
+                { "showuser", new ShowSpecificUser(userManagement)},//
                 { "changename", new ChangeName(userManagement)},//
                 { "changepw", new ChangePW(userManagement)},//
                 //extra
@@ -48,6 +49,7 @@ namespace AMIG.OS.CommandProcessing
                 { "write", new WRITE(fileSystemManager)},
                 { "rmfile", new RemoveFile(fileSystemManager)},
                 { "rmdir", new RemoveDir(fileSystemManager)},
+                { "mkdir", new MakeDir(fileSystemManager)},
             };
         }
 

@@ -40,6 +40,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
+                return;
             }
             parameters.TryGetValue("dir", out string dir);
             if (!string.IsNullOrWhiteSpace(dir))

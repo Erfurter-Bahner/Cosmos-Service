@@ -40,6 +40,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
+                return;
             }
             
             if (parameters.TryGetValue("file", out string value))

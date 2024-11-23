@@ -24,7 +24,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public string PermissionName { get; } = Permissions.showme; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-           
+           {"-help", "show help"},
         };
         public ShowMe(UserManagement userManagement)
         {
@@ -42,6 +42,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
+                return;
             }
             if (parameters.Parameters.Count == 0) {
                 userManagement.DisplayUser(currentUser);
@@ -57,6 +58,10 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             Console.WriteLine(Description);
             Console.WriteLine("Usage: showme");
+            foreach (var param in Parameters)
+            {
+                Console.WriteLine($"  {param.Key}\t{param.Value}");
+            }
         }
     }
 }

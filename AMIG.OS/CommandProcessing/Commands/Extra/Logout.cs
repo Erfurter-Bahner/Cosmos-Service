@@ -32,6 +32,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
+                return;
             }
             if (parameters.Parameters.Count == 0) {
 

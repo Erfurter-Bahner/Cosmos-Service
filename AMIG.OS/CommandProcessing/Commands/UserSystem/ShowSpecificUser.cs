@@ -16,17 +16,18 @@ using System.Drawing;
 
 namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
-    public class ShowAll : ICommand
+    public class ShowSpecificUser : ICommand
     {
         private readonly UserManagement userManagement;
         private User LoggedInUser;
-        public string Description => "show all users";
-        public string PermissionName { get; } = Permissions.showall; // Required permission name
+        public string Description => "show specific users";
+        public string PermissionName { get; } = Permissions.showuser; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "show help"}
+            {"-user", "name of users"},
+            {"-help", "show help"},
         };
-        public ShowAll(UserManagement userManagement)
+        public ShowSpecificUser(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -44,9 +45,25 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 ShowHelp();
                 return;
             }
-            if (parameters.Parameters.Count == 0) {
+            parameters.TryGetValue("user", out string usernames);
+            if (!string.IsNullOrWhiteSpace(usernames)) 
+            {
+                string[] usernamesInput = usernames.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                userManagement.DisplayAllUsers();
+                foreach (var _user in usernamesInput)
+                {
+                    // Überprüfen, ob der Benutzer existiert
+                    User user = userManagement.userRepository.GetUserByUsername(_user);
+                    if (user == null)
+                    {
+                        Console.WriteLine($"Benutzer '{_user}' wurde nicht gefunden.");
+                        return;
+                    }
+                    else
+                    {
+                        userManagement.DisplayUser(user);                      
+                    }
+                }
             }
             else
             {
@@ -58,7 +75,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: showall");
+            Console.WriteLine("Usage: showuser [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

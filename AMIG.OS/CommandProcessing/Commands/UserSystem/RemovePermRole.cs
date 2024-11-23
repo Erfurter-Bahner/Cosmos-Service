@@ -36,7 +36,8 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
             if (parameters.TryGetValue("help", out _))
             {
-                ShowHelp();                
+                ShowHelp();
+                return;
             }
 
             parameters.TryGetValue("permissions", out string permissionsRaw);

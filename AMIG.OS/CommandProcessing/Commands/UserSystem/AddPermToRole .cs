@@ -41,6 +41,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
+                return;
             }
 
             parameters.TryGetValue("permissions", out string permissionsRaw);
