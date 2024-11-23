@@ -57,9 +57,20 @@ namespace AMIG.OS.Kernel
                                 currentInput = currentInput.Substring(0, cursorPosition - 1) + currentInput.Substring(cursorPosition);
                                 cursorPosition--; // Cursor nach links verschieben
                                 ClearCurrentLine();
-                                Console.Write(Helper.preInput + currentInput);
+
+                                // Setze die Farbe für die Eingabe
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write(Helper.preInput); // Schreibe das Prefix
+                                Console.ResetColor();
+
+                                // Schreibe den eigentlichen Input in der Standardfarbe
+                                Console.Write(currentInput);
+
+                                // Setze den Cursor an die korrekte Position
+                                Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
                             }
                             break;
+
 
                         case ConsoleKey.LeftArrow:
                             if (cursorPosition > 0)
@@ -84,7 +95,10 @@ namespace AMIG.OS.Kernel
                                 currentInput = commandHistory[historyIndex]; // Fetch command from history
                                 cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
                                 ClearCurrentLine();
-                                Console.Write(Helper.preInput + currentInput);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write(Helper.preInput); // Schreibe das Prefix
+                                Console.ResetColor();
+                                Console.Write(currentInput);
                             }
                             break;
 
@@ -95,7 +109,10 @@ namespace AMIG.OS.Kernel
                                 currentInput = commandHistory[historyIndex]; // Fetch next command from history
                                 cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
                                 ClearCurrentLine();
-                                Console.Write(Helper.preInput + currentInput);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write(Helper.preInput); // Schreibe das Prefix
+                                Console.ResetColor();
+                                Console.Write(currentInput);
                             }
                             else
                             {
@@ -116,7 +133,10 @@ namespace AMIG.OS.Kernel
                                     currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
                                     cursorPosition++; // Cursor nach rechts verschieben
                                     ClearCurrentLine();
-                                    Console.Write(Helper.preInput + currentInput);
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.Write(Helper.preInput); // Schreibe das Prefix
+                                    Console.ResetColor();
+                                    Console.Write(currentInput);
                                     Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); // Setze den Cursor an die richtige Position
                                 }
                             }
@@ -126,7 +146,9 @@ namespace AMIG.OS.Kernel
                     if (key.Key == ConsoleKey.Enter) // Endet die Schleife nach einem "Enter"
                     {
                         ClearCurrentLine();
-                        Console.Write(Helper.preInput);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write(Helper.preInput); // Schreibe das Prefix
+                        Console.ResetColor();
                         break;
                     }
                 }

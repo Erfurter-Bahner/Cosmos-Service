@@ -32,12 +32,6 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
         public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (parameters == null)
-            {
-                Console.WriteLine("Fehler: Parameter sind null in addrole.");
-                return;
-            }
-
             // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
             if (parameters.TryGetValue("help", out _))
             {

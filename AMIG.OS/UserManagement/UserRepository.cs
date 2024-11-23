@@ -15,9 +15,9 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserRepository(RoleRepository roleRepository)
         {
-            this.roleRepository = roleRepository;
-            //InitializeTestUsers();
-            LoadUsers();            
+            this.roleRepository = roleRepository;           
+            LoadUsers();       
+            InitializeAdmin();
         }
 
         // Speichert alle Benutzer in die Datei
@@ -136,19 +136,16 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
-        public void InitializeTestUsers()
+        public void InitializeAdmin()
         {
-            if (!File.Exists(dataFilePath) || users.Count == 0)
+            string userAdmin = "Admin";
+            if (!users.ContainsKey(userAdmin))
             {
-                Console.WriteLine("Erstelle Testbenutzer...");
-                var adminRole = roleRepository.GetRoleByName("admin");
-                var userPermissions = new HashSet<string> { "viewReports" };
-
-                // Beispielbenutzer hinzufügen
-                users.Add("User1", new User("User1", "adminPass", false, new List<Role> { adminRole }, userPermissions));
+                Console.WriteLine("Erstelle Admin ...");
+                var adminRole = roleRepository.GetRoleByName("admin");                              
+                users.Add(userAdmin, new User(userAdmin, "adminPass", false, new List<Role> { adminRole }));
                 SaveUsers();
-            }
- 
+            } 
         }
 
         // Gibt den Benutzer anhand des Benutzernamens zurück
