@@ -29,8 +29,9 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registrierungsprozess
-        public bool Register(string username, string password, string roleName)
+        public bool Register(string username, string password/*, string roleName*/)
         {
+            string roleName = "standard";
             // Rolle aus dem Rollen-Repository abrufen
             var roleToAssign = roleRepository.GetRoleByName(roleName);
 

@@ -117,16 +117,16 @@ namespace AMIG.OS.UserSystemManagement
                 return;
             }
 
-            Console.Write("Choose a role (Admin or Standard): ");
-            var roleInput = Console.ReadLine().ToLower();
-            if (string.IsNullOrWhiteSpace(roleInput))
-            {
-                Console.WriteLine("Role cannot be empty. Please try again.");
-                ShowLoginOptions();
-                return;
-            }
+            //Console.Write("Choose a role (Admin or Standard): ");
+            //var roleInput = Console.ReadLine().ToLower();
+            //if (string.IsNullOrWhiteSpace(roleInput))
+            //{
+            //    Console.WriteLine("Role cannot be empty. Please try again.");
+            //    ShowLoginOptions();
+            //    return;
+            //}
 
-            if (authService.Register(username, password, roleInput))
+            if (authService.Register(username, password))
             {
                 Console.WriteLine("Registration successful! Please log in.");
             }

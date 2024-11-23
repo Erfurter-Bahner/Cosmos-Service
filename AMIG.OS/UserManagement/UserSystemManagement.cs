@@ -32,9 +32,9 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registriert einen neuen Benutzer mit Benutzernamen, Passwort und zugewiesener Rolle
-        public bool Register(string username, string password, string role)
+        public bool Register(string username, string password/*, string role*/)
         {
-            return authService.Register(username, password, role);
+            return authService.Register(username, password/*, role*/);
         }
 
         // Entfernt einen Benutzer aus dem System

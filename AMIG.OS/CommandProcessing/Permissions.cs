@@ -5,9 +5,11 @@ namespace AMIG.OS.CommandProcessing
 {
     internal static class Permissions
     {
-        public const string addrole = nameof(addrole);
-        public const string rmrole = nameof(rmrole);
+        
         public const string extra = nameof(extra);
+        //user
+        public const string addrole = nameof(addrole);
+        public const string rmrole = nameof(rmrole);       
         public const string addroletouser = nameof(addroletouser);
         public const string rmroleuser = nameof(rmroleuser);
         public const string addpermtouser = nameof(addpermtouser);
@@ -25,6 +27,9 @@ namespace AMIG.OS.CommandProcessing
         public const string cat = nameof(cat);
         public const string touch = nameof(touch);
         public const string cd = nameof(cd);
+        public const string write = nameof(write);
+        public const string rmfile = nameof(rmfile);
+        public const string rmdir = nameof(rmdir);
         // Liste aller Berechtigungen
         public static readonly List<string> AllPermissions = new List<string>
         {
@@ -46,7 +51,10 @@ namespace AMIG.OS.CommandProcessing
             ls,
             cat,
             touch,
-            cd
+            cd,
+            write,
+            rmfile,
+            rmdir
         };
 
         // Prüft, ob die Berechtigung existiert (Case-Insensitive)

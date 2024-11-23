@@ -24,26 +24,30 @@ namespace AMIG.OS.CommandProcessing
                 { "addrole", new AddRole(userManagement) }, //addrole
                 { "rmrole", new RemoveRole(userManagement) }, //rmrole
                 { "addroletouser", new AddRoleToUser(userManagement)},//addroletouser
-                { "rmroleuser", new RemoveRoleUser(userManagement)}, //rmroleuser
-                { "adios", new Adios()}, //extra
-                { "logout", new Logout(userManagement)}, //extra
+                { "rmroleuser", new RemoveRoleUser(userManagement)}, //rmroleuser               
                 { "addpermtouser", new AddPermToUser(userManagement)},//addpermtouser
                 { "rmpermuser", new RemovePermUser(userManagement)},//rmpermuser
                 { "rmpermrole", new RemovePermRole(userManagement)},//
                 { "addpermtorole", new AddPermToRole(userManagement)},
                 { "adduser", new AddUser(userManagement) },//
-                { "rmuser", new RemoveUser(userManagement) },//
-                { "datetime", new Commands.Extra.DateTime()}, //extra
+                { "rmuser", new RemoveUser(userManagement) },//              
                 { "showall", new ShowAll(userManagement)},//
                 { "showme", new ShowMe(userManagement)},//
                 { "changename", new ChangeName(userManagement)},//
                 { "changepw", new ChangePW(userManagement)},//
+                //extra
+                { "adios", new Adios()}, //extra
+                { "logout", new Logout(userManagement)}, //extra
+                { "datetime", new Commands.Extra.DateTime()}, //extra
                 { "clear", new Clear(userManagement)}, //extra
                 // Weitere Befehle hinzufügen ...
                 { "ls", new LS(fileSystemManager)},
                 { "cat", new CAT(fileSystemManager)},
                 { "touch", new TOUCH(fileSystemManager)},
                 { "cd", new CD(fileSystemManager)},
+                { "write", new WRITE(fileSystemManager)},
+                { "rmfile", new RemoveFile(fileSystemManager)},
+                { "rmdir", new RemoveDir(fileSystemManager)},
             };
         }
 
@@ -52,7 +56,7 @@ namespace AMIG.OS.CommandProcessing
             var args = input.Split(' ');
             var commandName = args[0].ToLower();
 
-            if (commands.TryGetValue(commandName, out var command) /*&& command.CanExecute(currentUser)*/)
+            if (commands.TryGetValue(commandName, out var command) && command.CanExecute(currentUser))
             {
                 var parameters = ParseParameters(args.Skip(1).ToArray());
                 command.Execute(parameters, currentUser);
