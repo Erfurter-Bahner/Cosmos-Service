@@ -108,11 +108,17 @@ namespace AMIG.OS.Kernel
                         default:
                             if (key.KeyChar > 31) // Für alle Zeichen, die gedrückt werden (außer Steuerzeichen)
                             {
-                                currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
-                                cursorPosition++; // Cursor nach rechts verschieben
-                                ClearCurrentLine();
-                                Console.Write(Helper.preInput + currentInput);
-                                Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); // Setze den Cursor an die richtige Position
+                                // Berechne die maximale erlaubte Eingabelänge basierend auf der Konsolenbreite
+                                int maxInputLength = Console.WindowWidth - Helper.preInput.Length - 1;
+
+                                if (currentInput.Length < maxInputLength) // Eingabe nur zulassen, wenn Platz vorhanden
+                                {
+                                    currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
+                                    cursorPosition++; // Cursor nach rechts verschieben
+                                    ClearCurrentLine();
+                                    Console.Write(Helper.preInput + currentInput);
+                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); // Setze den Cursor an die richtige Position
+                                }
                             }
                             break;
                     }

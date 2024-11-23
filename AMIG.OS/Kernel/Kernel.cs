@@ -42,8 +42,9 @@ namespace AMIG.OS.Kernel
 
         protected override void Run()
         {
-           
+            Console.ForegroundColor=ConsoleColor.Green;
             Console.Write(Helper.preInput);
+            Console.ResetColor();
             systemServices.inputs();
         }
     }

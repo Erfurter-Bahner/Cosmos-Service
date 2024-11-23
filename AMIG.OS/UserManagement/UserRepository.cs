@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMIG.OS.CommandProcessing.Commands.Extra;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,14 +41,15 @@ namespace AMIG.OS.UserSystemManagement
                         string combinedPermissionsString = string.Join(";", user.CombinedPermissions);
 
                         // Debug-Ausgabe zur Überprüfung der Daten
-                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
+                        //Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
 
                         // Benutzerinformationen in die Datei schreiben
                         writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
-
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
+                Console.ResetColor();
             }
             catch (Exception ex)
             {

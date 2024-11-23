@@ -15,8 +15,7 @@ namespace AMIG.OS.UserSystemManagement
         public RoleRepository()
         {
             LoadRoles();
-            InitializeDefaultRoles();
-            
+            InitializeDefaultRoles();           
         }
 
         public void RoleDicTest()
@@ -141,7 +140,15 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.showme,
                     Permissions.changename,
                     Permissions.changepw,
-                    Permissions.extra
+                    Permissions.extra,
+                    Permissions.ls,
+                    Permissions.cat,
+                    Permissions.touch,
+                    Permissions.cd,
+                    Permissions.write,
+                    Permissions.rmfile,
+                    Permissions.rmdir
+
                 });
             }
             else
@@ -163,7 +170,14 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.showme,
                     Permissions.changename,
                     Permissions.changepw,
-                    Permissions.extra
+                    Permissions.extra,
+                    Permissions.ls,
+                    Permissions.cat,
+                    Permissions.touch,
+                    Permissions.cd,
+                    Permissions.write,
+                    Permissions.rmfile,
+                    Permissions.rmdir
                 };
             }
 

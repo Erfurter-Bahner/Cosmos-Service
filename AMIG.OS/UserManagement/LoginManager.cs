@@ -19,12 +19,8 @@ namespace AMIG.OS.UserSystemManagement
         public void ShowLoginOptions()
         {
             //userManagement.DisplayAllUsers(); // nur zum testen
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Select an option: ");
-            Console.ResetColor();
-
-
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("[1] Login");
             Console.WriteLine("[2] Register");
             Console.ResetColor();
@@ -44,7 +40,9 @@ namespace AMIG.OS.UserSystemManagement
                     ShowLoginOptions();
                     break;
                 default:
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Invalid option! Please use a Number as an Input");
+                    Console.ResetColor();
                     ShowLoginOptions();
                     break;
             }
@@ -58,7 +56,9 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob der Benutzername leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(username))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Username cannot be empty. Please try again.");
+                Console.ResetColor();
                 ShowLoginOptions();
                 return;
             }
@@ -69,7 +69,9 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob das Passwort leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(password))
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Password cannot be empty. Please try again.");
+                Console.ResetColor();
                 ShowLoginOptions();
                 return;
             }
@@ -79,16 +81,22 @@ namespace AMIG.OS.UserSystemManagement
                 LoggedInUser = userRepository.GetUserByUsername(username);
                 if (LoggedInUser == null)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Benutzer nicht gefunden");
+                    Console.ResetColor();
                 }
                 Console.WriteLine($"Der eingeloggte User heißt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
                 //commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Login successful!");
+                Console.ResetColor();
                 // Systemstart fortsetzen
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Invalid credentials. Try again.");
+                Console.ResetColor();
                 ShowLoginOptions();
             }
         }
@@ -128,11 +136,15 @@ namespace AMIG.OS.UserSystemManagement
 
             if (authService.Register(username, password))
             {
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Registration successful! Please log in.");
+                Console.ResetColor();
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Registration failed. Username may already exist.");
+                Console.ResetColor();
             }
         }
     }

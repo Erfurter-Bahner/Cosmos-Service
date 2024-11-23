@@ -1,18 +1,9 @@
 ﻿using AMIG.OS.UserSystemManagement;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AMIG.OS.Utils;
 using AMIG.OS.FileManagement;
-using Sys = Cosmos.System;
 using System.IO;
-using AMIG.OS.UserSystemManagement;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using AMIG.OS.FileManagement;
 
 namespace AMIG.OS.CommandProcessing.Commands.FileSystem
 {
@@ -84,7 +75,6 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
                 Console.WriteLine($"Verzeichnis '{newPath}' existiert nicht.");
             }
         }
-
 
         public void ShowHelp()
         {

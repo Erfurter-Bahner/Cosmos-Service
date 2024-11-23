@@ -36,11 +36,11 @@ namespace AMIG.OS.UserSystemManagement
             var roleToAssign = roleRepository.GetRoleByName(roleName);
 
             // Überprüfen, ob die Rolle existiert
-            if (roleToAssign == null)
-            {
-                Console.WriteLine("Die angegebene Rolle existiert nicht.");
-                return false;
-            }
+            //if (roleToAssign == null)
+            //{
+            //    Console.WriteLine("Die angegebene Rolle existiert nicht.");
+            //    return false;
+            //}
 
             // Überprüfen, ob der Benutzername bereits vergeben ist
             if (userRepository.GetUserByUsername(username) == null)
@@ -53,7 +53,7 @@ namespace AMIG.OS.UserSystemManagement
                 userRepository.AddUser(newUser);
                 //userRepository.SaveUsers(); // Benutzer sofort speichern
 
-                Console.WriteLine("Registrierung erfolgreich. Rolle zugewiesen.");
+                //Console.WriteLine("Registrierung erfolgreich. Rolle zugewiesen.");
                 return true;
             }
 

@@ -71,21 +71,34 @@ namespace AMIG.OS.UserSystemManagement
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
-                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
-                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
-                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+                // Überprüfen, ob der Benutzer gefunden wurde
+                if (user != null)
+                {
+                    // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                    string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                        ? string.Join(", ", user.Roles.Select(r => r.RoleName))
+                        : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
-                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
-                    ? string.Join(", ", user.Permissions)
-                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                    string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                        ? string.Join(", ", user.Permissions)
+                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
 
-                Console.WriteLine($"Username: {user.Username}, " +
-                    $"PW: {user.PasswordHash}, " +
-                    $"Role: {rolesDisplay}, " +
-                    $"Erstellt am: {user.CreatedAt}, " +
-                    $"Letzter Login: {user.LastLogin}, " +
-                    $"Perm: {permissionsDisplay}");
+                    string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
+                        ? string.Join(", ", user.CombinedPermissions)
+                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
+                    Console.WriteLine($"Username: {user.Username}, " +
+                        //$"PW: {user.PasswordHash}, " +
+                        $"Role: {rolesDisplay}, " +
+                        $"Erstellt am: {user.CreatedAt}, " +
+                        $"Letzter Login: {user.LastLogin}, " +
+                        $"Perm: {permissionsDisplay}," +
+                        $"RolePerm: {combinedPermissionsDisplay}");
+                }
+                else
+                {
+                    Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
+                }
             }
         }
 
@@ -103,12 +116,17 @@ namespace AMIG.OS.UserSystemManagement
                     ? string.Join(", ", user.Permissions)
                     : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
 
+                string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
+                    ? string.Join(", ", user.CombinedPermissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
                 Console.WriteLine($"Username: {user.Username}, " +
-                    $"PW: {user.PasswordHash}, " +
+                    //$"PW: {user.PasswordHash}, " +
                     $"Role: {rolesDisplay}, " +
                     $"Erstellt am: {user.CreatedAt}, " +
                     $"Letzter Login: {user.LastLogin}, " +
-                    $"Perm: {permissionsDisplay}");
+                    $"Perm: {permissionsDisplay},"+
+                    $"RolePerm: {combinedPermissionsDisplay}");
             }
             else
             {
