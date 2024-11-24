@@ -121,9 +121,8 @@ namespace AMIG.OS.Kernel
                                 ClearCurrentLine();
                             }
                             break;
-
                         default:
-                            if (key.KeyChar > 31) // Für alle Zeichen, die gedrückt werden (außer Steuerzeichen)
+                            if (key.KeyChar > 31) // Für alle druckbaren Zeichen
                             {
                                 // Berechne die maximale erlaubte Eingabelänge basierend auf der Konsolenbreite
                                 int maxInputLength = Console.WindowWidth - Helper.preInput.Length - 1;
@@ -133,11 +132,53 @@ namespace AMIG.OS.Kernel
                                     currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
                                     cursorPosition++; // Cursor nach rechts verschieben
                                     ClearCurrentLine();
+
                                     Console.ForegroundColor = ConsoleColor.Green;
                                     Console.Write(Helper.preInput); // Schreibe das Prefix
                                     Console.ResetColor();
-                                    Console.Write(currentInput);
-                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); // Setze den Cursor an die richtige Position
+
+                                    // Teile die Eingabe in Wörter auf
+                                    string[] parts = currentInput.Split(' ');
+                                    for (int i = 0; i < parts.Length; i++)
+                                    {
+                                        string part = parts[i];
+
+                                        // Spezifische Prüfung, wenn `-help` das erste Wort ist
+                                        if (i == 0 && part.Equals("-help", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            Console.ForegroundColor = ConsoleColor.Yellow; // `-help` in Gelb
+                                        }
+                                        // Befehl (erstes Wort)
+                                        else if (i == 0)
+                                        {
+                                            if (userManagement.loginManager.LoggedInUser.HasPermission(part))
+                                            {
+                                                Console.ForegroundColor = ConsoleColor.Green; // Gültiger Befehl
+                                            }
+                                            else
+                                            {
+                                                Console.ForegroundColor = ConsoleColor.Red; // Ungültiger Befehl
+                                            }
+                                        }
+                                        // valide Argumente (mit "-")
+                                        else if (Helper.IsValidArgument(part))
+                                        {
+                                            Console.ForegroundColor = ConsoleColor.Yellow; // Argumente
+                                        }
+                                        // Normaler Text
+                                        else
+                                        {
+                                            Console.ResetColor(); // Standardfarbe
+                                        }
+
+                                        Console.Write(part + " "); // Schreibe das aktuelle Segment
+                                    }
+
+                                    // Reset der Farbe nach der Schleife
+                                    Console.ResetColor();
+
+                                    // Setze den Cursor an die richtige Position
+                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
                                 }
                             }
                             break;

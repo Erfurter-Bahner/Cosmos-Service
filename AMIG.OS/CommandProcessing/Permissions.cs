@@ -67,18 +67,18 @@ namespace AMIG.OS.CommandProcessing
         {
 
             var trimmedPermission = permission.Trim();
-            Console.WriteLine($"Prüfe Berechtigung: '{trimmedPermission}'");
+            //Console.WriteLine($"Prüfe Berechtigung: '{trimmedPermission}'");
 
             foreach (var perm in AllPermissions)
             {
                 if (string.Equals(perm, trimmedPermission, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("Berechtigung gefunden.");
+                    //Console.WriteLine("Berechtigung gefunden.");
                     return true;
                 }
             }
 
-            Console.WriteLine("Berechtigung nicht gefunden.");
+            //Console.WriteLine("Berechtigung nicht gefunden.");
             return false;
         }
     }
