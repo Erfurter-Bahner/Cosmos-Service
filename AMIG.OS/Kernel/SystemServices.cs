@@ -88,39 +88,51 @@ namespace AMIG.OS.Kernel
                             }
                             break;
 
-                        case ConsoleKey.UpArrow: // schreibt letzten command 
-                            if (historyIndex > 0)
+                        case ConsoleKey.UpArrow:
+                            if (commandHistory.Count > 0) // Nur wenn die Historie Einträge hat
                             {
-                                historyIndex--;
-                                currentInput = commandHistory[historyIndex]; // Fetch command from history
+                                if (historyIndex > 0) // Bewege den Index nur, wenn er > 0 ist
+                                {
+                                    historyIndex--;
+                                }
+                                currentInput = commandHistory[historyIndex]; // Hole den Befehl aus der Historie
                                 cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
                                 ClearCurrentLine();
+
+                                // Schreibe Präfix und den aktuellen Befehl
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write(Helper.preInput); // Schreibe das Prefix
+                                Console.Write(Helper.preInput);
                                 Console.ResetColor();
                                 Console.Write(currentInput);
                             }
                             break;
 
-                        case ConsoleKey.DownArrow: // schreibt nächsten command
-                            if (historyIndex < commandHistory.Count - 1)
+
+                        case ConsoleKey.DownArrow:
+                            if (commandHistory.Count > 0) // Nur wenn die Historie Einträge hat
                             {
-                                historyIndex++;
-                                currentInput = commandHistory[historyIndex]; // Fetch next command from history
-                                cursorPosition = currentInput.Length; // Setze den Cursor ans Ende des Befehls
+                                if (historyIndex < commandHistory.Count - 1) // Wenn wir nicht am Ende der Liste sind
+                                {
+                                    historyIndex++;
+                                    currentInput = commandHistory[historyIndex]; // Hole den nächsten Befehl
+                                }
+                                //else // Wenn wir am Ende sind, leere den Input
+                                //{
+                                //    currentInput = "";
+                                //}
+
+                                cursorPosition = currentInput.Length; // Setze den Cursor ans Ende
                                 ClearCurrentLine();
+
+                                // Schreibe Präfix und den aktuellen Befehl (oder leere Zeile)
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.Write(Helper.preInput); // Schreibe das Prefix
+                                Console.Write(Helper.preInput);
                                 Console.ResetColor();
                                 Console.Write(currentInput);
                             }
-                            else
-                            {
-                                currentInput = ""; // Keine weiteren Befehle, Eingabe leeren
-                                cursorPosition = 0;
-                                ClearCurrentLine();
-                            }
                             break;
+
+                           
                         default:
                             if (key.KeyChar > 31) // Für alle druckbaren Zeichen
                             {
@@ -129,7 +141,10 @@ namespace AMIG.OS.Kernel
 
                                 if (currentInput.Length < maxInputLength) // Eingabe nur zulassen, wenn Platz vorhanden
                                 {
-                                    currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
+                                    
+                                    currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());                                  
+                                    
+                                    //currentInput = Console.ReadLine();
                                     cursorPosition++; // Cursor nach rechts verschieben
                                     ClearCurrentLine();
 
@@ -137,48 +152,29 @@ namespace AMIG.OS.Kernel
                                     Console.Write(Helper.preInput); // Schreibe das Prefix
                                     Console.ResetColor();
 
-                                    // Teile die Eingabe in Wörter auf
-                                    string[] parts = currentInput.Split(' ');
-                                    for (int i = 0; i < parts.Length; i++)
-                                    {
-                                        string part = parts[i];
+                                    //bool extra; 
+                                    //if(currentInput=="clear" || currentInput == "adios" || currentInput == "datetime"|| currentInput == "logout")
+                                    //{
+                                    //    extra = true;
+                                    //}
+                                    //else extra = false;
 
-                                        // Spezifische Prüfung, wenn `-help` das erste Wort ist
-                                        if (i == 0 && part.Equals("-help", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            Console.ForegroundColor = ConsoleColor.Yellow; // `-help` in Gelb
-                                        }
-                                        // Befehl (erstes Wort)
-                                        else if (i == 0)
-                                        {
-                                            if (userManagement.loginManager.LoggedInUser.HasPermission(part))
-                                            {
-                                                Console.ForegroundColor = ConsoleColor.Green; // Gültiger Befehl
-                                            }
-                                            else
-                                            {
-                                                Console.ForegroundColor = ConsoleColor.Red; // Ungültiger Befehl
-                                            }
-                                        }
-                                        // valide Argumente (mit "-")
-                                        else if (Helper.IsValidArgument(part))
-                                        {
-                                            Console.ForegroundColor = ConsoleColor.Yellow; // Argumente
-                                        }
-                                        // Normaler Text
-                                        else
-                                        {
-                                            Console.ResetColor(); // Standardfarbe
-                                        }
 
-                                        Console.Write(part + " "); // Schreibe das aktuelle Segment
-                                    }
-
-                                    // Reset der Farbe nach der Schleife
-                                    Console.ResetColor();
-
+                                    //// Überprüfe, ob der Befehl gültig ist
+                                    //if (!string.IsNullOrWhiteSpace(currentInput) && currentInput != "extra" && userManagement.loginManager.LoggedInUser.HasPermission(currentInput.Trim()) || extra)
+                                    //{
+                                    //    Console.ForegroundColor = ConsoleColor.Green; // Gültiger Befehl grün
+                                    //}                                   
+                                    //else
+                                    //{
+                                    //    Console.ForegroundColor = ConsoleColor.Red;// Ungültiger Befehl Standardfarbe
+                                    //} 
+                                   
+                                    Console.Write(currentInput);
                                     // Setze den Cursor an die richtige Position
-                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
+                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); 
+                                   // Console.ResetColor();
+
                                 }
                             }
                             break;
