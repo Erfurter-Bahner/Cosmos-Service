@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMIG.OS.CommandProcessing.Commands.Extra;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserRepository(RoleRepository roleRepository)
         {
-            this.roleRepository = roleRepository;
-            LoadUsers();
-            //InitializeTestUsers();
+            this.roleRepository = roleRepository;           
+            LoadUsers();       
+            InitializeAdmin();
         }
 
         // Speichert alle Benutzer in die Datei
@@ -40,14 +41,15 @@ namespace AMIG.OS.UserSystemManagement
                         string combinedPermissionsString = string.Join(";", user.CombinedPermissions);
 
                         // Debug-Ausgabe zur Überprüfung der Daten
-                        Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
+                        //Console.WriteLine($"Speichere Benutzer: {user.Username}, Rollen: {rolesString}, Berechtigungen: {permissionsString}, CombinedPermissons: {combinedPermissionsString}");
 
                         // Benutzerinformationen in die Datei schreiben
                         writer.WriteLine($"{user.Username},{user.PasswordHash},{rolesString},{user.CreatedAt},{user.LastLogin},{permissionsString}");
                     }
                 }
-
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
+                Console.ResetColor();
             }
             catch (Exception ex)
             {
@@ -133,26 +135,17 @@ namespace AMIG.OS.UserSystemManagement
             Console.WriteLine("Benutzerdaten erfolgreich geladen.");
         }
 
-
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
-        public void InitializeTestUsers()
+        public void InitializeAdmin()
         {
-            if (!File.Exists(dataFilePath) || users.Count == 0)
+            string userAdmin = "Admin";
+            if (!users.ContainsKey(userAdmin))
             {
-                Console.WriteLine("Erstelle Testbenutzer...");
-                var adminRole = roleRepository.GetRoleByName("Admin");
-                var userPermissions = new HashSet<string> { "viewReports" };
-
-                // Beispielbenutzer hinzufügen
-                users.Add("User1", new User("User1", "adminPass", false, new List<Role> { adminRole }, userPermissions));
+                Console.WriteLine("Erstelle Admin ...");
+                var adminRole = roleRepository.GetRoleByName("admin");                              
+                users.Add(userAdmin, new User(userAdmin, "adminPass", false, new List<Role> { adminRole }));
                 SaveUsers();
-            }
-            else
-            {
-                Role newRole = roleRepository.GetRoleByName("StandardUser");
-                users["User1"].AddRole(newRole);
-                SaveUsers();
-            }
+            } 
         }
 
         // Gibt den Benutzer anhand des Benutzernamens zurück
@@ -182,10 +175,6 @@ namespace AMIG.OS.UserSystemManagement
             if (users.Remove(username))
             {
                 SaveUsers();
-            }
-            else
-            {
-                Console.WriteLine("Benutzer nicht gefunden.");
             }
         }
 
@@ -224,7 +213,15 @@ namespace AMIG.OS.UserSystemManagement
         // Gibt alle Benutzer im Repository zurück
         public Dictionary<string, User> GetAllUsers()
         {
-            return users;
+            if (users == null)
+            {
+                Console.WriteLine("Es gibt keine Benutzer.");
+                return null;
+            }
+            else
+            {
+                return users;               
+            }            
         }
     }
 }

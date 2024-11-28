@@ -20,24 +20,27 @@ namespace AMIG.OS.UserSystemManagement
             if (user != null && user.VerifyPassword(password))
             {
                 user.LastLogin = DateTime.Now.ToString(); // Datum der letzten Anmeldung aktualisieren
+               
                 userRepository.SaveUsers(); // Änderungen speichern
+                
                 return true;
             }
             return false;
         }
 
         // Registrierungsprozess
-        public bool Register(string username, string password, string roleName)
+        public bool Register(string username, string password/*, string roleName*/)
         {
+            string roleName = "standard";
             // Rolle aus dem Rollen-Repository abrufen
             var roleToAssign = roleRepository.GetRoleByName(roleName);
 
             // Überprüfen, ob die Rolle existiert
-            if (roleToAssign == null)
-            {
-                Console.WriteLine("Die angegebene Rolle existiert nicht.");
-                return false;
-            }
+            //if (roleToAssign == null)
+            //{
+            //    Console.WriteLine("Die angegebene Rolle existiert nicht.");
+            //    return false;
+            //}
 
             // Überprüfen, ob der Benutzername bereits vergeben ist
             if (userRepository.GetUserByUsername(username) == null)
@@ -50,7 +53,7 @@ namespace AMIG.OS.UserSystemManagement
                 userRepository.AddUser(newUser);
                 //userRepository.SaveUsers(); // Benutzer sofort speichern
 
-                Console.WriteLine("Registrierung erfolgreich. Rolle zugewiesen.");
+                //Console.WriteLine("Registrierung erfolgreich. Rolle zugewiesen.");
                 return true;
             }
 

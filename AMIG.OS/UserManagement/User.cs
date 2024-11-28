@@ -9,7 +9,7 @@ namespace AMIG.OS.UserSystemManagement
     {
         // Basisinformationen des Benutzers
         public string Username { get; internal set; }
-        public string PasswordHash { get; private set; }
+        public string PasswordHash { get; internal set; }
         public string CreatedAt { get; internal set; } // Zeitpunkt der Erstellung des Benutzerkontos
         public string LastLogin { get; set; } // Zeitpunkt der letzten Anmeldung
 
@@ -21,7 +21,7 @@ namespace AMIG.OS.UserSystemManagement
         // Konstruktor: Erstellt einen neuen Benutzer und initialisiert die Felder
         public User(string username, string password, bool isHashed = false, List<Role> roles = null, HashSet<string> permissions = null, string created = null)
         {
-            Username = username;
+            Username = username;     
             PasswordHash = isHashed ? password : HashPassword(password);
             CreatedAt = created ?? DateTime.Now.ToString(); // Aktuelle Zeit, falls `created` null ist
 
@@ -97,7 +97,7 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Hash-Funktion zum Erstellen eines SHA256-Hashes für das Passwort
-        private string HashPassword(string input)
+        internal string HashPassword(string input)
         {
             byte[] hashBytes = SHA256.Hash(Encoding.UTF8.GetBytes(input));
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();

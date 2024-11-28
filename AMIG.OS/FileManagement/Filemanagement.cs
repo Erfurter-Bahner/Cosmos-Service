@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security;
-using AMIG.OS.UserSystemManagement;
-using Cosmos.System.FileSystem;
-using Cosmos.System.FileSystem.VFS;
 
 namespace AMIG.OS.FileManagement
 {
     public class FileSystemManager
     {
-
+        // Das aktuelle Verzeichnis
+        public string CurrentDirectory { get; set; } = @"0:\";
         private Dictionary<string, string> filePermissions = new Dictionary<string, string>();
         private const string permissionFilePath = @"0:\filePermissions.txt";
 
@@ -198,10 +195,8 @@ namespace AMIG.OS.FileManagement
             }
         }
 
-        public void ReadFile(string path, string userRole)
+        public void ReadFile(string path)
         {
-            if (HasPermission(path, userRole))
-            {
                 if (File.Exists(path))
                 {
                     string content = File.ReadAllText(path);
@@ -211,11 +206,6 @@ namespace AMIG.OS.FileManagement
                 {
                     Console.WriteLine($"Datei '{path}' existiert nicht.");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Keine Berechtigung, um die Datei zu lesen.");
-            }
         }
 
         public void WriteToFile(string path, string content)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using AMIG.OS.CommandProcessing;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -14,8 +14,8 @@ namespace AMIG.OS.UserSystemManagement
 
         public RoleRepository()
         {
-            InitializeDefaultRoles();
             LoadRoles();
+            InitializeDefaultRoles();           
         }
 
         public void RoleDicTest()
@@ -115,27 +115,100 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-
         // Initialisiert Standardrollen und speichert sie, falls keine Rollendaten existieren
         public void InitializeDefaultRoles()
         {
-            if (File.Exists(dataFilePath))
+            string admin = "admin";
+            string standarduser = "standard";
+
+            // Überschreibt oder fügt die Standardrollen hinzu
+            if (!roles.ContainsKey(admin))
             {
-                Console.WriteLine("Lade Rollen aus Datei...");
-                LoadRoles();
+                roles[admin] = new Role(admin, new HashSet<string>
+                {
+                    Permissions.addrole,
+                    Permissions.rmrole,
+                    Permissions.addroletouser,
+                    Permissions.rmroleuser,
+                    Permissions.addpermtouser,
+                    Permissions.rmpermuser,
+                    Permissions.rmpermrole,
+                    Permissions.addpermtorole,
+                    Permissions.adduser,
+                    Permissions.rmuser,
+                    Permissions.showall,
+                    Permissions.showme,
+                    Permissions.showuser,
+                    Permissions.changename,
+                    Permissions.changepw,
+                    Permissions.extra,
+                    Permissions.ls,
+                    Permissions.cat,
+                    Permissions.touch,
+                    Permissions.cd,
+                    Permissions.write,
+                    Permissions.rmfile,
+                    Permissions.rmdir,
+                    Permissions.mkdir
+
+                });
             }
             else
             {
-                Console.WriteLine("Erstelle Standardrollen, da keine Rollendaten-Datei existiert...");
-
-                // Standardrollen hinzufügen7
-                string admin = "admin";
-                string standarduser = "standarduser";
-                roles[admin] = new Role(admin, new HashSet<string> { "createUser", "deleteUser", "viewLogs", "modifySettings" });
-                roles[standarduser] = new Role(standarduser, new HashSet<string> { "viewLogs" });
-
-                SaveRoles();
+                // Rolle existiert bereits, also nur Berechtigungen überschreiben
+                roles[admin].Permissions = new HashSet<string>
+                {
+                    Permissions.addrole,
+                    Permissions.rmrole,
+                    Permissions.addroletouser,
+                    Permissions.rmroleuser,
+                    Permissions.addpermtouser,
+                    Permissions.rmpermuser,
+                    Permissions.rmpermrole,
+                    Permissions.addpermtorole,
+                    Permissions.adduser,
+                    Permissions.rmuser,
+                    Permissions.showall,
+                    Permissions.showme,
+                    Permissions.showuser,
+                    Permissions.changename,
+                    Permissions.changepw,
+                    Permissions.extra,
+                    Permissions.ls,
+                    Permissions.cat,
+                    Permissions.touch,
+                    Permissions.cd,
+                    Permissions.write,
+                    Permissions.rmfile,
+                    Permissions.rmdir,
+                    Permissions.mkdir
+                };
             }
+
+            // Standarduser-Rolle hinzufügen oder überschreiben
+            if (!roles.ContainsKey(standarduser))
+            {
+                roles[standarduser] = new Role(standarduser, new HashSet<string>
+                {
+                    Permissions.extra,
+                    Permissions.showme,
+                    Permissions.changename,
+                    Permissions.changepw
+                });
+            }
+            else
+            {
+                // Rolle existiert bereits, also nur Berechtigungen überschreiben
+                roles[standarduser].Permissions = new HashSet<string>
+                {
+                    Permissions.extra,
+                    Permissions.showme,
+                    Permissions.changename,
+                    Permissions.changepw
+                };
+            }
+            // Speichern der Rollen
+            SaveRoles();
         }
 
         // Rolle nach Name abrufen
@@ -172,25 +245,30 @@ namespace AMIG.OS.UserSystemManagement
             }
         }
 
-        // Fügt eine Berechtigung zu einer bestimmten Rolle hinzu
         public void AddPermissionToRole(string roleName, List<string> permissionsToAdd)
         {
             if (roles.TryGetValue(roleName, out Role role))
             {
                 foreach (var permission in permissionsToAdd)
                 {
+                    
+                    if (!Permissions.IsValidPermission(permission.ToString()))
+                    {
+                        Console.WriteLine($"Berechtigung '{permission}' existiert in der Berechtigungsliste nicht.");
+                        continue;
+                    }
+
                     if (role.Permissions.Contains(permission))
                     {
-                        role.Permissions.Add(permission);
-                        Console.WriteLine($"Berechtigung '{permission}' wurde aus der Rolle '{roleName}' hinzugefügt.");
+                        Console.WriteLine($"Berechtigung '{permission}' ist in der Rolle '{roleName}' schon vorhanden.");
+                        continue;
                     }
-                    else
-                    {
-                        Console.WriteLine($"Berechtigung '{permission}' ist in der Rolle '{roleName}' nicht vorhanden.");
-                    }
+
+                    role.Permissions.Add(permission);
+                    Console.WriteLine($"Berechtigung '{permission}' wurde der Rolle '{roleName}' hinzugefügt.");
                 }
 
-                // Rollen speichern, nachdem Berechtigungen entfernt wurden
+                // Rollen speichern, nachdem Berechtigungen hinzugefügt wurden
                 SaveRoles();
             }
             else
@@ -198,9 +276,10 @@ namespace AMIG.OS.UserSystemManagement
                 Console.WriteLine($"Rolle '{roleName}' wurde nicht gefunden.");
             }
         }
+    
 
-        // Entfernt eine Berechtigung von einer bestimmten Rolle
-        public void RemovePermissionsFromRole(string roleName, List<string> permissionsToRemove)
+    // Entfernt eine Berechtigung von einer bestimmten Rolle
+    public void RemovePermissionsFromRole(string roleName, List<string> permissionsToRemove)
         {
             if (roles.TryGetValue(roleName, out Role role))
             {

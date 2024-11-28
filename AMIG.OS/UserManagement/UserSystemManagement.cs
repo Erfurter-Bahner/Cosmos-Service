@@ -1,7 +1,4 @@
-﻿using AMIG.OS.Utils;
-using AMIG.OS.FileManagement;
-using System;
-using System.IO;
+﻿using System;
 using System.Linq;
 
 namespace AMIG.OS.UserSystemManagement
@@ -10,17 +7,17 @@ namespace AMIG.OS.UserSystemManagement
     public class UserManagement
     {
         public UserRepository userRepository { get; private set; }  // Verwaltet alle Benutzerinformationen
-       public AuthenticationService authService { get; private set; } // Zuständig für Authentifizierung
+        public AuthenticationService authService { get; private set; } // Zuständig für Authentifizierung
         public RoleRepository roleRepository { get; private set; }  // Speichert Rollen und Berechtigungen
-        public FileSystemManager fileSystemManager { get; private set; } // Initialisert Fileoperations
+        public LoginManager loginManager { get; private set; }
 
         public UserManagement()
         {
             // Initialisiere Repositorys und den Authentifizierungsdienst
             this.roleRepository = new RoleRepository();
             this.userRepository = new UserRepository(roleRepository);
-            this.fileSystemManager = new FileSystemManager();
             this.authService = new AuthenticationService(userRepository, roleRepository);
+            this.loginManager = new LoginManager(roleRepository,userRepository,authService);
         }
 
         // Führt die Benutzeranmeldung durch
@@ -35,9 +32,9 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Registriert einen neuen Benutzer mit Benutzernamen, Passwort und zugewiesener Rolle
-        public bool Register(string username, string password, string role)
+        public bool Register(string username, string password/*, string role*/)
         {
-            return authService.Register(username, password, role);
+            return authService.Register(username, password/*, role*/);
         }
 
         // Entfernt einen Benutzer aus dem System
@@ -74,28 +71,39 @@ namespace AMIG.OS.UserSystemManagement
             var users = userRepository.GetAllUsers();
             foreach (var user in users.Values)
             {
-                // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
-                string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                    ? string.Join(", ", user.Roles.Select(r => r.RoleName))
-                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+                // Überprüfen, ob der Benutzer gefunden wurde
+                if (user != null)
+                {
+                    // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
+                    string rolesDisplay = user.Roles != null && user.Roles.Count > 0
+                        ? string.Join(", ", user.Roles.Select(r => r.RoleName))
+                        : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
 
-                string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
-                    ? string.Join(", ", user.Permissions)
-                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                    string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
+                        ? string.Join(", ", user.Permissions)
+                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
 
-                Console.WriteLine($"Username: {user.Username}, " +
-                    $"PW: {user.PasswordHash}, " +
-                    $"Role: {rolesDisplay}, " +
-                    $"Erstellt am: {user.CreatedAt}, " +
-                    $"Letzter Login: {user.LastLogin}, " +
-                    $"Perm: {permissionsDisplay}");
+                    string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
+                        ? string.Join(", ", user.CombinedPermissions)
+                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
+                    Console.WriteLine($"Username: {user.Username}, " +
+                        //$"PW: {user.PasswordHash}, " +
+                        $"Role: {rolesDisplay}, " +
+                        $"Erstellt am: {user.CreatedAt}, " +
+                        $"Letzter Login: {user.LastLogin}, " +
+                        $"Perm: {permissionsDisplay}," +
+                        $"RolePerm: {combinedPermissionsDisplay}");
+                }
+                else
+                {
+                    Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
+                }
             }
         }
 
-        public void DisplayUser(string loggedInUser)
+        public void DisplayUser(User user)
         {
-            var user = userRepository.GetUserByUsername(loggedInUser);
-
             // Überprüfen, ob der Benutzer gefunden wurde
             if (user != null)
             {
@@ -108,21 +116,23 @@ namespace AMIG.OS.UserSystemManagement
                     ? string.Join(", ", user.Permissions)
                     : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
 
+                string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
+                    ? string.Join(", ", user.CombinedPermissions)
+                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+
                 Console.WriteLine($"Username: {user.Username}, " +
-                    $"PW: {user.PasswordHash}, " +
+                    //$"PW: {user.PasswordHash}, " +
                     $"Role: {rolesDisplay}, " +
                     $"Erstellt am: {user.CreatedAt}, " +
                     $"Letzter Login: {user.LastLogin}, " +
-                    $"Perm: {permissionsDisplay}");
+                    $"Perm: {permissionsDisplay},"+
+                    $"RolePerm: {combinedPermissionsDisplay}");
             }
             else
             {
-                Console.WriteLine($"Benutzer '{loggedInUser}' wurde nicht gefunden.");
+                Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
             }
         }
-
-
-
 
         // Ändert das Passwort eines Benutzers, sofern das alte Passwort korrekt ist
         public bool ChangePassword(string username, string oldPassword, string newPassword)
@@ -149,11 +159,5 @@ namespace AMIG.OS.UserSystemManagement
         {
             return authService.UserExists(username);
         }
-
-
- 
-        
-
-
     }
 }
