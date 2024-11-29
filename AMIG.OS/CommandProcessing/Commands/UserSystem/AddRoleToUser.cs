@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-user", "Name of the user" },
             { "-role", "Name of the new role" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public AddRoleToUser(UserManagement userManagement)
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 User user = userManagement.userRepository.GetUserByUsername(username);
                 if (user == null)
                 {
-                    Console.WriteLine($"Benutzer '{username}' wurde nicht gefunden.");
+                    Console.WriteLine($"User '{username}' doesnt exit.");
                     return;
                 }
 
@@ -68,20 +68,20 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         // Überprüfen, ob die Rolle existiert
                         if (role == null)
                         {
-                            Console.WriteLine($"Rolle '{roleName}' existiert nicht.");
+                            Console.Write($"Warning: Role '{roleName}' doesnt exist.");
                             continue; // Nächste Rolle prüfen
                         }
 
                         // Überprüfen, ob der Benutzer die Rolle bereits hat
                         if (user.Roles.Any(r => r.RoleName == roleName))
                         {
-                            Console.WriteLine($"Benutzer '{username}' hat bereits die Rolle '{roleName}'.");
+                            Console.WriteLine($"Warning: User '{username}' already has the role '{roleName}'.");
                             continue;
                         }
 
                         // Rolle und Berechtigungen zum Benutzer hinzufügen
                         user.AddRole(role);
-                        Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich zum Benutzer '{username}' hinzugefügt.");
+                        ConsoleHelpers.WriteSuccess($"Role '{roleName}' was added to user '{username}' successfully.");
                     }
 
                     // Benutzer speichern

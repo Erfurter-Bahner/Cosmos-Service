@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using AMIG.OS.CommandProcessing;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -61,11 +62,11 @@ namespace AMIG.OS.UserSystemManagement
                     }
                 }
 
-                Console.WriteLine("Rollendaten erfolgreich gespeichert.");
+                ConsoleHelpers.WriteSuccess("Role saved successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Speichern der Rollendaten: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Saving Roles: {ex.Message}");
             }
         }
 
@@ -74,7 +75,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (!File.Exists(dataFilePath))
             {
-                Console.WriteLine("Rollendaten-Datei existiert nicht. Lade keine Rollen.");
+                ConsoleHelpers.WriteError("Error: Role file not existing. Roles not loaded.");
                 return;
             }
 
@@ -86,7 +87,7 @@ namespace AMIG.OS.UserSystemManagement
                     while ((line = reader.ReadLine()) != null)
                     {
                         // Debug-Ausgabe zur Überprüfung jeder Zeile
-                        Console.WriteLine($"Einlesen der Zeile: {line}");
+                        Console.WriteLine($"Reading line: {line}");
 
                         var parts = line.Split(',');
                         if (parts.Length >= 2)
@@ -95,23 +96,23 @@ namespace AMIG.OS.UserSystemManagement
                             var permissions = new HashSet<string>(parts[1].Split(';').Select(p => p.Trim())); // Berechtigungen als HashSet
 
                             // Debug-Ausgabe zur Überprüfung der Rollendaten
-                            Console.WriteLine($"Gefundene Rolle: {roleName} mit Berechtigungen: {string.Join(", ", permissions)}");
+                            //Console.WriteLine($"Gefundene Rolle: {roleName} mit Berechtigungen: {string.Join(", ", permissions)}");
 
                             var role = new Role(roleName, permissions);
                             roles[roleName] = role;
                         }
-                        else
-                        {
-                            Console.WriteLine($"Zeile konnte nicht verarbeitet werden: {line}");
-                        }
+                        //else
+                        //{
+                        //    Console.WriteLine($"Zeile konnte nicht verarbeitet werden: {line}");
+                        //}
                     }
                 }
 
-                Console.WriteLine("Rollendaten erfolgreich geladen.");
+                ConsoleHelpers.WriteSuccess("Roles loaded successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Laden der Rollendaten: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Loading Roles: {ex.Message}");
             }
         }
 
@@ -228,7 +229,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine("Rolle existiert bereits.");
+                ConsoleHelpers.WriteError("Error: Role already exist.");
             }
         }
 
@@ -241,7 +242,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine("Rolle nicht gefunden.");
+                ConsoleHelpers.WriteError("Error: Role not found.");
             }
         }
 
@@ -254,18 +255,18 @@ namespace AMIG.OS.UserSystemManagement
                     
                     if (!Permissions.IsValidPermission(permission.ToString()))
                     {
-                        Console.WriteLine($"Berechtigung '{permission}' existiert in der Berechtigungsliste nicht.");
+                        Console.WriteLine($"Warning: Permission'{permission}' doesnt exist.");
                         continue;
                     }
 
                     if (role.Permissions.Contains(permission))
                     {
-                        Console.WriteLine($"Berechtigung '{permission}' ist in der Rolle '{roleName}' schon vorhanden.");
+                        Console.WriteLine($"Warning: Permission '{permission}' already exist in role '{roleName}'.");
                         continue;
                     }
 
                     role.Permissions.Add(permission);
-                    Console.WriteLine($"Berechtigung '{permission}' wurde der Rolle '{roleName}' hinzugefügt.");
+                    ConsoleHelpers.WriteSuccess($"Permission '{permission}' was added to role '{roleName}' sucessfully.");
                 }
 
                 // Rollen speichern, nachdem Berechtigungen hinzugefügt wurden
@@ -273,7 +274,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine($"Rolle '{roleName}' wurde nicht gefunden.");
+                ConsoleHelpers.WriteError($"Error: Role not found: '{roleName}' ");
             }
         }
     
@@ -288,11 +289,11 @@ namespace AMIG.OS.UserSystemManagement
                     if (role.Permissions.Contains(permission))
                     {
                         role.Permissions.Remove(permission);
-                        Console.WriteLine($"Berechtigung '{permission}' wurde aus der Rolle '{roleName}' entfernt.");
+                        ConsoleHelpers.WriteSuccess($"Permission'{permission}' was removed from role '{roleName}' successfully.");
                     }
                     else
                     {
-                        Console.WriteLine($"Berechtigung '{permission}' ist in der Rolle '{roleName}' nicht vorhanden.");
+                        Console.Write($"Warning: Permission '{permission}' doesnt exist in role '{roleName}'.");
                     }
                 }
 
@@ -301,7 +302,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine($"Rolle '{roleName}' wurde nicht gefunden.");
+                ConsoleHelpers.WriteError($"Error: Role not found: '{roleName}'");
             }
         }
         public Dictionary<string, Role> GetAllRoles()

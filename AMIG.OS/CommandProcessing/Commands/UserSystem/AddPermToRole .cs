@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-role", "Name of the role to add permissions" },
             { "-permissions", "Permissions to add to role" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public AddPermToRole(UserManagement userManagement)
@@ -33,10 +33,6 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         // Implementing Execute as defined in the custom ICommand interface
         public void Execute(CommandParameters parameters, User currentUser)
         {
-            if (parameters == null)
-            {
-                Console.WriteLine("parameters null in addrole");
-            }
             // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
             if (parameters.TryGetValue("help", out _))
             {
@@ -50,7 +46,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             // Überprüfen, ob der notwendige Parameter "role" vorhanden ist
             if (!string.IsNullOrEmpty(roleName))
             {
-                Console.WriteLine($"Gefundene Berechtigungen: {roleName}");
+                Console.WriteLine($"Found permissions: {roleName}");
                 // Überprüfen, ob der "permissions"-Parameter vorhanden ist
                 if (!string.IsNullOrEmpty(permissionsRaw))
                 {
@@ -75,18 +71,17 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         }
 
                     }
-
                     // Änderungen in den gespeicherten Rollen und Benutzern speichern
                     userManagement.userRepository.SaveUsers();
                 }
                 else
                 {
-                    Console.WriteLine("Fehler: Es wurden keine Berechtigungen angegeben. Verwenden Sie -permissions <Liste>");
+                    ConsoleHelpers.WriteError("Error: No permissions were specified. Use -permissions p1 p2 p3");
                 }
             }
             else
             {
-                Console.WriteLine("Fehler: Der Parameter '-role' fehlt. Verwenden Sie -help, um die Syntax zu sehen.");
+                ConsoleHelpers.WriteError("Error: Parameter '-role' is missing. Use -help to see usage.");
             }
         }
 
@@ -94,7 +89,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: rmpermrole [options]");
+            Console.WriteLine("Usage: addpermrole [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

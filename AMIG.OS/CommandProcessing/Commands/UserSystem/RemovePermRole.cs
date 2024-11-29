@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-role", "Name of the role, to remove perms from" },
             { "-permissions", "Permissions to remove from the role" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public RemovePermRole(UserManagement userManagement)
@@ -46,7 +46,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             // Überprüfen, ob der notwendige Parameter "role" vorhanden ist
             if (!string.IsNullOrEmpty(roleName))
             {
-                Console.WriteLine($"Gefundene Berechtigungen: {roleName}");
+                Console.WriteLine($"Found Permissions: {roleName}");
                 // Überprüfen, ob der "permissions"-Parameter vorhanden ist
                 if (!string.IsNullOrEmpty(permissionsRaw))
                 {
@@ -77,12 +77,12 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 }
                 else
                 {
-                    Console.WriteLine("Fehler: Es wurden keine Berechtigungen angegeben. Verwenden Sie -permissions <Liste>");
+                    ConsoleHelpers.WriteError("Error: No permissions were specified. Use -permissions p1 p2 p3");
                 }
             }
             else
             {
-                Console.WriteLine("Fehler: Der Parameter '-role' fehlt. Verwenden Sie -help, um die Syntax zu sehen.");
+                ConsoleHelpers.WriteError("Error: Parameter '-role' is missing. Use -help to see usage.");
             }
         }
 

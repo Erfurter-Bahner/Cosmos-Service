@@ -26,7 +26,7 @@ namespace AMIG.OS.CommandProcessing
             }
             else
             {
-                Console.WriteLine($"Warnung: Der Schlüssel '{key}' existiert bereits. Der Wert wird überschrieben.");
+                Console.WriteLine($"Warning: The Key '{key}' already exists. The key will be overwritten.");
                 Parameters[key] = value; // Falls Überschreiben gewünscht
                                          // Alternativ:
                                          // Parameters[key] += " " + value; // Falls Werte angehängt werden sollen

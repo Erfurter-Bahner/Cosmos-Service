@@ -10,14 +10,19 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
     public class Adios : ICommand
     {
         private readonly UserManagement userManagement;
-        public string Description => "shutdown the system";
+        public string Description => "Shutdown the system.";
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-amigos", "needed to use shutdown command."},
+            {"-amigos", "Required to use the shutdown command."},
+            {"-help", "Show help for this command."}
         };
 
-        // Implementing CanExecute as defined in the custom ICommand interface
+        public Adios(UserManagement userManagement)
+        {
+            this.userManagement = userManagement;
+        }
+
         public bool CanExecute(User currentUser)
         {
             return currentUser.HasPermission(PermissionName);
@@ -25,28 +30,26 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
 
         public void Execute(CommandParameters parameters, User currentUser)
         {
-            // Wenn der 'help'-Parameter übergeben wird, zeige die Hilfe
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
                 return;
             }
 
-            // Prüfen, ob der Befehl "amigos" ohne weitere Argumente aufgerufen wurde
+            // Überprüfen, ob genau ein Parameter ("-amigos") übergeben wurde
             if (parameters.Parameters.Count == 1 && parameters.Parameters.ContainsKey("amigos"))
             {
                 Console.Clear();
-                Console.WriteLine("\n\tHASTA LA VISTA");
+                ConsoleHelpers.WriteSuccess("\n\tHASTA LA VISTA");
                 Thread.Sleep(1500);
                 Sys.Power.Shutdown(); // Simuliert das Herunterfahren des Systems
             }
             else
             {
-                Console.WriteLine("Fehlende oder ungültige Argumente. Verwenden Sie -help für weitere Informationen.");
+                ConsoleHelpers.WriteError("Missing or invalid arguments. Use '-help' for more information.");
             }
         }
 
-        // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
             Console.WriteLine(Description);

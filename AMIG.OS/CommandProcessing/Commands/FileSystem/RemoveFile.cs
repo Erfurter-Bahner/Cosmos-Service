@@ -22,7 +22,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-file", "file to remove"},
-            {"-help", "show help"},
+           {"-help", "Show help for this command."},
         };
         public RemoveFile(FileSystemManager fileSystemManagement)
         {
@@ -56,7 +56,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 

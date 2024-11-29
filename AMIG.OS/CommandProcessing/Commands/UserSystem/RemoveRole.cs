@@ -15,7 +15,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             { "-role", "Name of the new role" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public RemoveRole(UserManagement userManagement)
@@ -72,7 +72,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 

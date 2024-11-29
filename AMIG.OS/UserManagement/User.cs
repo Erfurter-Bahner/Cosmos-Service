@@ -92,7 +92,7 @@ namespace AMIG.OS.UserSystemManagement
         // Überprüft, ob das übergebene Passwort mit dem gespeicherten Hash übereinstimmt
         public bool VerifyPassword(string password)
         {
-            Console.WriteLine($"Verifying password. Input: {password}, Hash: {PasswordHash}");
+            Console.WriteLine($"Verifying password.");
             return PasswordHash == HashPassword(password);
         }
 

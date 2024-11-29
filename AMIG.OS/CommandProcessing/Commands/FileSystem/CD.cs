@@ -11,17 +11,17 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
     {
         private readonly FileSystemManager fileSystemManager;
 
-        public string Description => "Change directory.";
+        public string Description => "Change the current directory.";
         public string PermissionName { get; } = Permissions.cd; // Permission für 'cd' Befehl
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-dir", "Directory to change to (absolute or relative)."},
-            {"-help", "Show help."},
+            {"-dir", "The directory to change to (absolute or relative)."},
+            {"-help", "Show help for this command."},
         };
 
         public CD(FileSystemManager fileSystemManager)
         {
-            this.fileSystemManager = fileSystemManager;
+            this.fileSystemManager = fileSystemManager ?? throw new ArgumentNullException(nameof(fileSystemManager));
         }
 
         public bool CanExecute(User currentUser)
@@ -39,53 +39,58 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
 
             if (!parameters.TryGetValue("dir", out string dir) || string.IsNullOrWhiteSpace(dir))
             {
-                Console.WriteLine("Bitte geben Sie ein gültiges Verzeichnis an. Verwenden Sie -help für Details.");
+                ConsoleHelpers.WriteError("Please provide a valid directory. Use '-help' for usage details.");
                 return;
             }
 
-            // Sonderfall: Wechsel ins übergeordnete Verzeichnis
-            if (dir == "..")
+            try
             {
-                // Verwende Directory.GetParent
-                var parent = Directory.GetParent(fileSystemManager.CurrentDirectory);
-                if (parent == null) // Kein übergeordnetes Verzeichnis vorhanden (Root)
+                // Sonderfall: Wechsel ins übergeordnete Verzeichnis
+                if (dir == "..")
                 {
-                    Console.WriteLine("Sie befinden sich bereits im Root-Verzeichnis.");
+                    var parent = Directory.GetParent(fileSystemManager.CurrentDirectory);
+                    if (parent == null)
+                    {
+                        ConsoleHelpers.WriteError("You are already in the root directory.");
+                        return;
+                    }
+
+                    fileSystemManager.CurrentDirectory = parent.FullName;
+                    ConsoleHelpers.WriteSuccess($"Changed directory to '{fileSystemManager.CurrentDirectory}'.");
                     return;
                 }
 
-                fileSystemManager.CurrentDirectory = parent.FullName;
-                Console.WriteLine($"Verzeichnis gewechselt zu '{fileSystemManager.CurrentDirectory}'.");
-                return;
-            }
+                // Prüfe, ob der Pfad relativ oder absolut ist
+                string newPath = Path.IsPathRooted(dir)
+                    ? dir
+                    : Path.Combine(fileSystemManager.CurrentDirectory, dir);
 
-            // Prüfe, ob der Pfad relativ oder absolut ist
-            string newPath = Path.IsPathRooted(dir)
-                ? dir
-                : Path.Combine(fileSystemManager.CurrentDirectory, dir);
-
-            // Verzeichnis existiert prüfen
-            if (Directory.Exists(newPath))
-            {
-                fileSystemManager.CurrentDirectory = newPath;
-                Console.WriteLine($"Verzeichnis gewechselt zu '{fileSystemManager.CurrentDirectory}'.");
+                // Verzeichnis existiert prüfen
+                if (Directory.Exists(newPath))
+                {
+                    fileSystemManager.CurrentDirectory = newPath;
+                    ConsoleHelpers.WriteSuccess($"Changed directory to '{fileSystemManager.CurrentDirectory}'.");
+                }
+                else
+                {
+                    ConsoleHelpers.WriteError($"The directory '{newPath}' does not exist.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"Verzeichnis '{newPath}' existiert nicht.");
+                ConsoleHelpers.WriteError($"An error occurred while changing the directory: {ex.Message}");
             }
         }
 
         public void ShowHelp()
         {
-            Console.WriteLine(Description);
-            Console.WriteLine("Usage: cd -dir <directory>");
+            ConsoleHelpers.WriteSuccess(Description);
+            Console.WriteLine("Usage: cd [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");
             }
+
         }
     }
 }
-
-

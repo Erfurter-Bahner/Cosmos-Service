@@ -24,7 +24,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public string PermissionName { get; } = Permissions.showme; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-           {"-help", "show help"},
+          {"-help", "Show help for this command."},
         };
         public ShowMe(UserManagement userManagement)
         {
@@ -49,7 +49,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }            
         }
 
@@ -57,7 +57,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: showme");
+            Console.WriteLine("Usage: showme [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"  {param.Key}\t{param.Value}");

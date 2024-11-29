@@ -15,8 +15,8 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             { "-user", "Name of the user" },
-            { "-permissions", "Permissions to Add" },
-            { "-help", "Shows usage information for the command." }
+            { "-permissions", "Permissions to add to user" },
+            {"-help", "Show help for this command."},
         };
 
         public AddPermToUser(UserManagement userManagement)
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 User user = userManagement.userRepository.GetUserByUsername(username);
                 if (user == null)
                 {
-                    Console.WriteLine($"Benutzer '{username}' wurde nicht gefunden.");
+                    ConsoleHelpers.WriteError($"User '{username}' not found.");
                     return;
                 }
 
@@ -65,26 +65,26 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         // Überprüfen, ob die Berechtigung gültig ist
                         if (!Permissions.IsValidPermission(permName))
                         {
-                            Console.WriteLine($"Warnung: '{permName}' ist keine gültige Berechtigung und wurde übersprungen.");
+                            Console.WriteLine($"Warning: '{permName}' isnt a known permission and was skipped.");
                             continue;
                         }
 
                         // Überprüfen, ob der Benutzer die Berechtigung bereits hat
                         if (user.Permissions.Contains(permName))
                         {
-                            Console.WriteLine($"Hinweis: Benutzer '{username}' hat bereits die Berechtigung '{permName}'.");
+                            Console.WriteLine($"Warning: User '{username}' already has the permission '{permName}'.");
                             continue;
                         }
 
                         // Berechtigung hinzufügen
                         user.AddPermission(permName);
                         userManagement.userRepository.SaveUsers();
-                        Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich dem Benutzer '{username}' hinzugefügt.");
+                        ConsoleHelpers.WriteSuccess($"Permission '{permName}' was added to '{username}' successfully.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                    ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             public void ShowHelp()
             {
                 Console.WriteLine(Description);
-                Console.WriteLine($"Usage: {PermissionName} [options]");
+                Console.WriteLine($"Usage: addpermuser [options]");
                 foreach (var param in Parameters)
                 {
                     Console.WriteLine($"  {param.Key}\t{param.Value}");

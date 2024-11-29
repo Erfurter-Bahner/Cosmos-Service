@@ -3,30 +3,28 @@ using AMIG.OS.Utils;
 using System;
 using System.Collections.Generic;
 
-
 namespace AMIG.OS.CommandProcessing.Commands.Extra
 {
     public class Logout : ICommand
     {
         private readonly UserManagement userManagement;
-        private User LoggedInUser;
-        public string Description => "logout to start screen";
+        public string Description => "Logs out the current user and returns to the login screen.";
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "to show help"},
+             {"-help", "Show help for this command."}
         };
+
         public Logout(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
-        // Implementing CanExecute as defined in the custom ICommand interface
+
         public bool CanExecute(User currentUser)
         {
             return currentUser.HasPermission(PermissionName);
         }
 
-        // Implementing Execute as defined in the custom ICommand interface
         public void Execute(CommandParameters parameters, User currentUser)
         {
             if (parameters.TryGetValue("help", out _))
@@ -34,21 +32,28 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
                 ShowHelp();
                 return;
             }
-            if (parameters.Parameters.Count == 0) {
 
-                userManagement.loginManager.ShowLoginOptions();
-                
+            if (parameters.Parameters.Count == 0)
+            {
+                try
+                {
+                    userManagement.loginManager.ShowLoginOptions();
+                    ConsoleHelpers.WriteSuccess("You have successfully logged out.");
+                }
+                catch (Exception ex)
+                {
+                    ConsoleHelpers.WriteError($"An error occurred during logout: {ex.Message}");
+                }
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
-            }            
+                ConsoleHelpers.WriteError("Invalid arguments. Use '-help' to see usage instructions.");
+            }
         }
 
-        // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
-            Console.WriteLine(Description);
+            ConsoleHelpers.WriteSuccess(Description);
             Console.WriteLine("Usage: logout [options]");
             foreach (var param in Parameters)
             {

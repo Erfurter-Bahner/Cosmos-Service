@@ -24,7 +24,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         {
             {"-file", "File to write to (will be created if it does not exist)."},
             {"-text", "Text to write into the file."},
-            {"-help", "Show help information."},
+            {"-help", "Show help for this command."},
         };
 
         public WRITE(FileSystemManager fileSystemManager)
@@ -60,16 +60,16 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
                    
                     // Schreibe Text in eine neue Zeile
                     fileSystemManager.WriteToFile(filePath, text);
-                    Console.WriteLine($"Text in Datei '{filePath}' geschrieben.");
+                    ConsoleHelpers.WriteSuccess($"Text successfully written in '{filePath}'.");
                 }
                 else
                 {
-                    Console.WriteLine("Kein Text angegeben. Verwenden Sie -help für Details.");
+                    ConsoleHelpers.WriteError("No Text to write. Use -help to see usage.");
                 }
             }
             else
             {
-                Console.WriteLine("Ungültige Argumente. Verwenden Sie -help für Details.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 

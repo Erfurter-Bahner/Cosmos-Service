@@ -14,7 +14,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             { "-user", "Name of the user/s" },          
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public RemoveUser(UserManagement userManagement)
@@ -51,24 +51,24 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                     User user = userManagement.userRepository.GetUserByUsername(_user);
                     if (user == null)
                     {
-                        Console.WriteLine($"Benutzer '{_user}' wurde nicht gefunden.");
+                        Console.WriteLine($"Warning: User '{_user}' doesnt exit.");
                         return;
                     }
                     else if (currentUser.Username==_user)
                     {
-                        Console.WriteLine("Du kannst dich nicht selbst löschen.");
+                        Console.WriteLine("You cant remove yourself.");
                         return; 
                     }
                     else
                     {
                         userManagement.RemoveUser(_user);
-                        Console.WriteLine($"Benutzer '{_user}' wurde entfernt.");
+                        ConsoleHelpers.WriteSuccess($"User '{_user}' was removed successfully.");
                     }
                 }             
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 

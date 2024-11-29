@@ -1,4 +1,5 @@
 ﻿using System;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -57,7 +58,7 @@ namespace AMIG.OS.UserSystemManagement
                 return true;
             }
 
-            Console.WriteLine("Benutzername ist bereits vergeben.");
+            //ConsoleHelpers.WriteError("Username already exist.");
             return false;
         }
 

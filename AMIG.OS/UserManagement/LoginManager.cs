@@ -40,9 +40,7 @@ namespace AMIG.OS.UserSystemManagement
                     ShowLoginOptions();
                     break;
                 default:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid option! Please use a Number as an Input");
-                    Console.ResetColor();
+                    ConsoleHelpers.WriteError("Error: Invalid option! Please use a Number as an Input");
                     ShowLoginOptions();
                     break;
             }
@@ -56,9 +54,7 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob der Benutzername leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(username))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Username cannot be empty. Please try again.");
-                Console.ResetColor();
+                ConsoleHelpers.WriteError("Error: Username cannot be empty. Please try again.");
                 ShowLoginOptions();
                 return;
             }
@@ -69,9 +65,7 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob das Passwort leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(password))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Password cannot be empty. Please try again.");
-                Console.ResetColor();
+                ConsoleHelpers.WriteError("Error: Password cannot be empty. Please try again.");
                 ShowLoginOptions();
                 return;
             }
@@ -80,23 +74,19 @@ namespace AMIG.OS.UserSystemManagement
             {
                 LoggedInUser = userRepository.GetUserByUsername(username);
                 if (LoggedInUser == null)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Benutzer nicht gefunden");
-                    Console.ResetColor();
+                {                
+                    ConsoleHelpers.WriteError("Error: User doesnt exist");                   
                 }
-                Console.WriteLine($"Der eingeloggte User heißt: {LoggedInUser.Username} mit der Rolle {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
+                Console.WriteLine($"User: {LoggedInUser.Username} with role {string.Join(", ", LoggedInUser.Roles.Select(r => r.RoleName))}");
                 //commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Login successful!");
-                Console.ResetColor();
+                
+                ConsoleHelpers.WriteSuccess("Login successful!");
+                
                 // Systemstart fortsetzen
             }
             else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid credentials. Try again.");
-                Console.ResetColor();
+            {              
+                ConsoleHelpers.WriteError("Error: Invalid credentials. Try again.");                
                 ShowLoginOptions();
             }
         }
@@ -109,7 +99,7 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob der Benutzername leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(username))
             {
-                Console.WriteLine("Username cannot be empty. Please try again.");
+                ConsoleHelpers.WriteError("Error: Username cannot be empty. Please try again.");
                 ShowLoginOptions();
                 return;
             }
@@ -120,31 +110,20 @@ namespace AMIG.OS.UserSystemManagement
             // Prüfen, ob das Passwort leer oder nur Leerzeichen ist
             if (string.IsNullOrWhiteSpace(password))
             {
-                Console.WriteLine("Password cannot be empty. Please try again.");
+                ConsoleHelpers.WriteError("Error: Password cannot be empty. Please try again.");
                 ShowLoginOptions();
                 return;
             }
 
-            //Console.Write("Choose a role (Admin or Standard): ");
-            //var roleInput = Console.ReadLine().ToLower();
-            //if (string.IsNullOrWhiteSpace(roleInput))
-            //{
-            //    Console.WriteLine("Role cannot be empty. Please try again.");
-            //    ShowLoginOptions();
-            //    return;
-            //}
-
             if (authService.Register(username, password))
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Registration successful! Please log in.");
-                Console.ResetColor();
+
+                ConsoleHelpers.WriteSuccess("Registration successful! Please log in.");
+               
             }
             else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Registration failed. Username may already exist.");
-                Console.ResetColor();
+            {               
+                ConsoleHelpers.WriteError("Error: Registration failed. Username may already exist.");
             }
         }
     }

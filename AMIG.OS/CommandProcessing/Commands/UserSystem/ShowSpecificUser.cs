@@ -24,8 +24,8 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public string PermissionName { get; } = Permissions.showuser; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-user", "name of users"},
-            {"-help", "show help"},
+            {"-user", "names of users to show"},
+            {"-help", "Show help for this command."},
         };
         public ShowSpecificUser(UserManagement userManagement)
         {
@@ -56,7 +56,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                     User user = userManagement.userRepository.GetUserByUsername(_user);
                     if (user == null)
                     {
-                        Console.WriteLine($"Benutzer '{_user}' wurde nicht gefunden.");
+                        Console.WriteLine($"Warning: User '{_user}' doesnt exist.");
                         return;
                     }
                     else
@@ -67,7 +67,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }            
         }
 
