@@ -72,7 +72,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             Console.WriteLine("Usage: ls [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
 

@@ -16,9 +16,10 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserRepository(RoleRepository roleRepository)
         {
-            this.roleRepository = roleRepository;           
-            LoadUsers();       
+            this.roleRepository = roleRepository;  
             InitializeAdmin();
+            LoadUsers();       
+            
         }
 
         // Speichert alle Benutzer in die Datei

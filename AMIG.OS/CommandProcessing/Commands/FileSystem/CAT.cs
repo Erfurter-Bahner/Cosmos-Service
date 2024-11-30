@@ -22,7 +22,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public string PermissionName { get; } = Permissions.cat;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "show help"},
+            {"-help", "Show help for this command."},
         };
         public CAT(FileSystemManager fileSystemManagement)
         {
@@ -61,7 +61,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             Console.WriteLine("Usage: ls [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
 

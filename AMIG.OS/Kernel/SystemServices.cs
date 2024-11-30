@@ -132,7 +132,7 @@ namespace AMIG.OS.Kernel
                             }
                             break;
 
-                           
+
                         default:
                             if (key.KeyChar > 31) // Für alle druckbaren Zeichen
                             {
@@ -141,10 +141,7 @@ namespace AMIG.OS.Kernel
 
                                 if (currentInput.Length < maxInputLength) // Eingabe nur zulassen, wenn Platz vorhanden
                                 {
-                                    
-                                    currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());                                  
-                                    
-                                    //currentInput = Console.ReadLine();
+                                    currentInput = currentInput.Insert(cursorPosition, key.KeyChar.ToString());
                                     cursorPosition++; // Cursor nach rechts verschieben
                                     ClearCurrentLine();
 
@@ -152,32 +149,45 @@ namespace AMIG.OS.Kernel
                                     Console.Write(Helper.preInput); // Schreibe das Prefix
                                     Console.ResetColor();
 
-                                    //bool extra; 
-                                    //if(currentInput=="clear" || currentInput == "adios" || currentInput == "datetime"|| currentInput == "logout")
-                                    //{
-                                    //    extra = true;
-                                    //}
-                                    //else extra = false;
+                                    // Teile den aktuellen Input in Hauptbefehl und Argumente
+                                    string[] inputParts = currentInput.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                                    string commandPart = inputParts.Length > 0 ? inputParts[0] : "";
+                                    string argumentPart = inputParts.Length > 1 ? inputParts[1] : "";
 
+                                    // Prüfen, ob der Befehl gültig ist
+                                    if (!string.IsNullOrWhiteSpace(commandPart) &&
+                                        commandPart != "extra" &&
+                                        (Helper.SpecialCommands.Contains(commandPart.Trim()) || userManagement.loginManager.LoggedInUser.HasPermission(commandPart.Trim())))
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Green; // Gültiger Befehl: Grün
+                                    }
+                                    else if(commandPart=="-help")
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Yellow; 
+                                    }
+                                    else
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Red; // Ungültig: Rot
+                                    }
 
-                                    //// Überprüfe, ob der Befehl gültig ist
-                                    //if (!string.IsNullOrWhiteSpace(currentInput) && currentInput != "extra" && userManagement.loginManager.LoggedInUser.HasPermission(currentInput.Trim()) || extra)
-                                    //{
-                                    //    Console.ForegroundColor = ConsoleColor.Green; // Gültiger Befehl grün
-                                    //}                                   
-                                    //else
-                                    //{
-                                    //    Console.ForegroundColor = ConsoleColor.Red;// Ungültiger Befehl Standardfarbe
-                                    //} 
-                                   
-                                    Console.Write(currentInput);
+                                    Console.Write(commandPart);
+
+                                    // Schreibe die Argumente (ohne Prüfung)
+                                    Console.ResetColor();
+                                    if (!string.IsNullOrEmpty(argumentPart))
+                                    {
+                                        Console.Write(" " + argumentPart);
+                                    }
+
                                     // Setze den Cursor an die richtige Position
-                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop); 
-                                   // Console.ResetColor();
-
+                                    Console.SetCursorPosition(Helper.preInput.Length + cursorPosition, Console.CursorTop);
                                 }
                             }
                             break;
+
+
+
+
                     }
 
                     if (key.Key == ConsoleKey.Enter) // Endet die Schleife nach einem "Enter"

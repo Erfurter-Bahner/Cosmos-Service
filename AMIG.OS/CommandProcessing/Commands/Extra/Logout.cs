@@ -57,7 +57,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
             Console.WriteLine("Usage: logout [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

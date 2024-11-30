@@ -92,7 +92,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine("Usage: addpermrole [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

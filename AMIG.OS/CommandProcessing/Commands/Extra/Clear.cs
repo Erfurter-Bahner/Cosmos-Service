@@ -53,7 +53,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
             Console.WriteLine("Usage: clear [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -44,26 +45,26 @@ namespace AMIG.OS.UserSystemManagement
         }
 
         // Fügt einen Benutzer mit einer Rolle und einem Passwort hinzu, falls er noch nicht existiert
-        public void AddUserWithRoleAndPassword(string username, string password, string role)
-        {
-            if (!authService.UserExists(username))
-            {
-                var user = new User(username, password, isHashed: true); // Neues Benutzerobjekt mit Passwort-Hash erstellen
-                userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
-                Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
-            }
-            else
-            {
-                Console.WriteLine("Benutzername existiert bereits.");
-            }
-        }
+        //public void AddUserWithRoleAndPassword(string username, string password, string role)
+        //{
+        //    if (!authService.UserExists(username))
+        //    {
+        //        var user = new User(username, password, isHashed: true); // Neues Benutzerobjekt mit Passwort-Hash erstellen
+        //        userRepository.AddUser(user); // Benutzer zum Repository hinzufügen
+        //        Console.WriteLine($"Benutzer {username} mit der Rolle {role} hinzugefügt.");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Benutzername existiert bereits.");
+        //    }
+        //}
 
         // Entfernt alle Benutzer aus dem System
-        public void RemoveAllUser()
-        {
-            userRepository.RemoveAllUsers();
-            Console.WriteLine("Alle Benutzer wurden entfernt.");
-        }
+        //public void RemoveAllUser()
+        //{
+        //    userRepository.RemoveAllUsers();
+        //    Console.WriteLine("Alle Benutzer wurden entfernt.");
+        //}
 
         // Gibt Informationen aller Benutzer in der Konsole aus
         public void DisplayAllUsers()
@@ -77,27 +78,27 @@ namespace AMIG.OS.UserSystemManagement
                     // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                     string rolesDisplay = user.Roles != null && user.Roles.Count > 0
                         ? string.Join(", ", user.Roles.Select(r => r.RoleName))
-                        : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+                        : "No roles"; // Anzeige "Keine Rollen", falls leer
 
                     string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
                         ? string.Join(", ", user.Permissions)
-                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                        : "No permssions"; // Anzeige "Keine Berechtigungen", falls leer
 
                     string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
                         ? string.Join(", ", user.CombinedPermissions)
-                        : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                        : "No combinedpermissions"; // Anzeige "Keine Berechtigungen", falls leer
 
                     Console.WriteLine($"Username: {user.Username}, " +
                         //$"PW: {user.PasswordHash}, " +
                         $"Role: {rolesDisplay}, " +
-                        $"Erstellt am: {user.CreatedAt}, " +
-                        $"Letzter Login: {user.LastLogin}, " +
+                        $"Created: {user.CreatedAt}, " +
+                        $"Last login: {user.LastLogin}, " +
                         $"Perm: {permissionsDisplay}," +
                         $"RolePerm: {combinedPermissionsDisplay}");
                 }
                 else
                 {
-                    Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
+                    ConsoleHelpers.WriteError($"Error: User '{user.Username}' does not exist.");
                 }
             }
         }
@@ -110,27 +111,27 @@ namespace AMIG.OS.UserSystemManagement
                 // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
                 string rolesDisplay = user.Roles != null && user.Roles.Count > 0
                     ? string.Join(", ", user.Roles.Select(r => r.RoleName))
-                    : "Keine Rollen"; // Anzeige "Keine Rollen", falls leer
+                    : "No roles"; // Anzeige "Keine Rollen", falls leer
 
                 string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
                     ? string.Join(", ", user.Permissions)
-                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                    : "No permissions"; // Anzeige "Keine Berechtigungen", falls leer
 
                 string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
                     ? string.Join(", ", user.CombinedPermissions)
-                    : "Keine Berechtigungen"; // Anzeige "Keine Berechtigungen", falls leer
+                    : "No combinedpermissions"; // Anzeige "Keine Berechtigungen", falls leer
 
                 Console.WriteLine($"Username: {user.Username}, " +
                     //$"PW: {user.PasswordHash}, " +
                     $"Role: {rolesDisplay}, " +
-                    $"Erstellt am: {user.CreatedAt}, " +
-                    $"Letzter Login: {user.LastLogin}, " +
+                    $"Created: {user.CreatedAt}, " +
+                    $"Last login: {user.LastLogin}, " +
                     $"Perm: {permissionsDisplay},"+
                     $"RolePerm: {combinedPermissionsDisplay}");
             }
             else
             {
-                Console.WriteLine($"Benutzer '{user.Username}' wurde nicht gefunden.");
+                ConsoleHelpers.WriteError($"Error: User '{user.Username}' does not exist.");
             }
         }
 
@@ -149,7 +150,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine($"Benutzer '{username}' existiert nicht.");
+                ConsoleHelpers.WriteError($"Error: User '{username}' does not exist.");
                 return null;
             }
         }

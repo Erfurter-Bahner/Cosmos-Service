@@ -67,7 +67,8 @@ namespace AMIG.OS.CommandProcessing
             }
             else if (commandName == "-help")
             {
-                ShowAllCommandsHelp();
+                Console.WriteLine("Commands: Use command -help for more information");
+                CommandHelp.ShowAllCommandsHelp();
             }
             else
             {
@@ -134,14 +135,14 @@ namespace AMIG.OS.CommandProcessing
 
             return parameters;
         }
-        private void ShowAllCommandsHelp()
-        {
-            Console.WriteLine("Available commands:");
-            foreach (var cmd in commands)
-            {
-                Console.WriteLine($"\n{cmd.Key}");
-                cmd.Value.ShowHelp();
-            }
-        }
+        //private void ShowAllCommandsHelp()
+        //{
+        //    Console.WriteLine("Available commands:");
+        //    foreach (var cmd in commands)
+        //    {
+        //        Console.WriteLine($"\n{cmd.Key}");
+        //        cmd.Value.ShowHelp();
+        //    }
+        //}
     }
 }

@@ -31,6 +31,16 @@ namespace AMIG.OS.Utils
             "-help",
         };
 
+        public static HashSet<string> SpecialCommands = new HashSet<string>
+        {
+            "clear",
+            "adios",
+            "datetime",
+            "logout"
+        };
+
+
+
         // Prüft, ob die Berechtigung existiert (Case-Insensitive)
         public static bool IsValidArgument(string permission)
         {
