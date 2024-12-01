@@ -22,7 +22,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public string PermissionName { get; } = Permissions.cat;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "Show help for this command."},
+            {"-help","Show help for this command."},
         };
         public CAT(FileSystemManager fileSystemManagement)
         {

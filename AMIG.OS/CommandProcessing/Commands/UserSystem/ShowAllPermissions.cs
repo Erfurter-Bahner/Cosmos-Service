@@ -16,17 +16,17 @@ using System.Drawing;
 
 namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 {
-    public class ShowAll : ICommand
+    public class ShowAllPermissions : ICommand
     {
         private readonly UserManagement userManagement;
         private User LoggedInUser;
-        public string Description => "show all users";
-        public string PermissionName { get; } = Permissions.showall; // Required permission name
+        public string Description => "show all permissions";
+        public string PermissionName { get; } = Permissions.showallperms; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help","Show help for this command."},
         };
-        public ShowAll(UserManagement userManagement)
+        public ShowAllPermissions(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
@@ -46,7 +46,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             if (parameters.Parameters.Count == 0) {
 
-                userManagement.DisplayAllUsers();
+                Permissions.ShowAllPermissionsHelp();
             }
             else
             {
@@ -58,7 +58,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: showall [options]");
+            Console.WriteLine("Usage: showallperms [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"{param.Key}\t{param.Value}");

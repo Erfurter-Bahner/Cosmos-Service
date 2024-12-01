@@ -14,9 +14,9 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            { "-role", "Name of the role to add permissions" },
-            { "-permissions", "Permissions to add to role" },
-            {"-help", "Show help for this command."},
+            {"-role","Name of the role to add permissions" },
+            {"-permissions","Permissions to add to role" },
+            {"-help","Show help for this command."},
         };
 
         public AddPermToRole(UserManagement userManagement)
@@ -89,7 +89,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: addpermrole [options]");
+            Console.WriteLine("Usage: addpermtorole [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"{param.Key}\t{param.Value}");

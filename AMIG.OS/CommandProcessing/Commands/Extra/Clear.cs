@@ -14,7 +14,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-             {"-help", "Show help for this command."}
+             {"-help","Show help for this command."}
         };
 
         public Clear(UserManagement userManagement)
@@ -38,8 +38,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
             // Überprüfen, ob keine zusätzlichen Parameter angegeben wurden
             if (parameters.Parameters.Count == 0)
             {
-                Console.Clear();
-                ConsoleHelpers.WriteSuccess("Screen cleared successfully.");
+                Console.Clear();                
             }
             else
             {

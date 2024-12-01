@@ -14,8 +14,8 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-amigos", "Required to use the shutdown command."},
-            {"-help", "Show help for this command."}
+            {"-amigos","Required to use the shutdown command."},
+            {"-help","Show help for this command."}
         };
 
         public Adios(UserManagement userManagement)

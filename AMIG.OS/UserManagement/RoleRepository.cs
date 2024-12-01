@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using AMIG.OS.CommandProcessing;
+using AMIG.OS.CommandProcessing.Commands.UserSystem;
 using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
@@ -16,7 +17,7 @@ namespace AMIG.OS.UserSystemManagement
         public RoleRepository()
         {
             LoadRoles();
-            InitializeDefaultRoles();           
+            InitializeDefaultRoles();
         }
 
         public void RoleDicTest()
@@ -87,7 +88,7 @@ namespace AMIG.OS.UserSystemManagement
                     while ((line = reader.ReadLine()) != null)
                     {
                         // Debug-Ausgabe zur Überprüfung jeder Zeile
-                        Console.WriteLine($"Reading line: {line}");
+                        //Console.WriteLine($"Reading line: {line}");
 
                         var parts = line.Split(',');
                         if (parts.Length >= 2)
@@ -150,8 +151,10 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.write,
                     Permissions.rmfile,
                     Permissions.rmdir,
-                    Permissions.mkdir
-
+                    Permissions.mkdir,
+                    Permissions.showallperms,
+                    Permissions.showallroles,
+                    Permissions.showrole
                 });
             }
             else
@@ -159,7 +162,7 @@ namespace AMIG.OS.UserSystemManagement
                 // Rolle existiert bereits, also nur Berechtigungen überschreiben
                 roles[admin].Permissions = new HashSet<string>
                 {
-                    Permissions.addrole,
+                   Permissions.addrole,
                     Permissions.rmrole,
                     Permissions.addroletouser,
                     Permissions.rmroleuser,
@@ -182,7 +185,10 @@ namespace AMIG.OS.UserSystemManagement
                     Permissions.write,
                     Permissions.rmfile,
                     Permissions.rmdir,
-                    Permissions.mkdir
+                    Permissions.mkdir,
+                    Permissions.showallperms,
+                    Permissions.showallroles,
+                    Permissions.showrole
                 };
             }
 
@@ -229,7 +235,8 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                ConsoleHelpers.WriteError("Error: Role already exist.");
+                Console.Write("Warning: Role will be overwritten.");
+                return; 
             }
         }
 
@@ -238,7 +245,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (roles.Remove(roleName))
             {
-                SaveRoles(); // Speichert die Liste nach dem Entfernen
+                return; 
             }
             else
             {
@@ -252,7 +259,7 @@ namespace AMIG.OS.UserSystemManagement
             {
                 foreach (var permission in permissionsToAdd)
                 {
-                    
+
                     if (!Permissions.IsValidPermission(permission.ToString()))
                     {
                         Console.WriteLine($"Warning: Permission'{permission}' doesnt exist.");
@@ -277,10 +284,10 @@ namespace AMIG.OS.UserSystemManagement
                 ConsoleHelpers.WriteError($"Error: Role not found: '{roleName}' ");
             }
         }
-    
 
-    // Entfernt eine Berechtigung von einer bestimmten Rolle
-    public void RemovePermissionsFromRole(string roleName, List<string> permissionsToRemove)
+
+        // Entfernt eine Berechtigung von einer bestimmten Rolle
+        public void RemovePermissionsFromRole(string roleName, List<string> permissionsToRemove)
         {
             if (roles.TryGetValue(roleName, out Role role))
             {
@@ -309,5 +316,49 @@ namespace AMIG.OS.UserSystemManagement
         {
             return roles;
         }
+
+        //showall
+        public void DisplayAllRoles()
+        {
+            if (roles.Count == 0)
+            {
+                ConsoleHelpers.WriteError("No roles available.");
+                return;
+            }
+            foreach (var role in roles.Values)
+            {
+                // Überprüfen, ob der Benutzer gefunden wurde
+                if (role != null)
+                {
+                    Console.WriteLine($"Rolename: {role.RoleName}");
+                }
+                else
+                {
+                    ConsoleHelpers.WriteError($"Error: Role '{role.RoleName}' does not exist.");
+                }
+            }
+        }
+
+        //showspecific 
+        public void DisplayRole(Role role)
+        {
+            // Überprüfen, ob der Benutzer gefunden wurde
+            if (role != null)
+            {
+                string permissionsDisplay = role.Permissions != null && role.Permissions.Count > 0
+                    ? string.Join(", ", role.Permissions)
+                    : "No permissions"; // Anzeige "Keine Berechtigungen", falls leer
+
+
+                Console.WriteLine($"Rolename: {role.RoleName}, " +
+                    //$"PW: {user.PasswordHash}, " + +
+                    $"RolePerm: {permissionsDisplay}");
+            }
+            else
+            {
+                ConsoleHelpers.WriteError($"Error: User '{role.RoleName}' does not exist.");
+            }
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using Sys = Cosmos.System;
+﻿
 using AMIG.OS.UserSystemManagement;
 using AMIG.OS.Utils;
 using System;
@@ -12,7 +12,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-             {"-help", "Show help for this command."}
+             {"-help","Show help for this command."}
         };
 
         public DateTime() { }
@@ -35,7 +35,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
                 try
                 {
                     // Zeigt das aktuelle Datum und die Uhrzeit an
-                    ConsoleHelpers.WriteSuccess($"Current Date and Time: {System.DateTime.Now}");
+                    Console.WriteLine(System.DateTime.Now);
                 }
                 catch (Exception ex)
                 {

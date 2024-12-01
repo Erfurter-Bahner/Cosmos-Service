@@ -12,7 +12,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
         public string PermissionName { get; } = Permissions.extra; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-             {"-help", "Show help for this command."}
+             {"-help","Show help for this command."}
         };
 
         public Logout(UserManagement userManagement)
@@ -39,6 +39,7 @@ namespace AMIG.OS.CommandProcessing.Commands.Extra
                 {
                     userManagement.loginManager.ShowLoginOptions();
                     ConsoleHelpers.WriteSuccess("You have successfully logged out.");
+                    CommandHistory.commandHistory.Clear();
                 }
                 catch (Exception ex)
                 {

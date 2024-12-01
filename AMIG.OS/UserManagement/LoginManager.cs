@@ -81,7 +81,7 @@ namespace AMIG.OS.UserSystemManagement
                 //commandHandler.SetStartTime(DateTime.Now); // Startzeit setzen
                 
                 ConsoleHelpers.WriteSuccess("Login successful!");
-                
+                DateTime starttime=System.DateTime.Now;
                 // Systemstart fortsetzen
             }
             else

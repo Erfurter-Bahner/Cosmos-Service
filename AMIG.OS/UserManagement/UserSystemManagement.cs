@@ -70,31 +70,17 @@ namespace AMIG.OS.UserSystemManagement
         public void DisplayAllUsers()
         {
             var users = userRepository.GetAllUsers();
+            if (users.Count == 0)
+            {
+                ConsoleHelpers.WriteError("No users available.");
+                return;
+            }
             foreach (var user in users.Values)
             {
                 // Überprüfen, ob der Benutzer gefunden wurde
                 if (user != null)
                 {
-                    // Prüfen, ob der Benutzer Rollen oder Berechtigungen hat
-                    string rolesDisplay = user.Roles != null && user.Roles.Count > 0
-                        ? string.Join(", ", user.Roles.Select(r => r.RoleName))
-                        : "No roles"; // Anzeige "Keine Rollen", falls leer
-
-                    string permissionsDisplay = user.Permissions != null && user.Permissions.Count > 0
-                        ? string.Join(", ", user.Permissions)
-                        : "No permssions"; // Anzeige "Keine Berechtigungen", falls leer
-
-                    string combinedPermissionsDisplay = user.CombinedPermissions != null && user.CombinedPermissions.Count > 0
-                        ? string.Join(", ", user.CombinedPermissions)
-                        : "No combinedpermissions"; // Anzeige "Keine Berechtigungen", falls leer
-
-                    Console.WriteLine($"Username: {user.Username}, " +
-                        //$"PW: {user.PasswordHash}, " +
-                        $"Role: {rolesDisplay}, " +
-                        $"Created: {user.CreatedAt}, " +
-                        $"Last login: {user.LastLogin}, " +
-                        $"Perm: {permissionsDisplay}," +
-                        $"RolePerm: {combinedPermissionsDisplay}");
+                    Console.WriteLine($"Username: {user.Username}");
                 }
                 else
                 {

@@ -33,6 +33,9 @@ namespace AMIG.OS.CommandProcessing
                 { "rmuser", new RemoveUser(userManagement) },//              
                 { "showall", new ShowAll(userManagement)},//
                 { "showme", new ShowMe(userManagement)},//
+                { "showallperms", new ShowAllPermissions(userManagement)},
+                { "showallroles", new ShowAllRoles(userManagement)},
+                { "showrole", new ShowSpecificRole(userManagement)},
                 { "showuser", new ShowSpecificUser(userManagement)},//
                 { "changename", new ChangeName(userManagement)},//
                 { "changepw", new ChangePW(userManagement)},//

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System;
+using AMIG.OS.CommandProcessing;
 
 public class CommandHelp
 {
-    public static readonly List<string> AllPermissions = new List<string>
+    public static readonly List<string> AllCommands = new List<string>
     {
         "addrole",
         "rmrole",
@@ -32,6 +33,9 @@ public class CommandHelp
         "rmdir",
         "showuser",
         "mkdir",
+        "showallperms",
+        "showallroles",
+        "showrole"                  
     };
 
     public static void ShowAllCommandsHelp()
@@ -39,7 +43,7 @@ public class CommandHelp
         const int columnWidth = 20; // Maximale Breite pro Spalte
         const int columns = 2;     // Anzahl der Spalten
 
-        int rows = (int)Math.Ceiling((double)AllPermissions.Count / columns);
+        int rows = (int)Math.Ceiling((double)AllCommands.Count / columns);
 
         Console.WriteLine("Available Commands:");
         for (int row = 0; row < rows; row++)
@@ -48,12 +52,13 @@ public class CommandHelp
             for (int col = 0; col < columns; col++)
             {
                 int index = row + col * rows;
-                if (index < AllPermissions.Count)
+                if (index < AllCommands.Count)
                 {
-                    line += AllPermissions[index].PadRight(columnWidth);
+                    line += AllCommands[index].PadRight(columnWidth);
                 }
             }
             Console.WriteLine(line);
         }
     }
+
 }
