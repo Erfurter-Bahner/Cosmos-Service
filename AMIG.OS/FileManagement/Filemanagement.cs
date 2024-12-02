@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.FileManagement
 {
@@ -40,16 +43,16 @@ namespace AMIG.OS.FileManagement
                     }
                     // Nach dem Laden der Berechtigungen ausgeben
                     PrintPermissions();
-                    Console.WriteLine("Berechtigungen erfolgreich geladen.");
+                    ConsoleHelpers.WriteSuccess("Permissions loaded successfully.");
                 }
                 else
                 {
-                    Console.WriteLine("Berechtigungsdatei existiert nicht.");
+                    ConsoleHelpers.WriteError("Error: Permission file does not exist.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Laden der Berechtigungen: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Loading Permissions: {ex.Message}");
             }
         }
 
@@ -73,7 +76,7 @@ namespace AMIG.OS.FileManagement
         {
             try
             {
-                Console.WriteLine($"Speichere Berechtigungen in Datei: {permissionFilePath}");
+                Console.WriteLine($"Saving Permissions in file: {permissionFilePath}");
 
                 // Überprüfen, ob die Datei bereits existiert und ggf. löschen
                 if (File.Exists(permissionFilePath))
@@ -94,16 +97,16 @@ namespace AMIG.OS.FileManagement
                 // Überprüfen, ob die Datei erfolgreich gespeichert wurde
                 if (File.Exists(permissionFilePath))
                 {
-                    Console.WriteLine("Datei wurde erfolgreich gespeichert.");
+                    ConsoleHelpers.WriteSuccess("File saved successfully.");
                 }
                 else
                 {
-                    Console.WriteLine("Fehler: Datei wurde nicht gespeichert.");
+                    ConsoleHelpers.WriteError("Error: File wasnt saved.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Speichern der Datei: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Saving file: {ex.Message}");
             }
         }
 
@@ -187,11 +190,11 @@ namespace AMIG.OS.FileManagement
                     byte[] contentBytes = System.Text.Encoding.ASCII.GetBytes(content);
                     stream.Write(contentBytes, 0, contentBytes.Length);
                 }
-                Console.WriteLine($"Datei '{path}' erstellt.");
+                ConsoleHelpers.WriteSuccess($"File created: '{path}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Erstellen der Datei: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Creating file: {ex.Message}");
             }
         }
 
@@ -200,11 +203,11 @@ namespace AMIG.OS.FileManagement
                 if (File.Exists(path))
                 {
                     string content = File.ReadAllText(path);
-                    Console.WriteLine($"Inhalt der Datei '{path}':\n{content}");
+                    Console.WriteLine($"Content of file: '{path}':\n{content}");
                 }
                 else
                 {
-                    Console.WriteLine($"Datei '{path}' existiert nicht.");
+                ConsoleHelpers.WriteError($"Error: File doesnt exist: '{path}' ");
                 }
         }
 
@@ -225,11 +228,11 @@ namespace AMIG.OS.FileManagement
                     byte[] contentBytes = System.Text.Encoding.ASCII.GetBytes(content + Environment.NewLine); // Fügt einen Zeilenumbruch hinzu
                     stream.Write(contentBytes, 0, contentBytes.Length);
                 }
-                Console.WriteLine($"Inhalt in die Datei '{path}' geschrieben.");
+                ConsoleHelpers.WriteSuccess($"Content written in file: '{path}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Schreiben in die Datei: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Writing in file: {ex.Message}");
             }
         }
 
@@ -240,16 +243,16 @@ namespace AMIG.OS.FileManagement
                 if (File.Exists(path))
                 {
                     File.Delete(path);
-                    Console.WriteLine($"Datei '{path}' wurde gelöscht.");
+                    ConsoleHelpers.WriteSuccess($"File deleted: '{path}'.");
                 }
                 else
                 {
-                    Console.WriteLine($"Datei '{path}' existiert nicht.");
+                    ConsoleHelpers.WriteError($"Error: File doesnt exist: '{path}'");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Löschen der Datei: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Deleting file: {ex.Message}");
             }
         }
 
@@ -260,16 +263,16 @@ namespace AMIG.OS.FileManagement
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
-                    Console.WriteLine($"Verzeichnis '{path}' erstellt.");
+                    ConsoleHelpers.WriteSuccess($"Directory created: '{path}' ");
                 }
                 else
                 {
-                    Console.WriteLine($"Verzeichnis '{path}' existiert bereits.");
+                    ConsoleHelpers.WriteError($"Error: Directory already exist: '{path}'");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Erstellen des Verzeichnisses: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Creating directory: {ex.Message}");
             }
         }
 
@@ -282,7 +285,7 @@ namespace AMIG.OS.FileManagement
                     var entries = Directory.GetFileSystemEntries(path);
                     if (entries.Length == 0)
                     {
-                        Console.WriteLine("Verzeichnis ist leer.");
+                        ConsoleHelpers.WriteError("Error: Directory is empty.");
                     }
                     else
                     {
@@ -294,12 +297,12 @@ namespace AMIG.OS.FileManagement
                 }
                 else
                 {
-                    Console.WriteLine($"Verzeichnis '{path}' existiert nicht.");
+                    ConsoleHelpers.WriteError($"Error: Directory doesnt exist: '{path}'");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Auflisten des Verzeichnisses: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Listing directries: {ex.Message}");
             }
         }
         public void DeleteDirectory(string path)
@@ -309,16 +312,16 @@ namespace AMIG.OS.FileManagement
                 if (Directory.Exists(path))
                 {
                     Directory.Delete(path, true);
-                    Console.WriteLine($"Verzeichnis '{path}' und sein Inhalt wurden gelöscht.");
+                    ConsoleHelpers.WriteSuccess($"Directory deleted: '{path}'");
                 }
                 else
                 {
-                    Console.WriteLine($"Verzeichnis '{path}' existiert nicht.");
+                    ConsoleHelpers.WriteError($"Error: Directory doesnt exist: '{path}'");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Löschen des Verzeichnisses: {ex.Message}");
+                Console.WriteLine($"Error: Deleting directory: {ex.Message}");
             }
         }
     }

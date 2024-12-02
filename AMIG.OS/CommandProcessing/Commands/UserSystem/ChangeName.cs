@@ -23,7 +23,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public string PermissionName { get; } = Permissions.changename; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "to show help"},
+           {"-help", "Show help for this command."},
         };
         public ChangeName(UserManagement userManagement)
         {
@@ -50,22 +50,22 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
                 do
                 {
-                    Console.Write("Neuer Benutzername: ");
+                    Console.Write("New Username: ");
                     newUsername = Console.ReadLine();
 
                     do
                     {
-                        Console.Write("Bestätigen: y/n ");
+                        Console.Write("Confirm: y/n ");
                         entscheidung = Console.ReadLine().ToLower();
 
                         if (entscheidung == "n")
                         {
-                            Console.WriteLine("Benutzername nicht bestätigt. Bitte erneut eingeben.");
+                            ConsoleHelpers.WriteError("Username not confirmed. Please enter again.");
                             break;  // Schleife verlassen, um neuen Benutzernamen einzugeben
                         }
                         else if (entscheidung != "y" && entscheidung != "n")
                         {
-                            Console.WriteLine("Ungültige Eingabe: y/n ");
+                            ConsoleHelpers.WriteError("Invalid Input: y/n ");
                         }
 
                     } while (entscheidung != "y" && entscheidung != "n");
@@ -76,7 +76,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }            
         }
 
@@ -87,7 +87,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine("Usage: changename [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

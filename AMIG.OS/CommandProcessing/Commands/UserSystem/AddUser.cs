@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             //{ "-user", "name of the new user" },
             //{ "-role", "Name of the new role/s" },           
-            //{ "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public AddUser(UserManagement userManagement)
@@ -48,7 +48,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             string password = ConsoleHelpers.GetPassword();
 
             // Rollen (durch Semikolon getrennt, z. B. Admin;User)
-            Console.Write("Roles (durch leerzeichen getrennt): ");
+            Console.Write("Roles (r1 r2 r3): ");
             string rolesInput = Console.ReadLine();
 
             var roles = new List<Role>();  // Rollen als Dictionary speichern
@@ -61,8 +61,8 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
 
                 if (role != null)
                 {
-                    Console.WriteLine($"Rolle: {role.RoleName}");
-                    Console.WriteLine("Berechtigungen:");
+                    Console.WriteLine($"Role: {role.RoleName}");
+                    Console.WriteLine("Permissions:");
                     foreach (var permission in role.Permissions)
                     {
                         Console.WriteLine($"- {permission}");
@@ -73,7 +73,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 }
                 else
                 {
-                    Console.WriteLine($"Rolle '{trimmedRoleName}' nicht gefunden.");
+                    Console.WriteLine($"Warning: Role '{trimmedRoleName}' doesnt exit.");
                 }
             }
 
@@ -84,7 +84,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             userManagement.userRepository.AddUser(user);  // Methode, um den Benutzer hinzuzufügen
 
             // Optional: Ausgabe zur Bestätigung
-            Console.WriteLine("Benutzer erfolgreich hinzugefügt!");
+            ConsoleHelpers.WriteSuccess("User successfully added");
         }
 
         // Show help method as defined in the custom ICommand interface
@@ -94,7 +94,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine("Usage: addrole");
             //foreach (var param in Parameters)
             //{
-            //    Console.WriteLine($"  {param.Key}\t{param.Value}");
+            //    Console.WriteLine($"{param.Key}\t{param.Value}");
             //}
         }
     }

@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-role", "Name of the new role/s" },
             { "-permissions", "Permissions of the new role" },
-            { "-help", "Shows usage information for the command." }
+           {"-help", "Show help for this command."},
         };
 
         public AddRole(UserManagement userManagement)
@@ -46,14 +46,14 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             // Überprüfen, ob der notwendige Parameter "role" vorhanden ist
             if (string.IsNullOrEmpty(roleName))
             {
-                Console.WriteLine("Fehler: Der Parameter '-role' fehlt. Verwenden Sie -help, um die Syntax zu sehen.");
+                ConsoleHelpers.WriteError("Error: Parameter '-role' is missing. Use -help to see usage.");
                 return;
             }
 
             // Überprüfen, ob Berechtigungen angegeben wurden
             if (string.IsNullOrEmpty(permissionsRaw))
             {
-                Console.WriteLine("Fehler: Es wurden keine Berechtigungen angegeben. Verwenden Sie -permissions <Liste>");
+                ConsoleHelpers.WriteError("Error: No permissions were specified. Use -permissions p1 p2 p3");
                 return;
             }
 
@@ -70,20 +70,20 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 }
                 else
                 {
-                    Console.WriteLine($"Warnung: '{permission}' ist keine gültige Berechtigung und wurde übersprungen.");
+                    Console.WriteLine($"Warning: '{permission}' isnt a known permission and was skipped.");
                 }
             }
 
             // Prüfen, ob nach der Validierung noch Berechtigungen übrig sind
             if (permissionsHash.Count == 0)
             {
-                Console.WriteLine("Fehler: Keine gültigen Berechtigungen angegeben. Rolle wurde nicht erstellt.");
+                ConsoleHelpers.WriteError("Error: No valid permissions specified. Role has not been created.");
                 return;
             }
 
             // Neue Rolle hinzufügen
             userManagement.roleRepository.AddRole(new Role(roleName, permissionsHash));
-            Console.WriteLine($"Rolle '{roleName}' mit Berechtigungen '{string.Join(", ", permissionsHash)}' hinzugefügt.");
+            ConsoleHelpers.WriteSuccess($"Role '{roleName}' with Permissions '{string.Join(", ", permissionsHash)}' added.");
         }
 
 
@@ -94,7 +94,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine($"Usage: addrole [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

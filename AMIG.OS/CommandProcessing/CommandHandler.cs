@@ -33,11 +33,14 @@ namespace AMIG.OS.CommandProcessing
                 { "rmuser", new RemoveUser(userManagement) },//              
                 { "showall", new ShowAll(userManagement)},//
                 { "showme", new ShowMe(userManagement)},//
+                { "showallperms", new ShowAllPermissions(userManagement)},
+                { "showallroles", new ShowAllRoles(userManagement)},
+                { "showrole", new ShowSpecificRole(userManagement)},
                 { "showuser", new ShowSpecificUser(userManagement)},//
                 { "changename", new ChangeName(userManagement)},//
                 { "changepw", new ChangePW(userManagement)},//
                 //extra
-                { "adios", new Adios()}, //extra
+                { "adios", new Adios(userManagement)}, //extra
                 { "logout", new Logout(userManagement)}, //extra
                 { "datetime", new Commands.Extra.DateTime()}, //extra
                 { "clear", new Clear(userManagement)}, //extra
@@ -67,11 +70,12 @@ namespace AMIG.OS.CommandProcessing
             }
             else if (commandName == "-help")
             {
-                ShowAllCommandsHelp();
+                Console.WriteLine("Commands: Use command -help for more information");
+                CommandHelp.ShowAllCommandsHelp();
             }
             else
             {
-                Console.WriteLine("Unbekannter Befehl oder fehlende Berechtigung.");
+                ConsoleHelpers.WriteError("Unknown command or missing permission.");
             }
         }
         private CommandParameters ParseParameters(string[] args)
@@ -129,19 +133,19 @@ namespace AMIG.OS.CommandProcessing
             }
             else
             {
-                Console.WriteLine("Es wurde kein gültiger Schlüssel erkannt.");
+                ConsoleHelpers.WriteError("No valid key detected.");
             }
 
             return parameters;
         }
-        private void ShowAllCommandsHelp()
-        {
-            Console.WriteLine("Available commands:");
-            foreach (var cmd in commands)
-            {
-                Console.WriteLine($"\n{cmd.Key}");
-                cmd.Value.ShowHelp();
-            }
-        }
+        //private void ShowAllCommandsHelp()
+        //{
+        //    Console.WriteLine("Available commands:");
+        //    foreach (var cmd in commands)
+        //    {
+        //        Console.WriteLine($"\n{cmd.Key}");
+        //        cmd.Value.ShowHelp();
+        //    }
+        //}
     }
 }

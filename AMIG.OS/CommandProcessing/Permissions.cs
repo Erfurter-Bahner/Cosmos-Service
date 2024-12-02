@@ -32,7 +32,12 @@ namespace AMIG.OS.CommandProcessing
         public const string rmfile = nameof(rmfile);
         public const string rmdir = nameof(rmdir);
         public const string mkdir = nameof(mkdir);
-        
+        public const string showallperms = nameof(showallperms);
+        public const string showallroles = nameof(showallroles);
+        public const string showrole = nameof(showrole);
+
+
+
         // Liste aller Berechtigungen
         public static readonly List<string> AllPermissions = new List<string>
         {
@@ -60,7 +65,13 @@ namespace AMIG.OS.CommandProcessing
             rmdir,
             showuser,
             mkdir,
+            showallperms,
+            showallroles,
+            showrole,
+
         };
+
+
 
         // Prüft, ob die Berechtigung existiert (Case-Insensitive)
         public static bool IsValidPermission(string permission)
@@ -80,6 +91,29 @@ namespace AMIG.OS.CommandProcessing
 
             //Console.WriteLine("Berechtigung nicht gefunden.");
             return false;
+        }
+
+        public static void ShowAllPermissionsHelp()
+        {
+            const int columnWidth = 20; // Maximale Breite pro Spalte
+            const int columns = 2;     // Anzahl der Spalten
+
+            int rows = (int)Math.Ceiling((double)AllPermissions.Count / columns);
+
+            Console.WriteLine("Available Permissions:");
+            for (int row = 0; row < rows; row++)
+            {
+                string line = "";
+                for (int col = 0; col < columns; col++)
+                {
+                    int index = row + col * rows;
+                    if (index < AllPermissions.Count)
+                    {
+                        line += AllPermissions[index].PadRight(columnWidth);
+                    }
+                }
+                Console.WriteLine(line);
+            }
         }
     }
 }

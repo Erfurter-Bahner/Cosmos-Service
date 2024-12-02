@@ -14,7 +14,7 @@ namespace AMIG.OS.Kernel
         private UserManagement userManagement;
         private CommandHandler commandHandler;
         private SystemServices systemServices;
-        DateTime starttime;
+        
 
         protected override void BeforeRun()
         {                    
@@ -32,11 +32,11 @@ namespace AMIG.OS.Kernel
 
             Console.Clear();
             var available_space = fs1.GetAvailableFreeSpace(@"0:\");
-            Console.WriteLine("available free space: " + available_space);
+            Console.WriteLine("available free space: " + available_space/1024/1024 +"MB");
 
             var fs_type = fs1.GetFileSystemType(@"0:\");
             Console.WriteLine("file system type: " + fs_type);
-
+            Console.WriteLine(System.DateTime.Now);
             userManagement.loginManager.ShowLoginOptions();
         }
 

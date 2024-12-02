@@ -22,7 +22,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public string PermissionName { get; } = Permissions.cat;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "show help"},
+            {"-help","Show help for this command."},
         };
         public CAT(FileSystemManager fileSystemManagement)
         {
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 
@@ -58,10 +58,10 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: ls ");
+            Console.WriteLine("Usage: ls [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
 

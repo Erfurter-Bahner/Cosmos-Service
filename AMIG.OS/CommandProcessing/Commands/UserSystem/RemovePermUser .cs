@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-user", "Name of the user" },
             { "-permissions", "Permissions to remove" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public RemovePermUser(UserManagement userManagement)
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 User user = userManagement.userRepository.GetUserByUsername(username);
                 if (user == null)
                 {
-                    Console.WriteLine($"Benutzer '{username}' wurde nicht gefunden.");
+                    ConsoleHelpers.WriteError($"Error: User '{username}' doesnt exit.");
                     return;
                 }
 
@@ -65,13 +65,13 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         // Überprüfen, ob der Benutzer die Berechtigung bereits hat
                         if (!user.Permissions.Contains(permName))
                         {
-                            Console.WriteLine($"Benutzer '{username}' hat nicht die Berechtigung '{permName}'.");
+                            Console.WriteLine($"Warning: User '{username}' doesnt have '{permName}'.");
                             continue;
                         }
 
                         // Berechtigung zum Benutzer hinzufügen
                         user.RemovePermission(permName);
-                        Console.WriteLine($"Berechtigung '{permName}' wurde erfolgreich von Benutzer '{username}' entfernt.");
+                        ConsoleHelpers.WriteSuccess($"Permissions '{permName}' were removed from user '{username}' successfully.");
                     }
                     // Benutzer speichern
                     userManagement.userRepository.SaveUsers();
@@ -79,7 +79,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 
@@ -90,7 +90,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine($"Usage: {PermissionName} [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

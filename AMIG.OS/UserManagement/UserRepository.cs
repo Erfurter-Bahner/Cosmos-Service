@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AMIG.OS.Utils;
 
 namespace AMIG.OS.UserSystemManagement
 {
@@ -15,9 +16,10 @@ namespace AMIG.OS.UserSystemManagement
 
         public UserRepository(RoleRepository roleRepository)
         {
-            this.roleRepository = roleRepository;           
-            LoadUsers();       
+            this.roleRepository = roleRepository;  
             InitializeAdmin();
+            LoadUsers();       
+            
         }
 
         // Speichert alle Benutzer in die Datei
@@ -48,12 +50,12 @@ namespace AMIG.OS.UserSystemManagement
                     }
                 }
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Benutzerdaten erfolgreich gespeichert.");
+                ConsoleHelpers.WriteSuccess("Userinfo saved sucessfully.");
                 Console.ResetColor();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Speichern der Benutzer: {ex.Message}");
+                ConsoleHelpers.WriteError($"Error: Saving Users: {ex.Message}");
             }
         }
 
@@ -63,7 +65,7 @@ namespace AMIG.OS.UserSystemManagement
             // Überprüfen, ob die Benutzerdaten-Datei existiert
             if (!File.Exists(dataFilePath))
             {
-                Console.WriteLine("Benutzerdaten-Datei nicht gefunden.");
+                ConsoleHelpers.WriteError("Error: Userinfo file not existing.");
                 return;
             }
 
@@ -91,7 +93,7 @@ namespace AMIG.OS.UserSystemManagement
                             // Leere Rollennamen überspringen und warnen
                             if (string.IsNullOrEmpty(roleName))
                             {
-                                Console.WriteLine($"Warnung: Leere Rolle gefunden für Benutzer '{username}'. Rolle wird übersprungen.");
+                                //Console.WriteLine($"Warnung: Leere Rolle gefunden für Benutzer '{username}'. Rolle wird übersprungen.");
                                 continue;
                             }
 
@@ -101,10 +103,10 @@ namespace AMIG.OS.UserSystemManagement
                             {
                                 roles.Add(role);
                             }
-                            else
-                            {
-                                Console.WriteLine($"Warnung: Rolle '{roleName}' wurde nicht gefunden für Benutzer '{username}'.");
-                            }
+                            //else
+                            //{
+                            //    Console.WriteLine($"Warnung: Rolle '{roleName}' wurde nicht gefunden für Benutzer '{username}'.");
+                            //}
                         }
 
                         // Berechtigungen anhand von Semikolon getrennten Werten in ein HashSet laden
@@ -122,17 +124,17 @@ namespace AMIG.OS.UserSystemManagement
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Fehler beim Erstellen des Benutzers '{username}': {ex.Message}");
+                            ConsoleHelpers.WriteError($"Error: Creating user: '{username}': {ex.Message}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Ungültiges Format in der Benutzerdaten-Datei.");
+                        ConsoleHelpers.WriteError("Error: Wrong format in User file.");
                     }
                 }
             }
 
-            Console.WriteLine("Benutzerdaten erfolgreich geladen.");
+            ConsoleHelpers.WriteSuccess("User loaded successfully.");
         }
 
         // Initialisiert Testbenutzer, falls die Datei nicht existiert oder leer ist
@@ -165,7 +167,7 @@ namespace AMIG.OS.UserSystemManagement
             }
             else
             {
-                Console.WriteLine("Benutzername existiert bereits.");
+                ConsoleHelpers.WriteError("Error: Username already exist.");
             }
         }
 
@@ -215,7 +217,7 @@ namespace AMIG.OS.UserSystemManagement
         {
             if (users == null)
             {
-                Console.WriteLine("Es gibt keine Benutzer.");
+                ConsoleHelpers.WriteError("Error: No User.");
                 return null;
             }
             else

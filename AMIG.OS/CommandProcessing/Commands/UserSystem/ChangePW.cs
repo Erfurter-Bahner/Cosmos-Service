@@ -18,24 +18,23 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
     public class ChangePW : ICommand
     {
         private readonly UserManagement userManagement;
-        private User LoggedInUser;
-        public string Description => "change password";
+        public string Description => "Change the current user's password.";
         public string PermissionName { get; } = Permissions.changepw; // Required permission name
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-help", "to show help"},
+            {"-help", "Show detailed help for the 'changepw' command."},
         };
+
         public ChangePW(UserManagement userManagement)
         {
             this.userManagement = userManagement;
         }
-        // Implementing CanExecute as defined in the custom ICommand interface
+
         public bool CanExecute(User currentUser)
         {
             return currentUser.HasPermission(PermissionName);
         }
 
-        // Implementing Execute as defined in the custom ICommand interface
         public void Execute(CommandParameters parameters, User currentUser)
         {
             if (parameters.TryGetValue("help", out _))
@@ -44,65 +43,61 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 return;
             }
 
-            if (parameters.Parameters.Count == 0)
+            if (parameters.Parameters.Count > 0)
             {
-                // Schritt 1: Überprüfung des alten Passworts
-                while (true)
-                {
-                    Console.Write("Altes Passwort: ");
-                    string oldPassword = ConsoleHelpers.GetPassword();
-
-                    // Überprüfen, ob das eingegebene Passwort korrekt ist
-                    if (currentUser.VerifyPassword(oldPassword))
-                    {
-                        break; // Passwort korrekt, Schleife verlassen
-                    }
-                    else
-                    {
-                        Console.WriteLine("Falsches Passwort. Bitte erneut versuchen.");
-                    }
-                }
-
-                // Schritt 2: Neues Passwort festlegen
-                string newPassword;
-                while (true)
-                {
-                    Console.Write("Neues Passwort: ");
-                    newPassword = ConsoleHelpers.GetPassword();
-
-                    Console.Write("Neues Passwort bestätigen: ");
-                    string confirmPassword = ConsoleHelpers.GetPassword();
-
-                    // Prüfen, ob beide Eingaben übereinstimmen
-                    if (newPassword == confirmPassword)
-                    {
-                        break; // Beide Passwörter stimmen überein
-                    }
-                    else
-                    {
-                        Console.WriteLine("Passwörter stimmen nicht überein. Bitte erneut versuchen.");
-                    }
-                }
-
-                // Schritt 3: Passwort aktualisieren
-                currentUser.PasswordHash = currentUser.HashPassword(newPassword);
-                userManagement.userRepository.SaveUsers();
-                Console.WriteLine("Passwort erfolgreich geändert.");
+                ConsoleHelpers.WriteError("Invalid parameters. Use '-help' to see the correct usage.");
+                return;
             }
-            else
+
+            // Schritt 1: Überprüfung des alten Passworts
+            while (true)
             {
-                Console.WriteLine("Falsche Parameter. Verwenden Sie '-help', um die richtige Nutzung anzuzeigen.");
+                Console.Write("Old password: ");
+                string oldPassword = ConsoleHelpers.GetPassword();
+
+                if (currentUser.VerifyPassword(oldPassword))
+                {
+                    break;
+                }
+                else
+                {
+                    ConsoleHelpers.WriteError("Error: Incorrect password. Please try again.");
+                }
             }
+
+            // Schritt 2: Neues Passwort festlegen
+            string newPassword;
+            while (true)
+            {
+                Console.Write("New password: ");
+                newPassword = ConsoleHelpers.GetPassword();
+
+                Console.Write("Confirm new password: ");
+                string confirmPassword = ConsoleHelpers.GetPassword();
+
+                if (newPassword == confirmPassword)
+                {
+                    break;
+                }
+                else
+                {
+                    ConsoleHelpers.WriteError("Error: Passwords do not match. Please try again.");
+                }
+            }
+
+            // Schritt 3: Passwort aktualisieren
+            currentUser.PasswordHash = currentUser.HashPassword(newPassword);
+            userManagement.userRepository.SaveUsers();
+            ConsoleHelpers.WriteSuccess("Password changed successfully.");
         }
 
-        // Show help method as defined in the custom ICommand interface
         public void ShowHelp()
         {
             Console.WriteLine(Description);
             Console.WriteLine("Usage: changepw [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }

@@ -31,5 +31,20 @@ namespace AMIG.OS.Utils
             Console.WriteLine(); // Neue Zeile nach der Passworteingabe
             return password;
         }
+
+        public static void WriteError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+        public static void WriteSuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+
     }
 }

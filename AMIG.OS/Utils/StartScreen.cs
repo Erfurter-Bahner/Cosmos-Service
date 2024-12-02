@@ -19,7 +19,7 @@ namespace AMIG.OS.Utils
             {
                 Console.Write(logo[i]);
             }
-            Console.WriteLine("\nSystem wird geladen");
+            Console.WriteLine("\nSystem is loading");
             // Ladebalken mit Klammern
             Console.Write("[");
             Console.SetCursorPosition(window_width - 1, Console.CursorTop); // Setze Cursorposition nach der rechten Klammer

@@ -22,7 +22,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-file", "file to create"},
-            {"-help", "show help"},
+           {"-help", "Show help for this command."},
         };
         public TOUCH(FileSystemManager fileSystemManagement)
         {
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 
@@ -61,7 +61,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             Console.WriteLine("Usage: touch [options] ");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
 

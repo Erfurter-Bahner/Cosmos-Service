@@ -21,8 +21,8 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public string PermissionName { get; } = Permissions.rmdir;
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
-            {"-dir", "directory to remove"},
-            {"-help", "show help"},
+            {"-dir", "The directory to change to (absolute or relative)."},
+           {"-help", "Show help for this command."},
         };
         public RemoveDir(FileSystemManager fileSystemManagement)
         {
@@ -54,7 +54,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 
@@ -65,7 +65,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
             Console.WriteLine("Usage: rmdir [options] ");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
 

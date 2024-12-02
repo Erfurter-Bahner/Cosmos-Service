@@ -16,7 +16,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         {
             { "-user", "Name of the user" },
             { "-role", "Name of the role/s to remove" },
-            { "-help", "Shows usage information for the command." }
+            {"-help", "Show help for this command."},
         };
 
         public RemoveRoleUser(UserManagement userManagement)
@@ -50,7 +50,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 User user = userManagement.userRepository.GetUserByUsername(username);
                 if (user == null)
                 {
-                    Console.WriteLine($"Benutzer '{username}' wurde nicht gefunden.");
+                    ConsoleHelpers.WriteError($"User '{username}' doesnt exit.");
                     return;
                 }
 
@@ -68,20 +68,20 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         // Überprüfen, ob die Rolle existiert
                         if (role == null)
                         {
-                            Console.WriteLine($"Rolle '{roleName}' existiert nicht.");
+                            Console.WriteLine($"Warning: Role '{roleName}' doesnt exit.");
                             continue; // Nächste Rolle prüfen
                         }
 
                         // Überprüfen, ob der Benutzer die Rolle bereits hat
                         if (!user.Roles.Contains(role))
                         {
-                            Console.WriteLine($"Benutzer '{username}' hat nicht die Rolle '{roleName}'.");
+                            Console.WriteLine($"Warning: User '{username}' doesnt have the role '{roleName}'.");
                             continue;
                         }
 
                         // Rolle und Berechtigungen zum Benutzer hinzufügen
                         user.RemoveRole(role);
-                        Console.WriteLine($"Rolle '{roleName}' wurde erfolgreich vom Benutzer '{username}' entfernt.");
+                        ConsoleHelpers.WriteSuccess($"Role '{roleName}' was removed from '{username}' successfully.");
                     }
 
                     // Benutzer speichern
@@ -90,7 +90,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             }
             else
             {
-                Console.WriteLine("Insufficient arguments. Use -help to see usage.");
+                ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
             }
         }
 
@@ -101,7 +101,7 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
             Console.WriteLine($"Usage: {PermissionName} [options]");
             foreach (var param in Parameters)
             {
-                Console.WriteLine($"  {param.Key}\t{param.Value}");
+                Console.WriteLine($"{param.Key}\t{param.Value}");
             }
         }
     }
