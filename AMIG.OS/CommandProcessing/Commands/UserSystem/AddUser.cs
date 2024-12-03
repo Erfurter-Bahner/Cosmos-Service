@@ -91,11 +91,11 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: addrole");
-            //foreach (var param in Parameters)
-            //{
-            //    Console.WriteLine($"{param.Key}\t{param.Value}");
-            //}
+            Console.WriteLine("Usage: addrole [options]");
+            foreach (var param in Parameters)
+            {
+                Console.WriteLine($"{param.Key}\t{param.Value}");
+            }
         }
     }
 }

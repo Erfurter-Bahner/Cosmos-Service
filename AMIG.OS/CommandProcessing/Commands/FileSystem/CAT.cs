@@ -58,7 +58,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: ls [options]");
+            Console.WriteLine("Usage: cat [options]");
             foreach (var param in Parameters)
             {
                 Console.WriteLine($"{param.Key}\t{param.Value}");
