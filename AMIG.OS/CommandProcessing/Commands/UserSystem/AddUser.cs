@@ -33,30 +33,56 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         // Implementing Execute as defined in the custom ICommand interface
         public void Execute(CommandParameters parameters, User currentUser)
         {
-
             // Hilfe anzeigen, wenn der "help"-Parameter enthalten ist
             if (parameters.TryGetValue("help", out _))
             {
                 ShowHelp();
                 return;
             }
-            // Benutzerdaten abfragen
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
 
-            Console.Write("Password: ");
-            string password = ConsoleHelpers.GetPassword();
-
-            // Rollen (durch Semikolon getrennt, z. B. Admin;User)
-            Console.Write("Roles (r1 r2 r3): ");
-            string rolesInput = Console.ReadLine();
-
-            var roles = new List<Role>();  // Rollen als Dictionary speichern
-            var userPermissions = new HashSet<string>(); // Berechtigungen für den Benutzer werden hier gesammelt
-
-            foreach (var roleName in rolesInput.Split(' '))  // Rollen durch Semikolon trennen
+            // Benutzername abfragen
+            string username;
+            do
             {
-                var trimmedRoleName = roleName.Trim();  // Leere Leerzeichen entfernen
+                Console.Write("Username: ");
+                username = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(username))
+                {
+                    ConsoleHelpers.WriteError("Username cannot be empty. Please try again.");
+                }
+            } while (string.IsNullOrWhiteSpace(username));
+
+            // Passwort abfragen
+            string password;
+            do
+            {
+                Console.Write("Password: ");
+                password = ConsoleHelpers.GetPassword();
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    ConsoleHelpers.WriteError("Password cannot be empty. Please try again.");
+                }
+            } while (string.IsNullOrWhiteSpace(password));
+
+            // Rollen abfragen
+            string rolesInput;
+            do
+            {
+                Console.Write("Roles (r1 r2 r3): ");
+                rolesInput = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(rolesInput))
+                {
+                    ConsoleHelpers.WriteError("Roles cannot be empty. Please try again.");
+                }
+            } while (string.IsNullOrWhiteSpace(rolesInput));
+
+            // Rollen verarbeiten
+            var roles = new List<Role>(); // Rollen als Liste speichern
+            var userPermissions = new HashSet<string>(); // Berechtigungen für den Benutzer sammeln
+
+            foreach (var roleName in rolesInput.Split(' ')) // Rollen durch Leerzeichen trennen
+            {
+                var trimmedRoleName = roleName.Trim(); // Leere Leerzeichen entfernen
                 Role role = userManagement.roleRepository.GetRoleByName(trimmedRoleName); // Beispielmethode, um Rolle nach Name zu finden
 
                 if (role != null)
@@ -68,20 +94,20 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         Console.WriteLine($"- {permission}");
                     }
 
-                    roles.Add(role);  // Rolle ins Dictionary einfügen, wobei der Schlüssel der Name der Rolle ist
-                    userPermissions.UnionWith(role.Permissions);  // Berechtigungen der Rolle hinzufügen
+                    roles.Add(role); // Rolle zur Liste hinzufügen
+                    userPermissions.UnionWith(role.Permissions); // Berechtigungen der Rolle hinzufügen
                 }
                 else
                 {
-                    Console.WriteLine($"Warning: Role '{trimmedRoleName}' doesnt exit.");
+                    Console.WriteLine($"Warning: Role '{trimmedRoleName}' doesn't exist.");
                 }
             }
 
             // Benutzer erstellen
             var user = new User(username, password, roles: roles, permissions: userPermissions);
 
-            // Hinzufügen des Benutzers zur Sammlung
-            userManagement.userRepository.AddUser(user);  // Methode, um den Benutzer hinzuzufügen
+            // Benutzer zur Sammlung hinzufügen
+            userManagement.userRepository.AddUser(user); // Methode, um den Benutzer hinzuzufügen
 
             // Optional: Ausgabe zur Bestätigung
             ConsoleHelpers.WriteSuccess("User successfully added");
@@ -91,11 +117,11 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
         public void ShowHelp()
         {
             Console.WriteLine(Description);
-            Console.WriteLine("Usage: addrole");
-            //foreach (var param in Parameters)
-            //{
-            //    Console.WriteLine($"{param.Key}\t{param.Value}");
-            //}
+            Console.WriteLine("Usage: addrole [options]");
+            foreach (var param in Parameters)
+            {
+                Console.WriteLine($"{param.Key}\t{param.Value}");
+            }
         }
     }
 }

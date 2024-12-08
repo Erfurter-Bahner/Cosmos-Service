@@ -18,33 +18,28 @@ namespace AMIG.OS.CommandProcessing
         {
             commands = new Dictionary<string, ICommand>
             {
-                //{ "login", new LoginCommand(userManagement) },
-                //{ "ls", new ListDirectoryCommand(fileSystem) },
-                //{ "mkdir", new MakeDirectoryCommand(fileSystem) },
-                { "addrole", new AddRole(userManagement) }, //addrole
-                { "rmrole", new RemoveRole(userManagement) }, //rmrole
-                { "addroletouser", new AddRoleToUser(userManagement)},//addroletouser
-                { "rmroleuser", new RemoveRoleUser(userManagement)}, //rmroleuser               
-                { "addpermtouser", new AddPermToUser(userManagement)},//addpermtouser
-                { "rmpermuser", new RemovePermUser(userManagement)},//rmpermuser
-                { "rmpermrole", new RemovePermRole(userManagement)},//
+                { "addrole", new AddRole(userManagement) }, 
+                { "rmrole", new RemoveRole(userManagement) }, 
+                { "addroletouser", new AddRoleToUser(userManagement)},
+                { "rmroleuser", new RemoveRoleUser(userManagement)},            
+                { "addpermtouser", new AddPermToUser(userManagement)},
+                { "rmpermuser", new RemovePermUser(userManagement)},
+                { "rmpermrole", new RemovePermRole(userManagement)},
                 { "addpermtorole", new AddPermToRole(userManagement)},
-                { "adduser", new AddUser(userManagement) },//
-                { "rmuser", new RemoveUser(userManagement) },//              
-                { "showall", new ShowAll(userManagement)},//
-                { "showme", new ShowMe(userManagement)},//
+                { "adduser", new AddUser(userManagement) },
+                { "rmuser", new RemoveUser(userManagement) },             
+                { "showall", new ShowAll(userManagement)},
+                { "showme", new ShowMe(userManagement)},
                 { "showallperms", new ShowAllPermissions(userManagement)},
                 { "showallroles", new ShowAllRoles(userManagement)},
                 { "showrole", new ShowSpecificRole(userManagement)},
-                { "showuser", new ShowSpecificUser(userManagement)},//
-                { "changename", new ChangeName(userManagement)},//
-                { "changepw", new ChangePW(userManagement)},//
-                //extra
-                { "adios", new Adios(userManagement)}, //extra
-                { "logout", new Logout(userManagement)}, //extra
-                { "datetime", new Commands.Extra.DateTime()}, //extra
-                { "clear", new Clear(userManagement)}, //extra
-                // Weitere Befehle hinzufügen ...
+                { "showuser", new ShowSpecificUser(userManagement)},
+                { "changename", new ChangeName(userManagement)},
+                { "changepw", new ChangePW(userManagement)},
+                { "adios", new Adios(userManagement)}, 
+                { "logout", new Logout(userManagement)}, 
+                { "datetime", new Commands.Extra.DateTime()}, 
+                { "clear", new Clear(userManagement)}, 
                 { "ls", new LS(fileSystemManager)},
                 { "cat", new CAT(fileSystemManager)},
                 { "touch", new TOUCH(fileSystemManager)},
