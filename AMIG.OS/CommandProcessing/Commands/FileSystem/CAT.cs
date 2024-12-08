@@ -23,6 +23,7 @@ namespace AMIG.OS.CommandProcessing.Commands.FileSystem
         public Dictionary<string, string> Parameters => new Dictionary<string, string>
         {
             {"-help","Show help for this command."},
+            {"-file", "file to show content"},
         };
         public CAT(FileSystemManager fileSystemManagement)
         {
