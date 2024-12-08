@@ -63,7 +63,7 @@ namespace AMIG.OS.CommandProcessing
                 // Übergeben der Parameter an Execute
                 // command: zusatz1 zusatz2
             }
-            else if (commandName == "-help")
+            else if (commandName == "help")
             {
                 Console.WriteLine("Commands: Use command -help for more information");
                 CommandHelp.ShowAllCommandsHelp();
