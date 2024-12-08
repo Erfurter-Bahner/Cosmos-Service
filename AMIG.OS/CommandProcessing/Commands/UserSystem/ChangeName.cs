@@ -43,20 +43,30 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                 ShowHelp();
                 return;
             }
-            if (parameters.Parameters.Count == 0) {
 
+            if (parameters.Parameters.Count == 0)
+            {
                 string newUsername;
                 string entscheidung;
 
                 do
                 {
-                    Console.Write("New Username: ");
-                    newUsername = Console.ReadLine();
+                    do
+                    {
+                        Console.Write("New Username: ");
+                        newUsername = Console.ReadLine()?.Trim();
+
+                        if (string.IsNullOrEmpty(newUsername))
+                        {
+                            ConsoleHelpers.WriteError("Username cannot be empty. Please enter a valid username.");
+                        }
+
+                    } while (string.IsNullOrEmpty(newUsername));
 
                     do
                     {
                         Console.Write("Confirm: y/n ");
-                        entscheidung = Console.ReadLine().ToLower();
+                        entscheidung = Console.ReadLine()?.ToLower();
 
                         if (entscheidung == "n")
                         {
@@ -65,19 +75,22 @@ namespace AMIG.OS.CommandProcessing.Commands.UserSystem
                         }
                         else if (entscheidung != "y" && entscheidung != "n")
                         {
-                            ConsoleHelpers.WriteError("Invalid Input: y/n ");
+                            ConsoleHelpers.WriteError("Invalid input: y/n ");
                         }
 
                     } while (entscheidung != "y" && entscheidung != "n");
 
                 } while (entscheidung != "y");
+
+                // Benutzername aktualisieren
                 currentUser.Username = newUsername;
                 userManagement.userRepository.SaveUsers();
+                ConsoleHelpers.WriteSuccess("Username successfully changed.");
             }
             else
             {
                 ConsoleHelpers.WriteError("Insufficient arguments. Use -help to see usage.");
-            }            
+            }
         }
 
         // Show help method as defined in the custom ICommand interface
